@@ -20,7 +20,6 @@
         <!-- dependency versions -->
         <junit.version>4.11</junit.version>
     </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>

@@ -2,6 +2,7 @@ package com.hortonworks.iotas.webservice;
 
 import com.codahale.metrics.annotation.Timed;
 import com.hortonworks.iotas.catalog.DataSource;
+import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageManager;
 
 import javax.ws.rs.*;
@@ -13,7 +14,7 @@ import java.util.Collection;
 @Path("/api/v1/catalog")
 @Produces(MediaType.APPLICATION_JSON)
 public class DataSourceCatalogResource {
-    private StorageManager dao;
+    private StorageManager<DataSource> dao;
     // TODO should probably make namespace static
     private static final String DATA_SOURCE_NAMESPACE = new DataSource().getNameSpace();
 
@@ -35,7 +36,7 @@ public class DataSourceCatalogResource {
     public DataSource getDataSourceById(@PathParam("id") Long dataSourceId) {
         DataSource ds = new DataSource();
         ds.setDataSourceId(dataSourceId);
-        return this.dao.<DataSource>get(DATA_SOURCE_NAMESPACE, ds.getPrimaryKey());
+        return this.dao.<DataSource>get(new StorableKey(DATA_SOURCE_NAMESPACE, ds.getPrimaryKey()));
     }
 
     @POST
@@ -58,7 +59,7 @@ public class DataSourceCatalogResource {
     public DataSource removeParser(@PathParam("id") Long dataSourceId) {
         DataSource dataSource = new DataSource();
         dataSource.setDataSourceId(dataSourceId);
-        return this.dao.remove(DATA_SOURCE_NAMESPACE, dataSource.getPrimaryKey());
+        return this.dao.remove(new StorableKey(DATA_SOURCE_NAMESPACE, dataSource.getPrimaryKey()));
     }
 
     @PUT

@@ -2,6 +2,7 @@ package com.hortonworks.iotas.webservice;
 
 import com.codahale.metrics.annotation.Timed;
 import com.hortonworks.iotas.catalog.Device;
+import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageManager;
 
 import javax.ws.rs.*;
@@ -11,11 +12,11 @@ import java.util.Collection;
 @Path("/api/v1/catalog")
 @Produces(MediaType.APPLICATION_JSON)
 public class DeviceCatalogResource {
-    private StorageManager dao;
+    private StorageManager<Device> dao;
     // TODO should probably make namespace static
     private static final String DEVICE_NAMESPACE = new Device().getNameSpace();
 
-    public DeviceCatalogResource(StorageManager manager) {
+    public DeviceCatalogResource(StorageManager<Device> manager) {
         this.dao = manager;
     }
 
@@ -35,7 +36,7 @@ public class DeviceCatalogResource {
         Device device = new Device();
         device.setDeviceId(deviceId);
         device.setVersion(version);
-        return this.dao.<Device>get(DEVICE_NAMESPACE, device.getPrimaryKey());
+        return this.dao.<Device>get(new StorableKey(DEVICE_NAMESPACE, device.getPrimaryKey()));
     }
 
     @POST
@@ -56,7 +57,7 @@ public class DeviceCatalogResource {
         Device device = new Device();
         device.setDeviceId(deviceId);
         device.setVersion(version);
-        return this.dao.remove(DEVICE_NAMESPACE, device.getPrimaryKey());
+        return this.dao.remove(new StorableKey(DEVICE_NAMESPACE, device.getPrimaryKey()));
     }
 
     @PUT

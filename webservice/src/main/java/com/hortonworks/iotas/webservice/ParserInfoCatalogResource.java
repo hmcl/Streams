@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.ByteStreams;
 import com.hortonworks.iotas.catalog.ParserInfo;
+import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageManager;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -22,7 +23,7 @@ public class ParserInfoCatalogResource {
     private static final String PARSER_INFO_NAMESPACE = new ParserInfo().getNameSpace();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    private StorageManager dao;
+    private StorageManager<ParserInfo> dao;
     private IotasConfiguration configuration;
 
     public ParserInfoCatalogResource(StorageManager manager, IotasConfiguration configuration) {
@@ -44,7 +45,7 @@ public class ParserInfoCatalogResource {
     public ParserInfo getParserInfoById(@PathParam("id") Long parserId) {
         ParserInfo parserInfo = new ParserInfo();
         parserInfo.setParserId(parserId);
-        return this.dao.<ParserInfo>get(PARSER_INFO_NAMESPACE, parserInfo.getPrimaryKey());
+        return this.dao.<ParserInfo>get(new StorableKey(PARSER_INFO_NAMESPACE, parserInfo.getPrimaryKey()));
     }
 
     @DELETE
@@ -53,7 +54,7 @@ public class ParserInfoCatalogResource {
     public ParserInfo removeParser(@PathParam("id") Long parserId) {
         ParserInfo parserInfo = new ParserInfo();
         parserInfo.setParserId(parserId);
-        return this.dao.remove(PARSER_INFO_NAMESPACE, parserInfo.getPrimaryKey());
+        return this.dao.remove(new StorableKey(PARSER_INFO_NAMESPACE, parserInfo.getPrimaryKey()));
     }
 
     //Test curl command curl -X POST -i -F parserJar=@original-webservice-0.1-SNAPSHOT.jar -F parserInfo='{"parserName":"TestParser","className":"some.test.parserClass","version":0}' http://localhost:8080/api/v1/catalog/parsers

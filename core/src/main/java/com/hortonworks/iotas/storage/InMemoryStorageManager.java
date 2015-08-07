@@ -1,34 +1,34 @@
 package com.hortonworks.iotas.storage;
 
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 //TODO: The synchronization is broken right now, so all the methods dont guarantee the semantics as described in the interface.
-public class InMemoryStorageManager implements StorageManager {
+public class InMemoryStorageManager implements StorageManager<Storable> {
 
     private ConcurrentHashMap<String, ConcurrentHashMap<PrimaryKey, Storable>> storageMap =  new ConcurrentHashMap<String, ConcurrentHashMap<PrimaryKey, Storable>>();
     private ConcurrentHashMap<String, Long> sequenceMap = new ConcurrentHashMap<String, Long>();
 
     public void add(Storable storable) throws AlreadyExistsException {
-        String namespace = storable.getNameSpace();
-        PrimaryKey id = storable.getPrimaryKey();
-        Storable existing = get(namespace, id);
+        final Storable existing = get(storable.getStorableKey());
+
         if(existing == null) {
             addOrUpdate(storable);
-        } else if(existing.equals(storable)) {
+        } else if (existing.equals(storable)) {
             return;
         } else {
-            throw new AlreadyExistsException("Another instnace with same id = " + storable.getPrimaryKey() + " exists with different value in namespace " + namespace +
-                    " Consider using addOrUpdate method if you always want to overwrite.");
+            throw new AlreadyExistsException("Another instnace with same id = " + storable.getPrimaryKey()
+                    + " exists with different value in namespace " + storable.getNameSpace()
+                    + " Consider using addOrUpdate method if you always want to overwrite.");
         }
     }
 
-    public <T extends Storable> T remove(String namespace, PrimaryKey id) {
-        if(storageMap.containsKey(namespace)) {
-            return (T) storageMap.get(namespace).remove(id);
+    public Storable remove(StorableKey key) {
+        if(storageMap.containsKey(key.getNameSpace())) {
+            return storageMap.get(key.getNameSpace()).remove(key.getPrimaryKey());
         }
         return null;
     }
@@ -42,12 +42,12 @@ public class InMemoryStorageManager implements StorageManager {
         storageMap.get(namespace).put(id, storable);
     }
 
-    public <T extends Storable> T get(String namespace, PrimaryKey id) throws StorageException {
-        return storageMap.containsKey(namespace) ? (T) storageMap.get(namespace).get(id) : null;
+    public Storable get(StorableKey key) throws StorageException {
+        return storageMap.containsKey(key.getNameSpace()) ? storageMap.get(key.getNameSpace()).get(key.getPrimaryKey()) : null;
     }
 
-    public <T extends Storable> Collection<T> list(String namespace) throws StorageException {
-        return storageMap.containsKey(namespace) ? (Collection<T>) storageMap.get(namespace).values() : Collections.EMPTY_LIST;
+    public Collection<Storable> list(String namespace) throws StorageException {
+        return storageMap.containsKey(namespace) ? storageMap.get(namespace).values() : new LinkedList<Storable>();
     }
 
     public void cleanup() throws StorageException {

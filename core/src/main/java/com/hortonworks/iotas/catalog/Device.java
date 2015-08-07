@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.storage.PrimaryKey;
 import com.hortonworks.iotas.storage.Storable;
+import com.hortonworks.iotas.storage.StorableKey;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +67,11 @@ public class Device implements Storable {
         fieldToObjectMap.put(new Schema.Field(DEVICE_ID, Schema.Type.STRING), this.deviceId);
         fieldToObjectMap.put(new Schema.Field(VERSION, Schema.Type.LONG), this.version);
         return new PrimaryKey(fieldToObjectMap);
+    }
+
+    @JsonIgnore
+    public StorableKey getStorableKey() {
+        return new StorableKey(getNameSpace(), getPrimaryKey());
     }
 
     public Map toMap() {

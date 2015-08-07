@@ -2,6 +2,7 @@ package com.hortonworks.iotas.webservice;
 
 import com.codahale.metrics.annotation.Timed;
 import com.hortonworks.iotas.catalog.DataFeed;
+import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageManager;
 
 import javax.ws.rs.*;
@@ -11,7 +12,7 @@ import java.util.Collection;
 @Path("/api/v1/catalog")
 @Produces(MediaType.APPLICATION_JSON)
 public class FeedCatalogResource {
-    private StorageManager dao;
+    private StorageManager<DataFeed> dao;
     // TODO should probably make namespace static
     private static final String DATA_FEED_NAMESPACE = new DataFeed().getNameSpace();
 
@@ -33,7 +34,7 @@ public class FeedCatalogResource {
     public DataFeed getDataFeedById(@PathParam("id") Long dataFeedId) {
         DataFeed df = new DataFeed();
         df.setDatafeedId(dataFeedId);
-        return this.dao.<DataFeed>get(DATA_FEED_NAMESPACE, df.getPrimaryKey());
+        return this.dao.<DataFeed>get(new StorableKey(DATA_FEED_NAMESPACE, df.getPrimaryKey()));
     }
 
     @POST
@@ -56,7 +57,7 @@ public class FeedCatalogResource {
     public DataFeed removeDatafeed(@PathParam("id") Long dataFeedId) {
         DataFeed feed = new DataFeed();
         feed.setDatafeedId(dataFeedId);
-        return this.dao.remove(DATA_FEED_NAMESPACE, feed.getPrimaryKey());
+        return this.dao.remove(new StorableKey(DATA_FEED_NAMESPACE, feed.getPrimaryKey()));
     }
 
     @PUT
