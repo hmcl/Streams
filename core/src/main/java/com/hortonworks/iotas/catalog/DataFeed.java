@@ -14,7 +14,7 @@ import java.util.Map;
  *
  */
 public class DataFeed implements Storable {
-
+    public static final String NAME_SPACE = "datafeeds";
     public static final String DATAFEED_ID = "dataFeedId";
     public static final String DATASOURCE_ID = "dataSourceId";
     public static final String DATAFEED_NAME = "dataFeedName";
@@ -67,7 +67,7 @@ public class DataFeed implements Storable {
 
     @JsonIgnore
     public String getNameSpace() {
-        return "datafeeds";
+        return NAME_SPACE;
     }
 
     @JsonIgnore

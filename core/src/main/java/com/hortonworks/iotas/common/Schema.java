@@ -26,20 +26,54 @@ import java.util.Map;
 //TODO Make this class Jackson Compatible.
 public class Schema {
     public enum Type {
-        BOOLEAN,
-        BYTE, // 8-bit signed integer
-        SHORT, // 16-bit
-        INTEGER, // 32-bit
-        LONG, // 64-bit
-        FLOAT,
-        DOUBLE,
-        STRING,
-        BINARY, // raw data
-        NESTED,  // nested field
-        ARRAY    // array field
+        // Don't change the order of this enum to prevent bugs. If you need to add a new entry do so by adding it to the end.
+        BOOLEAN(Boolean.class),
+        BYTE(Byte.class), // 8-bit signed integer
+        SHORT(Short.class), // 16-bit
+        INTEGER(Integer.class), // 32-bit
+        LONG(Long.class), // 64-bit
+        FLOAT(Float.class),
+        DOUBLE(Double.class),
+        STRING(String.class),
+        BINARY(byte[].class), // raw data
+        NESTED(Map.class),  // nested field
+        ARRAY(List.class);    // array field
+
+        private Class javaType;
+
+        Type(Class javaType) {
+            this.javaType = javaType;
+        }
+
+        public Class getJavaType() {
+            return javaType;
+        }
+
+        /**
+         * Determines the {@link Type} of the value specified
+         * @param val value for which to determine the type
+         * @return {@link Type} of the value
+         */
+        public static Type getTypeOfVal(String val) {
+            Type type = null;
+            Type[] types = Type.values();
+            for (int i = 0; i < Type.STRING.ordinal(); i++) {
+                final Class clazz = types[i].getJavaType();
+                try {
+                    clazz.getMethod("valueOf", String.class).invoke(null, val);
+                    type = types[i];
+                    break;
+                } catch (Exception e) {/* Exception is thrown if type does not match. Search next type */
+                }
+            }
+            if (type == null) {
+                type = Type.STRING;
+            }
+            return type;
+        }
     }
 
-    public static class Field {
+    public static class Field implements Comparable<Field> {
         String name;
         Type type;
 
@@ -71,6 +105,24 @@ public class Schema {
             this.type = type;
         }
 
+        // sort by name and then by type
+        @Override
+        public int compareTo(Field o) {
+            if (this.name.compareTo(o.getName()) < 0) {
+                return - 1;
+            } 
+            if (this.name.compareTo(o.getName()) > 0) {
+                return 1;
+            }
+            if (this.type.compareTo(o.getType()) < 0) {
+                return - 1;
+            }
+            if (this.type.compareTo(o.getType()) > 0) {
+                return 1;
+            }
+            return 0;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -80,7 +132,6 @@ public class Schema {
 
             if (name != null ? !name.equals(field.name) : field.name != null) return false;
             return type == field.type;
-
         }
 
         @Override
@@ -247,6 +298,7 @@ public class Schema {
     }
 
     //TODO: need to replace with actual ToJson from Json
+    //TODO: this can be simplified to fields.toString() a
     public String toString() {
         if(fields == null) return "null";
         if(fields.isEmpty()) return "{}";
