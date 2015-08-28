@@ -11,6 +11,11 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <hikari.version>2.2.5</hikari.version>
+        <commons-lang.version>2.5</commons-lang.version>
+    </properties>
+
     <artifactId>core</artifactId>
 
     <dependencies>
@@ -40,9 +45,21 @@
             <version>3.3</version>
         </dependency>
         <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP-java6</artifactId>
+            <version>${hikari.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons-lang.version}</version>
+        </dependency>
+        <!--test-->
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
 </project>

@@ -7,7 +7,6 @@ import com.hortonworks.iotas.catalog.DataSource;
 import com.hortonworks.iotas.catalog.Device;
 import com.hortonworks.iotas.catalog.ParserInfo;
 import com.hortonworks.iotas.storage.DataSourceSubType;
-import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageManager;
 import com.hortonworks.iotas.util.CoreUtils;
@@ -44,9 +43,17 @@ public class CatalogService {
             this.value = value;
         }
 
+        public String getName() {
+            return name;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
         @Override
         public String toString() {
-            return "QueryParam{" +
+            return "{" +
                     "name='" + name + '\'' +
                     ", value='" + value + '\'' +
                     '}';

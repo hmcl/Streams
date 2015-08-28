@@ -23,7 +23,7 @@ import static com.hortonworks.iotas.common.Schema.Field;
  *        it wont be supported by the manager right now.
  */
 public class Device implements DataSourceSubType {
-
+    public static final String NAME_SPACE = "devices";
     public static final String DEVICE_ID = "deviceId";
     public static final String VERSION = "version";
     public static final String DATA_SOURCE_ID = "dataSourceId";
@@ -50,7 +50,7 @@ public class Device implements DataSourceSubType {
 
     @JsonIgnore
     public String getNameSpace() {
-        return "devices";
+        return NAME_SPACE;
     }
 
     @JsonIgnore

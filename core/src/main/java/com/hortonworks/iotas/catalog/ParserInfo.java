@@ -2,8 +2,8 @@ package com.hortonworks.iotas.catalog;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.PrimaryKey;
+import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorableKey;
 
 import java.util.HashMap;
@@ -13,6 +13,7 @@ import java.util.Map;
  * Parser information that will be stored by storage layer.
  */
 public class ParserInfo implements Storable {
+    public static final String NAME_SPACE = "parser-info";
     public static final String PARSER_ID = "parserId";
     public static final String PARSER_NAME = "parserName";
     public static final String CLASS_NAME = "className";
@@ -60,7 +61,7 @@ public class ParserInfo implements Storable {
 
     @JsonIgnore
     public String getNameSpace() {
-        return "parser-info";
+        return NAME_SPACE;
     }
 
     @JsonIgnore

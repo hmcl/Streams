@@ -1,0 +1,7 @@
+CREATE DATABASE iotas IF NOT EXISTS;
+
+CREATE TABLE IF NOT EXISTS device (
+    deviceId VARCHAR(256) PRIMARY KEY NOT NULL,
+    version BIGINT,
+    dataSourceId BIGINT,
+    timestamp BIGINT NOT NULL);
