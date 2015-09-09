@@ -49,6 +49,11 @@ public class Schema {
             return javaType;
         }
 
+        /**
+         * Determines the {@link Type} of the value specified
+         * @param val value for which to determine the type
+         * @return {@link Type} of the value
+         */
         public static Type getTypeOfVal(String val) {
             Type type = null;
             Type[] types = Type.values();
