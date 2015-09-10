@@ -14,7 +14,7 @@
     <properties>
         <hikari.version>2.2.5</hikari.version>
         <commons-lang.version>2.5</commons-lang.version>
-        <mysql-jdbc-connector.version>5.1.31</mysql-jdbc-connector.version>
+        <mysql-connector-java.version>5.1.31</mysql-connector-java.version>
     </properties>
 
     <artifactId>core</artifactId>
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-jdbc-connector.version}</version>
+            <version>${mysql-connector-java.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

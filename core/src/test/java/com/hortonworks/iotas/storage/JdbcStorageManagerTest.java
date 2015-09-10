@@ -41,7 +41,7 @@ public class JdbcStorageManagerTest {
     @Before
     public void setUp() throws Exception {
         setJdbcStorageManager();
-        SetDevice();
+        setDevice();
         createTables();
     }
 
@@ -74,15 +74,23 @@ public class JdbcStorageManagerTest {
 
     @Test
     public void testCrud() throws Exception {
-        Storable retrieved = jdbcStorageManager.get(device.getStorableKey());
-        Assert.assertNull(retrieved);
-        jdbcStorageManager.add(device);
-        retrieved = jdbcStorageManager.get(device.getStorableKey());
-        Assert.assertEquals("Instance put and retrieved from database are different", device, retrieved);
-
+        StorableKey key = null;
+        Storable retrieved;
+        try {
+            key = device.getStorableKey();
+            retrieved = jdbcStorageManager.get(key);
+            Assert.assertNull(retrieved);
+            jdbcStorageManager.add(device);
+            retrieved = jdbcStorageManager.get(key);
+            Assert.assertEquals("Instance put and retrieved from database are different", device, retrieved);
+        } finally {
+            jdbcStorageManager.remove(key);
+            retrieved = jdbcStorageManager.get(key);
+            Assert.assertNull(retrieved);
+        }
     }
 
-    public void SetDevice() {
+    private void setDevice() {
         this.device = new Device();
         Map<String, Object> state = new HashMap<>();
         state.put(Device.DEVICE_ID, "device_id_test");
