@@ -51,7 +51,7 @@ public abstract class MySqlStorableBuilder extends MySqlBuilder {
             Schema.Field column = columns.get(j % len);
             Schema.Type javaType = column.getType();
             String columnName = column.getName();
-            setPreparedStatementParams(preparedStatement, javaType, (j % len) + 1, columnsToValues.get(columnName));
+            setPreparedStatementParams(preparedStatement, javaType, j + 1, columnsToValues.get(columnName));
         }
 
         return preparedStatement;

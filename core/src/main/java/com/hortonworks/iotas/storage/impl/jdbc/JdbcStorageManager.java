@@ -109,7 +109,8 @@ public class JdbcStorageManager implements StorageManager {
         Connection connection = null;
         try {
             connection = getConnection();
-            PreparedStatement preparedStatement = new MySqlInsertUpdateDuplicate(storable)
+            final MySqlInsertUpdateDuplicate sqlBuilder = new MySqlInsertUpdateDuplicate(storable);
+            final PreparedStatement preparedStatement = sqlBuilder
                     .getPreparedStatement(connection, queryTimeoutSecs);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {

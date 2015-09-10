@@ -43,7 +43,7 @@ public class MySqlInsertUpdateDuplicate extends MySqlStorableBuilder {
 
         String sql = "INSERT INTO " + tableName + " ("
                 + join(getColumnNames(columns, null), ", ")
-                + ") VALUES( " + getBindVariables("?, ", columns.size()*2) + ")"
+                + ") VALUES(" + getBindVariables("?,", columns.size()) + ")"
                 + " ON DUPLICATE KEY UPDATE " + join(getColumnNames(columns, "%s = ?"), ", ");
 
         log.debug(sql);

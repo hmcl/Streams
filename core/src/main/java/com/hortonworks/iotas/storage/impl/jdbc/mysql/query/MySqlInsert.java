@@ -30,7 +30,7 @@ public class MySqlInsert extends MySqlStorableBuilder {
     public String getParameterizedSql() {
         final String sql = "INSERT INTO " + tableName + " ("
                 + join(getColumnNames(columns, null), ", ")
-                + ") VALUES( " + getBindVariables("?, ", columns.size()) + ")";
+                + ") VALUES( " + getBindVariables("?,", columns.size()) + ")";
 
         log.debug(sql);
         return sql;
