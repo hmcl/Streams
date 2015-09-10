@@ -31,7 +31,7 @@ public interface ConnectionBuilder extends Serializable {
 
     /**
      *
-     * @return a DB connection over which the queries can be executed.
+     * @return a database connection over which the queries can be executed.
      */
     Connection getConnection();
 

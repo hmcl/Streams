@@ -252,32 +252,41 @@ public class JdbcStorageManager implements StorageManager {
         final List<Map<String, Object>> maps = getMapsFromResultSet(resultSet);
         if (maps != null) {
             for (Map<String, Object> map : maps) {
-                T storable = newStorableInstance(nameSpace);
-                storable.fromMap(map);      // populates the Storable object state
-                storables.add(storable);
+                if (map != null) {
+                    T storable = newStorableInstance(nameSpace);
+                    storable.fromMap(map);      // populates the Storable object state
+                    storables.add(storable);
+                }
             }
         }
         return storables;
     }
 
     private <T extends Storable> T getStorableFromResultSet(ResultSet resultSet, String nameSpace) {
-        T storable = newStorableInstance(nameSpace);
-        storable.fromMap(getMapFromResultSet(resultSet, null));
+        T storable = null;
+        Map<String, Object> mapFromResultSet = getMapFromResultSet(resultSet);
+        if (mapFromResultSet != null) {
+            storable = newStorableInstance(nameSpace);
+            storable.fromMap(mapFromResultSet);
+        }
         return storable;
     }
 
+    // returns null for empty ResultSet or ResultSet with no rows
     private List<Map<String, Object>> getMapsFromResultSet(ResultSet resultSet) {
-        final List<Map<String, Object>> maps = new LinkedList<>();
+        List<Map<String, Object>> maps = null;
 
         try {
-            ResultSetMetaData rsMetadata = null;
-
-            while (resultSet.next()) {
-                if (rsMetadata == null) {
-                    rsMetadata = resultSet.getMetaData();
-                }
-                Map<String, Object> map = getMapFromResultSet(resultSet, rsMetadata);
+            if (resultSet.first()) {    // returns false if no rows in result set. Otherwise points to first row
+                maps = new LinkedList<>();
+                ResultSetMetaData rsMetadata = resultSet.getMetaData();
+                Map<String, Object> map = newMapWithRowContents(resultSet, rsMetadata);;
                 maps.add(map);
+
+                while (resultSet.next()) {
+                    map = newMapWithRowContents(resultSet, rsMetadata);;
+                    maps.add(map);
+                }
             }
         } catch (SQLException e) {
             log.error("Exception occurred while processing result set.", e);
@@ -285,16 +294,12 @@ public class JdbcStorageManager implements StorageManager {
         return maps;
     }
 
-    private <T extends Storable> Map<String, Object> getMapFromResultSet(ResultSet resultSet, ResultSetMetaData rsMetadata) {
+    private <T extends Storable> Map<String, Object> getMapFromResultSet(ResultSet resultSet) {
         Map<String, Object> map = null;
         try {
-            // if (rsMetadata != null) => resultSet.next() has already been called,
-            // therefore we don't call it again not to advance the cursor twice
-            if (rsMetadata == null) {
-                resultSet.next();
-                rsMetadata = resultSet.getMetaData();
+            if (resultSet.first()) {    // returns false if no rows in result set. Otherwise points to first row
+                map = newMapWithRowContents(resultSet, resultSet.getMetaData());
             }
-            map = newMapWithRowContents(resultSet, rsMetadata);
         } catch (SQLException e) {
             log.error("Exception occurred while processing ResultSet.", e);
         }

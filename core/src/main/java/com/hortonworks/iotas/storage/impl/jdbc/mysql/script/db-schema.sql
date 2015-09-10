@@ -1,7 +1,10 @@
-CREATE DATABASE iotas IF NOT EXISTS;
+#  CREATE DATABASE IF NOT EXISTS iotas;
 
-CREATE TABLE IF NOT EXISTS device (
-    deviceId VARCHAR(256) PRIMARY KEY NOT NULL,
-    version BIGINT,
-    dataSourceId BIGINT,
-    timestamp BIGINT NOT NULL);
+DROP TABLE IF EXISTS devices;
+
+CREATE TABLE IF NOT EXISTS devices (
+    deviceId VARCHAR(64) NOT NULL,
+    version BIGINT NOT NULL,
+    dataSourceId BIGINT NOT NULL,
+    PRIMARY KEY (deviceId, version)
+);

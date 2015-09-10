@@ -54,10 +54,10 @@ public abstract class MySqlStorableKeyBuilder extends MySqlBuilder {
         Map<Schema.Field, Object> columnsToValues = primaryKey.getFieldsToVal();
 
 
-        for (int j = 0; j < len * nTimes; j++) {
+        for (int j = 0; j < len*nTimes; j++) {
             Schema.Field column = columns.get(j % len);
             Schema.Type javaType = column.getType();
-            setPreparedStatementParams(preparedStatement, javaType, j % len, columnsToValues.get(column));
+            setPreparedStatementParams(preparedStatement, javaType, (j % len) + 1, columnsToValues.get(column));
         }
 
         return preparedStatement;

@@ -43,11 +43,6 @@ public class Device implements DataSourceSubType {
      */
     private Long dataSourceId;
 
-    /**
-     * Time when this was created updated.
-     */
-    private Long timestamp;
-
     @JsonIgnore
     public String getNameSpace() {
         return NAME_SPACE;

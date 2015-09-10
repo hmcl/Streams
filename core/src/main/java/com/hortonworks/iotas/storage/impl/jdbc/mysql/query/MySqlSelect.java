@@ -21,12 +21,12 @@ import com.hortonworks.iotas.storage.StorableKey;
 
 public class MySqlSelect extends MySqlStorableKeyBuilder {
     public MySqlSelect(String nameSpace) {
-        super(nameSpace);   // super.colunns == null => no where clause filtering
+        super(nameSpace);   // super.columns == null => no where clause filtering
     }
 
 
     public MySqlSelect(StorableKey storableKey) {
-        super(storableKey);     // super.colunns != null => do where clause filtering on PrimaryKey
+        super(storableKey);     // super.columns != null => do where clause filtering on PrimaryKey
     }
 
     // "SELECT * FROM DB.TABLE [WHERE C1 = ?, C2 = ?]"
