@@ -91,6 +91,7 @@ public class JdbcStorageManager implements StorageManager {
                 connection = getConnection();
                 PreparedStatement preparedStatement = new MySqlDelete(key).getPreparedStatement(connection, queryTimeoutSecs);
                 preparedStatement.executeUpdate();
+                preparedStatement.close();
             } catch (SQLException e) {
                 throw new StorageException(e);
             } finally {

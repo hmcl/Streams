@@ -28,6 +28,7 @@ import java.util.Properties;
 public class HikariCPConnectionBuilder implements ConnectionBuilder {
 
     private Map<String, Object> configMap;
+    private HikariConfig config;
     private transient HikariDataSource dataSource;
 
     public HikariCPConnectionBuilder(Map<String, Object> hikariCPConfig) {
@@ -35,14 +36,21 @@ public class HikariCPConnectionBuilder implements ConnectionBuilder {
         prepare();
     }
 
+    public HikariCPConnectionBuilder(HikariConfig hikariConfig) {
+        this.config = hikariConfig;
+        prepare();
+    }
+
     @Override
     public synchronized void prepare() {
         if(dataSource == null) {
-            Properties properties = new Properties();
-            properties.putAll(configMap);
-            HikariConfig config = new HikariConfig(properties);
+            if (configMap != null) {
+                Properties properties = new Properties();
+                properties.putAll(configMap);
+                config = new HikariConfig(properties);
+            }
             this.dataSource = new HikariDataSource(config);
-            this.dataSource.setAutoCommit(false);
+            this.dataSource.setAutoCommit(true);
         }
     }
 

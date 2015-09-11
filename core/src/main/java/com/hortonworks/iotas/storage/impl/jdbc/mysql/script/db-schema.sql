@@ -8,3 +8,8 @@ CREATE TABLE IF NOT EXISTS devices (
     dataSourceId BIGINT NOT NULL,
     PRIMARY KEY (deviceId, version)
 );
+
+SELECT * FROM devices;
+
+INSERT INTO devices (deviceId, version, dataSourceId) VALUES ('id', 123, 456)
+    ON DUPLICATE KEY UPDATE deviceId='id', version=123, dataSourceId=456;
