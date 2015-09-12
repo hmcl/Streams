@@ -50,7 +50,7 @@ public class HikariCPConnectionBuilder implements ConnectionBuilder {
                 config = new HikariConfig(properties);
             }
             this.dataSource = new HikariDataSource(config);
-            this.dataSource.setAutoCommit(true);
+            this.dataSource.setAutoCommit(false);
         }
     }
 

@@ -349,7 +349,7 @@ public class JdbcStorageManager implements StorageManager {
         return map;
     }
 
-    private Connection getConnection() throws SQLException {
+    protected Connection getConnection() throws SQLException {
         return getConnection(true);
     }
 
@@ -359,7 +359,7 @@ public class JdbcStorageManager implements StorageManager {
         return connection;
     }
 
-    private void closeConnection(Connection connection) {
+    protected void closeConnection(Connection connection) {
         if (connection != null) {
             try {
                 connection.close();

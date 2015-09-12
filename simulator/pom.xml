@@ -62,7 +62,7 @@
         <dependency>
             <artifactId>slf4j-api</artifactId>
             <groupId>org.slf4j</groupId>
-            <version>1.7.5</version>
+            <version>1.7.5</version>    <!--TODO: put version 1.7.12-->
         </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>

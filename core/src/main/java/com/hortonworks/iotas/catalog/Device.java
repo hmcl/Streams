@@ -86,7 +86,7 @@ public class Device implements DataSourceSubType {
         return this;
     }
 
-
+    // TODO: Should equasl include the datasource id?
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
