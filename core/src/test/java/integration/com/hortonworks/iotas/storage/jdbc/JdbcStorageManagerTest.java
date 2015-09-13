@@ -26,14 +26,12 @@ import com.hortonworks.iotas.storage.impl.jdbc.JdbcStorageManager;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.HikariCPConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlBuilder;
-import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -50,8 +48,6 @@ public class JdbcStorageManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        cleanup();
-//        setConnectionBuilder2();
         setConnectionBuilder();
         setJdbcStorageManager(connectionBuilder);
         setDevice();
@@ -63,44 +59,8 @@ public class JdbcStorageManagerTest {
         dropTables();
     }
 
-    private void cleanup()  {
-        String dbDir = "/Users/hlouro/Hugo/tmp/db/h2mysql_test/";
-        String db = dbDir + "test";
-        DeleteDbFiles.execute(dbDir, "test", false);
-    }
-
     private void dropTables() {
 
-    }
-
-    private class JdbcStorageManagerForTest extends JdbcStorageManager {
-        private Connection con;
-        public JdbcStorageManagerForTest(ConnectionBuilder connectionBuilder) {
-            super(connectionBuilder);
-//            setConection();
-//            con = connectionBuilder.getConnection();
-        }
-
-        private void setConection() {
-            try {
-                Class.forName("org.h2.Driver");
-                con = DriverManager.getConnection("jdbc:h2:/Users/hlouro/Hugo/tmp/db/h2mysql_test/test;MODE=MySQL");
-            } catch (ClassNotFoundException | SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-
-        @Override
-        protected Connection getConnection() throws SQLException {
-            return super.getConnection();
-//            return con;
-        }
-
-        @Override
-        protected void closeConnection(Connection connection) {
-            // do nothing
-        }
     }
 
     private void createTables() throws SQLException {
@@ -110,8 +70,6 @@ public class JdbcStorageManagerTest {
                 "    dataSourceId BIGINT NOT NULL,\n" +
                 "    PRIMARY KEY (deviceId, version)\n" +
                 ");";
-
-//        final String sql = "XXX";
 
         new MySqlBuilder() {
             @Override
@@ -128,40 +86,14 @@ public class JdbcStorageManagerTest {
     }
 
     private void setJdbcStorageManager(ConnectionBuilder connectionBuilder) {
-//        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder);
         jdbcStorageManager = new JdbcStorageManager(connectionBuilder);
     }
 
 
-    private void setConnectionBuilder2() {
-        connectionBuilder = new ConnectionBuilder() {
-            Connection con;
-            @Override
-            public void prepare() { }
-
-            @Override
-            public Connection getConnection() {
-                try {
-                    if (con == null) {
-                        Class.forName("org.h2.Driver");
-                        con = DriverManager.getConnection("jdbc:h2:/Users/hlouro/Hugo/tmp/db/h2mysql_test/test;MODE=MySQL;DATABASE_TO_UPPER=false");
-                    }
-                } catch (ClassNotFoundException | SQLException e) {
-                    throw new RuntimeException(e);
-                }
-                return con;
-            }
-
-            @Override
-            public void cleanup() { }
-        };
-    }
     private void setConnectionBuilder() {
 //        Map<String, Object> config = getMySqlHikariConfig();
         Map<String, Object> config = getH2HikariConfig();
-//        HikariConfig config = getH2HikariConfig();
         connectionBuilder = new HikariCPConnectionBuilder(config);
-        System.out.println("stop");
     }
 
     private Map<String, Object> getMySqlHikariConfig() {
@@ -175,37 +107,9 @@ public class JdbcStorageManagerTest {
     private Map<String, Object> getH2HikariConfig() {
         Map<String, Object> config = new HashMap<>();
         config.put("dataSourceClassName", "org.h2.jdbcx.JdbcDataSource");
-//        config.put("dataSource.URL", "jdbc:h2:/Users/hlouro/Hugo/tmp/db/h2mysql_test/test");
-        config.put("dataSource.URL", "jdbc:h2:/Users/hlouro/Hugo/tmp/db/h2mysql_test/test;MODE=MySQL;DATABASE_TO_UPPER=false"); // ;FILE_LOCK=SOCKET
-//        config.put("dataSource.url", "jdbc:h2:mem:test;MODE=MySQL;FILE_LOCK=SOCKET");
-//        config.put("dataSource.url", "jdbc:h2:mem:test");
-//        config.put("dataSource.url", "jdbc:h2:file:/Users/hlouro/Hugo/tmp/db/h2mysql_test/test;MODE=MySQL;MV_STORE=FALSE;MVCC=FALSE");
-//        config.put("dataSource.user", "sa");
-//        config.put("dataSource.URL", "jdbc:h2:/Users/hlouro/Hugo/tmp/db/h2mysql_test/test;MODE=MySQL;INIT=RUNSCRIPT FROM '/Users/hlouro/Hugo/tmp/db/h2mysql_test/test.sql'");
-//        config.put("dataSource.url", "jdbc:h2:/Users/hlouro/Hugo/tmp/db/h2mysql/test;MODE=MySQL");
+        config.put("dataSource.URL", "jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_UPPER=false");
         return config;
     }
-
-    /*private HikariConfig getH2HikariConfig() {
-        HikariConfig config = new HikariConfig();
-
-        config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
-
-//        config.setConnectionTestQuery("VALUES 1");
-        config.setConnectionTestQuery(sql);
-
-//        config.addDataSourceProperty("URL", "jdbc:h2:~/test");
-//        config.addDataSourceProperty("URL", "jdbc:h2:/Users/hlouro/Hugo/tmp/db/h2mysql_test_guy/test");
-//        config.addDataSourceProperty("URL", "jdbc:h2:/Users/hlouro/Hugo/tmp/db/h2mysql_test_guy/test;MODE=MySQL");
-
-        config.addDataSourceProperty("URL", "jdbc:h2:/Users/hlouro/Hugo/tmp/db/h2mysql_test/test;MODE=MySQL");
-
-//        config.addDataSourceProperty("user", "sa");
-//
-//        config.addDataSourceProperty("password", "sa");
-
-        return config;
-    }*/
 
     @Test
     public void testCrud() throws Exception {
@@ -217,7 +121,6 @@ public class JdbcStorageManagerTest {
             Assert.assertNull(retrieved);
             jdbcStorageManager.add(device);
             retrieved = jdbcStorageManager.get(key);
-            Assert.assertEquals("Instance put and retrieved from database are different", device, retrieved);
             Assert.assertEquals("Instance put and retrieved from database are different", device, retrieved);
         } finally {
             jdbcStorageManager.remove(key);
@@ -250,9 +153,4 @@ public class JdbcStorageManagerTest {
     }
 
 
-//    public static void main(String[] args) throws Exception {
-//        JdbcStorageManagerTest jdbcStorageManagerTest = new JdbcStorageManagerTest();
-//        jdbcStorageManagerTest.setUp();
-//        jdbcStorageManagerTest.testCrud();
-//    }
 }
