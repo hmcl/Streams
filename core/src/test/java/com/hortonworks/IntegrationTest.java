@@ -19,8 +19,8 @@
 package com.hortonworks;
 
 /**
- * Marker interface used to mark integration tests. Integration tests will be run during the maven <b><i>integration-test</i></b> phase,
- * whereas unit tests will be run during the maven <b><i>test</i></b> phase.
+ * Marker interface used to mark integration tests. Integration tests will be run during the maven
+ * <b><i>integration-test</i></b> phase, whereas unit tests will be run during the maven <b><i>test</i></b> phase.
  * <p/>
  * Integration tests can be in the same package as unit tests. To mark a test as integration test,
  * add the annotation @Category(IntegrationTest.class) to the class definition. For example:
