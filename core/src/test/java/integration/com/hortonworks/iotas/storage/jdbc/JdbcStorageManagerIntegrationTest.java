@@ -37,7 +37,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JdbcStorageManagerTest {
+public class JdbcStorageManagerIntegrationTest {
     // TODO
     //create DB
     //put stuff
@@ -127,14 +127,6 @@ public class JdbcStorageManagerTest {
             retrieved = jdbcStorageManager.get(key);
             Assert.assertNull(retrieved);
         }
-    }
-
-    @Test
-    public void testGet() throws Exception {
-        StorableKey key = device.getStorableKey();
-        System.out.println("StorableKey = " + key);
-        Storable retrieved = jdbcStorageManager.get(key);
-        Assert.assertEquals("Instance put and retrieved from database are different", device, retrieved);
     }
 
     // TODO TEST INSERT DUPLICATE KEY
