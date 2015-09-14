@@ -16,39 +16,39 @@
  * limitations under the License.
  */
 
-package integration.com.hortonworks.iotas.storage.jdbc;
+package com.hortonworks.iotas.storage.impl.jdbc;
 
+import com.hortonworks.IntegrationTest;
 import com.hortonworks.iotas.catalog.Device;
 import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageManager;
-import com.hortonworks.iotas.storage.impl.jdbc.JdbcStorageManager;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
-import com.hortonworks.iotas.storage.impl.jdbc.connection.HikariCPConnectionBuilder;
-import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlBuilder;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JdbcStorageManagerIntegrationTest {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+@Category(IntegrationTest.class)
+public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
     // TODO
     //create DB
     //put stuff
     //take stuff
     private StorageManager jdbcStorageManager;
     private Storable device;
-    private ConnectionBuilder connectionBuilder;
+
+    // ===== Test Setup ====
 
     @Before
     public void setUp() throws Exception {
-        setConnectionBuilder();
         setJdbcStorageManager(connectionBuilder);
         setDevice();
         createTables();
@@ -59,10 +59,6 @@ public class JdbcStorageManagerIntegrationTest {
         dropTables();
     }
 
-    private void dropTables() {
-
-    }
-
     private void createTables() throws SQLException {
         final String sql = "CREATE TABLE IF NOT EXISTS devices (\n" +
                 "    deviceId VARCHAR(64) NOT NULL,\n" +
@@ -71,69 +67,18 @@ public class JdbcStorageManagerIntegrationTest {
                 "    PRIMARY KEY (deviceId, version)\n" +
                 ");";
 
-        new MySqlBuilder() {
-            @Override
-            public String getParameterizedSql() {
-                return sql;
-            }
+        executeSql(sql);
+    }
 
-            @Override
-            public PreparedStatement getPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
-                return this.prepareStatement(connection, queryTimeoutSecs);
-            }
-        }.getPreparedStatement(connectionBuilder.getConnection(), -1).execute();
-
+    private void dropTables() throws SQLException {
+        final String sql = "DROP TABLE IF EXISTS devices";
+        executeSql(sql);
     }
 
     private void setJdbcStorageManager(ConnectionBuilder connectionBuilder) {
         jdbcStorageManager = new JdbcStorageManager(connectionBuilder);
     }
 
-
-    private void setConnectionBuilder() {
-//        Map<String, Object> config = getMySqlHikariConfig();
-        Map<String, Object> config = getH2HikariConfig();
-        connectionBuilder = new HikariCPConnectionBuilder(config);
-    }
-
-    private Map<String, Object> getMySqlHikariConfig() {
-        Map<String, Object> config = new HashMap<>();
-        config.put("dataSourceClassName", "com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
-        config.put("dataSource.url", "jdbc:mysql://localhost/test");
-        config.put("dataSource.user", "root");
-        return config;
-    }
-
-    private Map<String, Object> getH2HikariConfig() {
-        Map<String, Object> config = new HashMap<>();
-        config.put("dataSourceClassName", "org.h2.jdbcx.JdbcDataSource");
-        config.put("dataSource.URL", "jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_UPPER=false");
-        return config;
-    }
-
-    @Test
-    public void testCrud() throws Exception {
-        StorableKey key = null;
-        Storable retrieved;
-        try {
-            key = device.getStorableKey();
-            retrieved = jdbcStorageManager.get(key);
-            Assert.assertNull(retrieved);
-            jdbcStorageManager.add(device);
-            retrieved = jdbcStorageManager.get(key);
-            Assert.assertEquals("Instance put and retrieved from database are different", device, retrieved);
-        } finally {
-            jdbcStorageManager.remove(key);
-            retrieved = jdbcStorageManager.get(key);
-            Assert.assertNull(retrieved);
-        }
-    }
-
-    // TODO TEST INSERT DUPLICATE KEY
-    @Test
-    public void testAddDuplicateStorable() {
-        //TODO
-    }
 
     private void setDevice() {
         this.device = new Device();
@@ -142,6 +87,33 @@ public class JdbcStorageManagerIntegrationTest {
         state.put(Device.VERSION, 123L);
         state.put(Device.DATA_SOURCE_ID, 456L);
         device.fromMap(state);
+    }
+
+    // ===== Test Methods ====
+
+    @Test
+    public void testCrud() throws Exception {
+        System.out.println("HUGO_TEST");
+        StorableKey key = null;
+        Storable retrieved;
+        try {
+            key = device.getStorableKey();
+            retrieved = jdbcStorageManager.get(key);
+            assertNull(retrieved);
+            jdbcStorageManager.add(device);
+            retrieved = jdbcStorageManager.get(key);
+            assertEquals("Instance put and retrieved from database are different", device, retrieved);
+        } finally {
+            jdbcStorageManager.remove(key);
+            retrieved = jdbcStorageManager.get(key);
+            assertNull(retrieved);
+        }
+    }
+
+    // TODO TEST INSERT DUPLICATE KEY
+    @Test
+    public void testAddDuplicateStorable() {
+        //TODO
     }
 
 

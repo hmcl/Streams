@@ -92,6 +92,32 @@
                         <target>1.7</target>
                     </configuration>
                 </plugin>
+                <!-- Test Plugins -->
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.18.1</version>
+                    <configuration>
+                        <excludedGroups>com.hortonworks.IntegrationTest</excludedGroups>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.18.1</version>
+                    <configuration>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
+                        <groups>com.hortonworks.IntegrationTest</groups>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>integration-test</goal>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
