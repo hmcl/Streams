@@ -3,7 +3,7 @@
     <parent>
         <artifactId>IoTaS</artifactId>
         <groupId>com.hortonworks</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <version>${snapshot.version}</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -38,6 +38,22 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-protobuf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>com.hortonworks</groupId>
+            <artifactId>core</artifactId>
+            <version>${snapshot.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

@@ -7,10 +7,9 @@
     <parent>
         <groupId>com.hortonworks</groupId>
         <artifactId>IoTaS</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>${snapshot.version}</version>
     </parent>
 
-    <groupId>com.hortonworks</groupId>
     <artifactId>webservice</artifactId>
 
     <properties>
