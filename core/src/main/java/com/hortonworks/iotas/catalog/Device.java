@@ -34,12 +34,12 @@ public class Device implements DataSourceSubType {
     private String deviceId;
 
     /**
-     * Firmware version of the device. DeviceId + version is the primary key.
+     * Firmware version of the device. deviceId + version is the primary key.
      */
     private Long version;
 
     /**
-     * Reference to the datasource.
+     * Foreign key to reference to the parent 'DataSource'.
      */
     private Long dataSourceId;
 
@@ -56,13 +56,13 @@ public class Device implements DataSourceSubType {
     }
 
     /**
-     * The primary key of the device is the datasource id itself which is also a foreign key
-     * reference to the parent 'DataSource'.
+     * The primary key of the device is the deviceId + version.
      */
     @JsonIgnore
     public PrimaryKey getPrimaryKey() {
-        Map<Schema.Field, Object> fieldToObjectMap = new HashMap<Schema.Field, Object>();
-        fieldToObjectMap.put(new Schema.Field(DATA_SOURCE_ID, Schema.Type.LONG), this.dataSourceId);
+        Map<Schema.Field, Object> fieldToObjectMap = new HashMap<>();
+        fieldToObjectMap.put(new Schema.Field(DEVICE_ID, Schema.Type.STRING), deviceId);
+        fieldToObjectMap.put(new Schema.Field(VERSION, Schema.Type.LONG), version);
         return new PrimaryKey(fieldToObjectMap);
     }
 
@@ -86,7 +86,6 @@ public class Device implements DataSourceSubType {
         return this;
     }
 
-    // TODO: Should equasl include the datasource id?
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
