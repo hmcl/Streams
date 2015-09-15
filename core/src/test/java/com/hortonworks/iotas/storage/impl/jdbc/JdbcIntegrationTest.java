@@ -56,8 +56,10 @@ public class JdbcIntegrationTest {
     protected static Map<String, Object> getH2HikariConfig() {
         Map<String, Object> config = new HashMap<>();
         config.put("dataSourceClassName", "org.h2.jdbcx.JdbcDataSource");
-        config.put("dataSource.URL", "jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_UPPER=false");  // In memory configuration. Faster, useful for integration tests 
-//        config.put("dataSource.URL", "jdbc:h2:~/test;MODE=MySQL;DATABASE_TO_UPPER=false");  // Embedded configuration. Useful for querying up tables
+//        In memory configuration. Faster, useful for integration tests
+        config.put("dataSource.URL", "jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_UPPER=false");
+//        Embedded configuration. Facilitates debugging by allowing connecting to DB and querying tables
+//        config.put("dataSource.URL", "jdbc:h2:~/test;MODE=MySQL;DATABASE_TO_UPPER=false");
         return config;
     }
 
