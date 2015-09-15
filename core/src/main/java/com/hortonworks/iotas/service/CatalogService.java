@@ -93,7 +93,7 @@ public class CatalogService {
     public Collection<DataSource> listDataSourcesForType(DataSource.Type type, List<QueryParam> params) throws Exception {
         List<DataSource> dataSources = new ArrayList<DataSource>();
         String ns = getNamespaceForDataSourceType(type);
-        List<DataSourceSubType> subTypes = dao.<DataSourceSubType>find(ns, params);
+        Collection<DataSourceSubType> subTypes = dao.<DataSourceSubType>find(ns, params);
         for(DataSourceSubType st: subTypes) {
             dataSources.add(getDataSource(st.getDataSourceId()));
         }
