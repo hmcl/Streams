@@ -35,7 +35,7 @@ public class MySqlSelect extends MySqlStorableKeyBuilder {
         String sql = "SELECT * FROM " + tableName;
         //where clause is defined by columns specified in the PrimaryKey
         if (columns != null) {
-            sql += " WHERE " + join(getColumnNames(columns, "%s = ?"), ", ");
+            sql += " WHERE " + join(getColumnNames(columns, "%s = ?")," AND ");
         }
 
         log.debug(sql);

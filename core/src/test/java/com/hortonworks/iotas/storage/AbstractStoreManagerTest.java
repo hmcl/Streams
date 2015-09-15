@@ -5,12 +5,15 @@ import com.hortonworks.iotas.catalog.DataSource;
 import com.hortonworks.iotas.catalog.Device;
 import com.hortonworks.iotas.catalog.ParserInfo;
 import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.service.CatalogService;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class AbstractStoreManagerTest {
@@ -67,12 +70,13 @@ public abstract class AbstractStoreManagerTest {
      * test will use that to test the update operation. the 3rd item is inserted at storage layer and 4th i
      */
     @Test
-    public void testCrudForAllEntities(){
+    public void testCrudForAllEntities() {
         for(List<Storable> storableList : this.storables) {
             Storable storable1 = storableList.get(0);
             Storable storable2 = storableList.get(1);
             Storable storable3 = storableList.get(2);
             Storable storable4 = storableList.get(3);
+            String namespace = storable1.getNameSpace();
 
             //test add by inserting the first item in list.
             getStorageManager().add(storable1);
@@ -86,18 +90,35 @@ public abstract class AbstractStoreManagerTest {
             getStorageManager().addOrUpdate(storable3);
             Assert.assertEquals(storable3, getStorageManager().get(storable3.getStorableKey()));
 
-            //test remove by adding 4th item and removin it.
+            //test remove by adding 4th item and removing it.
             getStorageManager().addOrUpdate(storable4);
             Assert.assertEquals(storable4, getStorageManager().get(storable4.getStorableKey()));
-            getStorageManager().remove(storable4.getStorableKey());
+            Storable removed = getStorageManager().remove(storable4.getStorableKey());
             Assert.assertNull(getStorageManager().get(storable4.getStorableKey()));
+            Assert.assertEquals(storable4, removed);
 
             //The final state of storage layer should only have 2nd item (updated version of 1st item) and 3rd Item.
             Set<Storable> storableSet = new HashSet<Storable>();
             storableSet.add(storable2);
             storableSet.add(storable3);
             Assert.assertEquals(storableSet, new HashSet(getStorageManager().list(storable2.getStorableKey().getNameSpace())));
+
+            Collection<Storable> found = getStorageManager().find(namespace, buildQueryParamsForPrimaryKey(storable3));
+            Assert.assertEquals(found.size(), 1);
+            Assert.assertTrue(found.contains(storable3));
         }
+    }
+
+    List<CatalogService.QueryParam> buildQueryParamsForPrimaryKey(Storable storable) {
+        final Map<Schema.Field, Object> fieldsToVal = storable.getPrimaryKey().getFieldsToVal();
+        final List<CatalogService.QueryParam> queryParams = new ArrayList<>(fieldsToVal.size());
+
+        for (Schema.Field field : fieldsToVal.keySet()) {
+            CatalogService.QueryParam qp = new CatalogService.QueryParam(field.getName(), fieldsToVal.get(field).toString());
+            queryParams.add(qp);
+        }
+
+        return queryParams;
     }
 
     public static ParserInfo createParserInfo(Long id, String name) {

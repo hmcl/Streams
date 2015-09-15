@@ -143,7 +143,7 @@ public class JdbcStorageManager implements StorageManager {
     }
 
     @Override
-    public <T extends Storable> List<T> find(String namespace, List<CatalogService.QueryParam> queryParams) throws Exception {
+    public <T extends Storable> List<T> find(String namespace, List<CatalogService.QueryParam> queryParams) throws StorageException {
         if (queryParams == null) {
             return (List<T>) list(namespace);
         }
