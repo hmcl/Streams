@@ -1,7 +1,17 @@
  CREATE DATABASE IF NOT EXISTS iotas;
  USE iotas;
 
-#  Device
+ CREATE TABLE IF NOT EXISTS datasources (
+     dataSourceId BIGINT AUTO_INCREMENT NOT NULL,
+     dataSourceName VARCHAR(128) NOT NULL,
+     description TEXT,
+     tags TEXT,
+     type ENUM('DEVICE', 'UNKNOWN') NOT NULL,    # TODO: Create table datasources_type for type?
+     typeConfig TEXT,                            # TODO: NOT NULL, ???
+     timestamp  BIGINT,
+     PRIMARY KEY (dataSourceId)
+ );
+
 CREATE TABLE IF NOT EXISTS devices (
     deviceId VARCHAR(128) NOT NULL,
     version BIGINT NOT NULL,
@@ -9,18 +19,6 @@ CREATE TABLE IF NOT EXISTS devices (
     PRIMARY KEY (deviceId, version), 
     FOREIGN KEY (dataSourceId) REFERENCES datasources(dataSourceId)
 );
-
-CREATE TABLE IF NOT EXISTS datasources (
-    dataSourceId BIGINT AUTO_INCREMENT NOT NULL,
-    dataSourceName VARCHAR(128) NOT NULL,
-    description TEXT,
-    tags TEXT,
-    type ENUM('DEVICE', 'UNKNOWN') NOT NULL,    # TODO: Create table datasources_type for type?
-    typeConfig TEXT,                            # TODO: NOT NULL, ???
-    timestamp  BIGINT,
-    PRIMARY KEY (dataSourceId)
-);
-
 
 CREATE TABLE IF NOT EXISTS datafeeds (
     dataFeedId BIGINT AUTO_INCREMENT NOT NULL,
