@@ -1,13 +1,15 @@
- CREATE DATABASE IF NOT EXISTS iotas;
- USE iotas;
+--  CREATE DATABASE IF NOT EXISTS iotas;
+--  USE iotas;
+
+-- THE NAMES OF THE TABLE COLUMNS MUST MATCH THE NAMES OF THE CORRESPONDING CLASS MODEL FIELDS
 
  CREATE TABLE IF NOT EXISTS datasources (
      dataSourceId BIGINT AUTO_INCREMENT NOT NULL,
      dataSourceName VARCHAR(128) NOT NULL,
      description TEXT,
      tags TEXT,
-     type ENUM('DEVICE', 'UNKNOWN') NOT NULL,    # TODO: Create table datasources_type for type?
-     typeConfig TEXT,                            # TODO: NOT NULL, ???
+     type ENUM('DEVICE', 'UNKNOWN') NOT NULL,    -- TODO: Create table datasources_type for type?
+     typeConfig TEXT,                            -- TODO: NOT NULL, ???
      timestamp  BIGINT,
      PRIMARY KEY (dataSourceId)
  );
@@ -36,10 +38,10 @@ CREATE TABLE IF NOT EXISTS datafeeds (
 CREATE TABLE IF NOT EXISTS parser_info (
     parserId BIGINT AUTO_INCREMENT NOT NULL,
     parserName VARCHAR(128) NOT NULL,
-    version BIGINT,                             # TODO: NOT NULL ???
+    version BIGINT,                             -- TODO: NOT NULL ???
     className TEXT NOT NULL,
     jarStoragePath TEXT NOT NULL,
-    `schema` TEXT NOT NULL,
+    parserSchema TEXT NOT NULL,
     timestamp  BIGINT,
     PRIMARY KEY (parserId),
     UNIQUE (parserName)
