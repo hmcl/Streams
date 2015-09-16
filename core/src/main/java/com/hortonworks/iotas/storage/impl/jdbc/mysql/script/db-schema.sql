@@ -41,23 +41,8 @@ CREATE TABLE IF NOT EXISTS parser_info (
     version BIGINT,                             # TODO: NOT NULL ???
     className TEXT NOT NULL,
     jarStoragePath TEXT NOT NULL,
-    schemaId INT NOT NULL,
+    `schema` TEXT NOT NULL,
     timestamp  BIGINT,
     PRIMARY KEY (parserId),
-    UNIQUE (parserName),
-    FOREIGN KEY (schemaId) REFERENCES `schema`(id)
+    UNIQUE (parserName)
 );
-
-CREATE TABLE IF NOT EXISTS `schema` (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
-);
-
-CREATE TABLE IF NOT EXISTS schema_field (
-    name VARCHAR(64) NOT NULL PRIMARY KEY,
-    type ENUM('BOOLEAN', 'BYTE', 'SHORT', 'INTEGER', 'LONG', 'FLOAT', 'DOUBLE', 'STRING', 'BINARY', 'NESTED', 'ARRAY'), # TODO: Create table schema_field_type for type?
-    schema_id INT,
-    PRIMARY KEY(name, type),
-    FOREIGN KEY (schema_id) REFERENCES `schema`(id)
-);
-
-
