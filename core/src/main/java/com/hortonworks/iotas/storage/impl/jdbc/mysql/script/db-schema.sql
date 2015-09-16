@@ -22,19 +22,6 @@ CREATE TABLE IF NOT EXISTS devices (
     FOREIGN KEY (dataSourceId) REFERENCES datasources(dataSourceId)
 );
 
-CREATE TABLE IF NOT EXISTS datafeeds (
-    dataFeedId BIGINT AUTO_INCREMENT NOT NULL,
-    dataSourceId BIGINT NOT NULL,
-    dataFeedName VARCHAR(128) NOT NULL,
-    description TEXT,
-    tags TEXT,
-    parserId BIGINT NOT NULL,
-    endpoint TEXT NOT NULL,
-    timestamp  BIGINT,
-    PRIMARY KEY (dataFeedId),
-    FOREIGN KEY (dataSourceId) REFERENCES datasources(dataSourceId)
-);
-
 CREATE TABLE IF NOT EXISTS parser_info (
     parserId BIGINT AUTO_INCREMENT NOT NULL,
     parserName VARCHAR(128) NOT NULL,
@@ -45,4 +32,18 @@ CREATE TABLE IF NOT EXISTS parser_info (
     timestamp  BIGINT,
     PRIMARY KEY (parserId),
     UNIQUE (parserName)
+);
+
+CREATE TABLE IF NOT EXISTS datafeeds (
+    dataFeedId BIGINT AUTO_INCREMENT NOT NULL,
+    dataSourceId BIGINT NOT NULL,
+    dataFeedName VARCHAR(128) NOT NULL,
+    description TEXT,
+    tags TEXT,
+    parserId BIGINT NOT NULL,
+    endpoint TEXT NOT NULL,
+    timestamp  BIGINT,
+    PRIMARY KEY (dataFeedId),
+    FOREIGN KEY (dataSourceId) REFERENCES datasources(dataSourceId),
+    FOREIGN KEY (parserId) REFERENCES parser_info(parserId)
 );
