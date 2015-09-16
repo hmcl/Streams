@@ -13,7 +13,7 @@ import java.util.Map;
  * Parser information that will be stored by storage layer.
  */
 public class ParserInfo implements Storable {
-    public static final String NAME_SPACE = "parser-info";
+    public static final String NAME_SPACE = "parser_info";
     public static final String PARSER_ID = "parserId";
     public static final String PARSER_NAME = "parserName";
     public static final String CLASS_NAME = "className";
