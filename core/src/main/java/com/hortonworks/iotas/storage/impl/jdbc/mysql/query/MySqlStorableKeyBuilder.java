@@ -50,14 +50,16 @@ public abstract class MySqlStorableKeyBuilder extends MySqlBuilder {
     protected PreparedStatement doGetPreparedStatement(Connection connection, int queryTimeoutSecs, int nTimes) throws SQLException {
         final PreparedStatement preparedStatement = prepareStatement(connection, queryTimeoutSecs);
 
-        final int len = columns.size();
-        Map<Schema.Field, Object> columnsToValues = primaryKey.getFieldsToVal();
+        if (columns != null) {
+            final int len = columns.size();
+            Map<Schema.Field, Object> columnsToValues = primaryKey.getFieldsToVal();
 
 
-        for (int j = 0; j < len*nTimes; j++) {
-            Schema.Field column = columns.get(j % len);
-            Schema.Type javaType = column.getType();
-            setPreparedStatementParams(preparedStatement, javaType, j + 1, columnsToValues.get(column));
+            for (int j = 0; j < len * nTimes; j++) {
+                Schema.Field column = columns.get(j % len);
+                Schema.Type javaType = column.getType();
+                setPreparedStatementParams(preparedStatement, javaType, j + 1, columnsToValues.get(column));
+            }
         }
 
         return preparedStatement;
