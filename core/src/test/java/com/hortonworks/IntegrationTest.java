@@ -19,8 +19,8 @@
 package com.hortonworks;
 
 /**
- * Marker interface used to mark integration tests. Integration tests will be run during the maven
- * <b><i>integration-test</i></b> phase, whereas unit tests will be run during the maven <b><i>test</i></b> phase.
+ * Marker interface used to mark integration tests. Integration tests will be run during the Maven
+ * <b><i>integration-test</i></b> phase, whereas unit tests will be run during the Maven <b><i>test</i></b> phase.
  * <p/>
  * Integration tests can be in the same package as unit tests. To mark a test as integration test,
  * add the annotation @Category(IntegrationTest.class) to the class definition. For example:
@@ -32,6 +32,35 @@ package com.hortonworks;
  *  ...<br/>
  * }
  *
+ * Please consult the  @see <a href="file:///../../../../../../README.md">README.md</a> for info on how to add the dependencies
+ * to the Maven project POM files of the projects that include integration tests
+ *
+ *
+ * <pre>
+ * {@code
+ * <dependency>
+ *  <groupId>com.hortonworks</groupId>
+ *  <artifactId>core</artifactId>
+ *  <version>${snapshot.version}</version>
+ *  <type>test-jar</type>
+ *  <scope>test</scope>
+ * </dependency> }
+ * </pre>
+ * <br/>
+ * <pre>
+ * {@code
+ * <plugin>
+ *  <groupId>org.apache.maven.plugins</groupId>
+ * <artifactId>maven-surefire-plugin</artifactId>
+ * </plugin> }
+ * </pre>
+ * <pre>
+ * {@code
+ * <plugin>
+ * <groupId>org.apache.maven.plugins</groupId>
+ * <artifactId>maven-failsafe-plugin</artifactId>
+ * </plugin> }
+ * </pre>
  */
 public interface IntegrationTest {
 }
