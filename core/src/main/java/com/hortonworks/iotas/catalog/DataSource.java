@@ -18,11 +18,13 @@ public class DataSource implements Storable {
     public static final String DATAFEED_ID = "datafeedId";
     public static final String TAGS = "tags";
     public static final String TIMESTAMP = "timestamp";
+    public static final String TYPE = "type";
+    public static final String TYPE_CONFIG = "typeConfig";
 
     /**
      * The known types of data sources.
      */
-    public static enum Type {
+    public enum Type {
         DEVICE,
         UNKNOWN;
     }
@@ -69,12 +71,15 @@ public class DataSource implements Storable {
 
     @JsonIgnore
     public Schema getSchema() {
-         return new Schema.SchemaBuilder().fields(new Schema.Field(DATA_SOURCE_ID, Schema.Type.LONG),
+         return new Schema.SchemaBuilder().fields(
+                 new Schema.Field(DATA_SOURCE_ID, Schema.Type.LONG),
                  new Schema.Field(DATA_SOURCE_NAME, Schema.Type.STRING),
                  new Schema.Field(DESCRIPTION, Schema.Type.STRING),
-                 new Schema.Field(DATAFEED_ID, Schema.Type.LONG),
                  new Schema.Field(TAGS, Schema.Type.STRING),
-                 new Schema.Field(TIMESTAMP, Schema.Type.LONG)).build();
+                 new Schema.Field(TIMESTAMP, Schema.Type.LONG),
+                 new Schema.Field(TYPE, Schema.Type.STRING),
+                 new Schema.Field(TYPE_CONFIG, Schema.Type.STRING)
+         ).build();
     }
 
     @JsonIgnore
@@ -91,10 +96,13 @@ public class DataSource implements Storable {
 
     public Map toMap() {
         Map<String, Object> map = new HashMap<String, Object>();
+        map.put(DATA_SOURCE_ID, dataSourceId);
         map.put(DATA_SOURCE_NAME, this.dataSourceName);
         map.put(DESCRIPTION, this.description);
         map.put(TAGS, this.tags);
         map.put(TIMESTAMP, this.timestamp);
+        map.put(TYPE, type.name());
+        map.put(TYPE_CONFIG, typeConfig);
         return map;
     }
 
@@ -104,6 +112,8 @@ public class DataSource implements Storable {
         this.description = (String)  map.get(DESCRIPTION);
         this.tags = (String)  map.get(TAGS);
         this.timestamp = (Long) map.get(TIMESTAMP);
+        type = Type.valueOf((String) map.get(TYPE));
+        typeConfig = (String) map.get(TYPE_CONFIG);
         return this;
     }
 
