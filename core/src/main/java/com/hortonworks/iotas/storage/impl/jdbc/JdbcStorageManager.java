@@ -71,6 +71,7 @@ public class JdbcStorageManager implements StorageManager {
 
     @Override
     public void add(Storable storable) throws AlreadyExistsException {
+        log.debug("Adding storable [{}]", storable);
         final Storable existing = get(storable.getStorableKey());
 
         if(existing == null) {
@@ -106,7 +107,7 @@ public class JdbcStorageManager implements StorageManager {
         if (storable == null) {
             throw new IllegalArgumentException("Invalid " + Storable.class.getSimpleName() + " : null");
         }
-
+        log.debug("Adding or updating storable [{}]", storable);
         Connection connection = null;
         try {
             connection = getConnection();
@@ -148,6 +149,7 @@ public class JdbcStorageManager implements StorageManager {
             return (List<T>) list(namespace);
         }
 
+        log.debug("Finding entries in table [{}] that satisfy queryParams [{}]", namespace, queryParams);
         Connection connection = null;
         try {
             connection = getConnection();
@@ -162,7 +164,7 @@ public class JdbcStorageManager implements StorageManager {
                 log.debug("Querying table = [{}]\n\t filter = [{}]\n\t returned Storables = [{}]", namespace, queryParams, storables);
             }
             return (List<T>) storables;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new StorageException(e);
         } finally {
             closeConnection(connection);
@@ -173,6 +175,7 @@ public class JdbcStorageManager implements StorageManager {
     public <T extends Storable> Collection<T> list(String namespace) throws StorageException {
         Connection connection = null;
         try {
+            log.debug("Listing entries for table [{}]", namespace);
             connection = getConnection();
             PreparedStatement preparedStatement = new MySqlSelect(namespace).getPreparedStatement(connection, queryTimeoutSecs);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -220,11 +223,14 @@ public class JdbcStorageManager implements StorageManager {
 
     // private helper methods
 
-    private StorableKey buildStorableKey(String namespace, List<CatalogService.QueryParam> queryParams) {
+    private StorableKey buildStorableKey(String namespace, List<CatalogService.QueryParam> queryParams) throws Exception {
         final Map<Schema.Field, Object> fieldsToVal = new HashMap<>();
 
         for (CatalogService.QueryParam qp : queryParams) {
-            fieldsToVal.put(new Schema.Field(qp.getName(), Schema.Type.getTypeOfVal(qp.getValue())), qp.getValue());
+            final String val = qp.getValue();
+            final Schema.Type typeOfVal = Schema.Type.getTypeOfVal(val);
+            fieldsToVal.put(new Schema.Field(qp.getName(), typeOfVal),
+                            typeOfVal.getJavaType().getConstructor(String.class).newInstance(val));
         }
 
         final PrimaryKey primaryKey = new PrimaryKey(fieldsToVal);
