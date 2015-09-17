@@ -44,14 +44,16 @@ public abstract class MySqlStorableBuilder extends MySqlBuilder {
     protected PreparedStatement doGetPreparedStatement(Connection connection, int queryTimeoutSecs, int nTimes) throws SQLException {
         final PreparedStatement preparedStatement = prepareStatement(connection, queryTimeoutSecs);
 
-        final int len = columns.size();
-        final Map columnsToValues = storable.toMap();
+        if (columns != null) {
+            final int len = columns.size();
+            final Map columnsToValues = storable.toMap();
 
-        for (int j = 0; j < len*nTimes; j++) {
-            Schema.Field column = columns.get(j % len);
-            Schema.Type javaType = column.getType();
-            String columnName = column.getName();
-            setPreparedStatementParams(preparedStatement, javaType, j + 1, columnsToValues.get(columnName));
+            for (int j = 0; j < len*nTimes; j++) {
+                Schema.Field column = columns.get(j % len);
+                Schema.Type javaType = column.getType();
+                String columnName = column.getName();
+                setPreparedStatementParams(preparedStatement, javaType, j + 1, columnsToValues.get(columnName));
+            }
         }
 
         return preparedStatement;
