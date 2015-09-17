@@ -57,17 +57,29 @@ public class Schema {
         public static Type getTypeOfVal(String val) {
             Type type = null;
             Type[] types = Type.values();
-            for (int i = 0; i < Type.STRING.ordinal(); i++) {
+
+            if (val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false")) {
+                type = BOOLEAN;
+            }
+
+            for (int i = 1; type == null && i < STRING.ordinal(); i++) {
                 final Class clazz = types[i].getJavaType();
                 try {
-                    clazz.getMethod("valueOf", String.class).invoke(null, val);
-                    type = types[i];
-                    break;
+                    Object result = clazz.getMethod("valueOf", String.class).invoke(null, val);
+                    // temporary workaround to work for Double as Double get parsed as Float with value infinity
+                    if (!(result instanceof Float) || !((Float) result).isInfinite()) {
+                        type = types[i];
+                        break;
+                    }
                 } catch (Exception e) {/* Exception is thrown if type does not match. Search next type */
+//                    // temporary workaround to work for Double as Double get parsed as Float with value infinity
+//                    if (i == FLOAT.ordinal() && Float.valueOf(val) > Float.MAX_VALUE) {
+//                        type = DOUBLE;
+//                    }
                 }
             }
             if (type == null) {
-                type = Type.STRING;
+                type = STRING;
             }
             return type;
         }
