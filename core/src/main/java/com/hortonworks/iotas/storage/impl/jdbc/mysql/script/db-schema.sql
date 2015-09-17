@@ -8,9 +8,9 @@
      dataSourceName VARCHAR(128) NOT NULL,
      description TEXT,
      tags TEXT,
+     timestamp  BIGINT,
      type ENUM('DEVICE', 'UNKNOWN') NOT NULL,    -- TODO: Create table datasources_type for type?
      typeConfig TEXT,                            -- TODO: NOT NULL, ???
-     timestamp  BIGINT,
      PRIMARY KEY (dataSourceId)
  );
 
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS parser_info (
     version BIGINT,                             -- TODO: NOT NULL ???
     className TEXT NOT NULL,
     jarStoragePath TEXT NOT NULL,
-    parserSchema TEXT NOT NULL,
+    parserSchema TEXT NOT NULL,                 -- the schema is serialized to a String before storing in DB
     timestamp  BIGINT,
     PRIMARY KEY (parserId),
     UNIQUE (parserName)
