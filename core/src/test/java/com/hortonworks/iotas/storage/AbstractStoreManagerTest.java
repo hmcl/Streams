@@ -25,48 +25,6 @@ public abstract class AbstractStoreManagerTest {
     //NOTE: If you are adding a new entity, create a list of 4 items where the 1st and 2nd item has same value for primary key.
     //and then add this list to storables variable defined below.
 
-    List<Storable> parsers = new ArrayList<Storable>() {{
-        add(createParserInfo(1l, "parser-1"));
-        add(createParserInfo(1l, "parser-2"));
-        add(createParserInfo(2l, "parser-3"));
-        add(createParserInfo(3l, "parser-4"));
-    }};
-
-    List<Storable> datafeeds = new ArrayList<Storable>() {{
-        add(createDataFeed(1l, "feed-1"));
-        add(createDataFeed(1l, "feed-2"));
-        add(createDataFeed(2l, "feed-3"));
-        add(createDataFeed(3l, "feed-4"));
-    }};
-
-    List<Storable> datasources = new ArrayList<Storable>() {{
-        add(createDataSource(1l, "datasource-1"));
-        add(createDataSource(1l, "datasource-2"));
-        add(createDataSource(2l, "datasource-3"));
-        add(createDataSource(3l, "datasource-4"));
-    }};
-
-    List<Storable> devices = new ArrayList<Storable>() {{
-        add(createDevice("device-1", 0l, 0l));
-        add(createDevice("device-1", 2l, 0l));
-        add(createDevice("device-2", 2l, 2l));
-        add(createDevice("device-3", 3l, 3l));
-    }};
-
-    List<List<Storable>> storables = new ArrayList<List<Storable>>() {{
-        add(datasources);
-        add(devices);
-        add(parsers);
-        add(datafeeds);
-    }};
-
-    /*protected List<StorableTest> storableTests = new ArrayList<StorableTest>() {{
-        add(new DataSourceTest());
-        add(new DeviceTest());
-//        add(new ParsersTest());
-//        add(new DataFeedsTest());
-    }};*/
-
     protected List<StorableTest> storableTests;
 
     @Before
@@ -76,19 +34,13 @@ public abstract class AbstractStoreManagerTest {
 
     protected abstract void setStorableTests();
 
-    /*protected void setStorableTests() {
-        storableTests = new ArrayList<StorableTest>() {{
-            add(new DataSourceTest());
-            add(new DeviceTest());
-//        add(new ParsersTest());
-//        add(new DataFeedsTest());
-        }};
-    }*/
-
-
-    public class StorableTest {
+    protected class StorableTest {
         protected List<Storable> storableList;
 
+        /**
+         * Performs any initialization steps that are required to test this storable instance, for example,
+         * initialize the a parent table that a child table refers to (e.g. DataSource and Device)
+         */
         public void init() {
 
         }
@@ -136,11 +88,23 @@ public abstract class AbstractStoreManagerTest {
         }
 
         public void close() {
-
+            getStorageManager().cleanup();
         }
 
         public List<Storable> getStorableList() {
             return storableList;
+        }
+
+        List<CatalogService.QueryParam> buildQueryParamsForPrimaryKey(Storable storable) {
+            final Map<Schema.Field, Object> fieldsToVal = storable.getPrimaryKey().getFieldsToVal();
+            final List<CatalogService.QueryParam> queryParams = new ArrayList<>(fieldsToVal.size());
+
+            for (Schema.Field field : fieldsToVal.keySet()) {
+                CatalogService.QueryParam qp = new CatalogService.QueryParam(field.getName(), fieldsToVal.get(field).toString());
+                queryParams.add(qp);
+            }
+
+            return queryParams;
         }
     }
 
@@ -234,20 +198,18 @@ public abstract class AbstractStoreManagerTest {
         }
     }
 
-
     /**
      * @return When we add a new implementation for StorageManager interface we will also add a corresponding test implementation
      * which will extends this class and implement this method.
      * <p/>
      * Essentially we are going to run the same test defined in this class for every single implementation of StorageManager.
      */
-    public abstract StorageManager getStorageManager();
+    protected abstract StorageManager getStorageManager();
 
     /**
      * Each of the storable entities has its own list and the 0th and 1st index items in that list has same id so
      * test will use that to test the update operation. the 3rd item is inserted at storage layer and 4th i
      */
-
     @Test
     public void testCrudForAllEntities() {
         for (StorableTest test : storableTests) {

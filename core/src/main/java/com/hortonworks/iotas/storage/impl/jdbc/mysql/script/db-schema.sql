@@ -4,12 +4,13 @@
 -- THE NAMES OF THE TABLE COLUMNS MUST MATCH THE NAMES OF THE CORRESPONDING CLASS MODEL FIELDS
 
  CREATE TABLE IF NOT EXISTS datasources (
-     dataSourceId BIGINT AUTO_INCREMENT NOT NULL,
+     dataSourceId BIGINT NOT NULL,
      dataSourceName VARCHAR(128) NOT NULL,
      description TEXT,
      tags TEXT,
      timestamp  BIGINT,
-     type ENUM('DEVICE', 'UNKNOWN') NOT NULL,    -- TODO: Create table datasources_type for type?
+     type TEXT NOT NULL,    -- TODO: Create table datasources_type for type?
+--      type ENUM('DEVICE', 'UNKNOWN') NOT NULL,    -- TODO: Create table datasources_type for type?
      typeConfig TEXT,                            -- TODO: NOT NULL, ???
      PRIMARY KEY (dataSourceId)
  );
