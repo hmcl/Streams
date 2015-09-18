@@ -71,11 +71,8 @@ public class Schema {
                         type = types[i];
                         break;
                     }
-                } catch (Exception e) {/* Exception is thrown if type does not match. Search next type */
-//                    // temporary workaround to work for Double as Double get parsed as Float with value infinity
-//                    if (i == FLOAT.ordinal() && Float.valueOf(val) > Float.MAX_VALUE) {
-//                        type = DOUBLE;
-//                    }
+                } catch (Exception e) {
+                    /* Exception is thrown if type does not match. Ignore to search next type */
                 }
             }
             if (type == null) {
