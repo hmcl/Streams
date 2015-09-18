@@ -30,6 +30,7 @@ import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageException;
 import com.hortonworks.iotas.storage.StorageManager;
+import com.hortonworks.iotas.storage.impl.jdbc.connection.Config;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlDelete;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlInsertUpdateDuplicate;
@@ -57,16 +58,14 @@ import java.util.Map;
 public class JdbcStorageManager implements StorageManager {
     private static final Logger log = LoggerFactory.getLogger(StorageManager.class);
 
-    private final ConnectionBuilder connectionBuilder;
-    private final int queryTimeoutSecs;
+    protected final ConnectionBuilder connectionBuilder;
+    protected final int queryTimeoutSecs;
+    protected final Config config;
 
-    public JdbcStorageManager(ConnectionBuilder connectionBuilder) {
-        this(connectionBuilder, -1);
-    }
-
-    public JdbcStorageManager(ConnectionBuilder connectionBuilder, int queryTimeoutSecs) {
+    public JdbcStorageManager(ConnectionBuilder connectionBuilder, Config config) {
         this.connectionBuilder = connectionBuilder;
-        this.queryTimeoutSecs = queryTimeoutSecs;
+        this.config = config;
+        this.queryTimeoutSecs = config.getQueryTimeoutSecs();
     }
 
     @Override
@@ -223,6 +222,7 @@ public class JdbcStorageManager implements StorageManager {
 
     // private helper methods
 
+    //TODO: Throw invalid query parameter exception
     private StorableKey buildStorableKey(String namespace, List<CatalogService.QueryParam> queryParams) throws Exception {
         final Map<Schema.Field, Object> fieldsToVal = new HashMap<>();
 
@@ -356,7 +356,7 @@ public class JdbcStorageManager implements StorageManager {
     }
 
     protected Connection getConnection() throws SQLException {
-        return getConnection(true);
+        return getConnection(config.isAutoCommit());
     }
 
     private Connection getConnection(boolean autoCommit) throws SQLException {
@@ -374,6 +374,4 @@ public class JdbcStorageManager implements StorageManager {
             }
         }
     }
-
-
 }
