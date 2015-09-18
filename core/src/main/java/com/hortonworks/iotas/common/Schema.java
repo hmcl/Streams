@@ -163,8 +163,8 @@ public class Schema {
         public static Field fromString(String str) {
             String[] nameTypePair = str.split(",");
             String name = removePrimeSymbols(nameTypePair[0].split("=")[1]);
-            String type = removePrimeSymbols(nameTypePair[1].split("=")[1]);
-            return new Field(name, Type.valueOf(type));
+            String val = removePrimeSymbols(nameTypePair[1].split("=")[1]);
+            return new Field(name, Type.valueOf(val));
         }
 
         // Removes the prime symbols that are in the beginning and end of the String,
