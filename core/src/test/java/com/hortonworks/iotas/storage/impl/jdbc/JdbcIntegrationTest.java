@@ -18,10 +18,16 @@
 
 package com.hortonworks.iotas.storage.impl.jdbc;
 
+import com.hortonworks.IntegrationTest;
+import com.hortonworks.iotas.storage.AbstractStoreManagerTest;
+import com.hortonworks.iotas.storage.StorageManager;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.HikariCPConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlBuilder;
 import org.junit.BeforeClass;
+import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,17 +35,20 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JdbcIntegrationTest {
+@Category(IntegrationTest.class)
+public abstract class JdbcIntegrationTest extends AbstractStoreManagerTest{
+    protected static final Logger log = LoggerFactory.getLogger(JdbcIntegrationTest.class);
     protected static ConnectionBuilder connectionBuilder;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        log.debug("JdbcIntegrationTest");
         setConnectionBuilder();
     }
 
     protected static void setConnectionBuilder() {
-//        Map<String, Object> config = getMySqlHikariConfig();
-        Map<String, Object> config = getH2HikariConfig();
+        Map<String, Object> config = getMySqlHikariConfig();
+//        Map<String, Object> config = getH2HikariConfig();
         connectionBuilder = new HikariCPConnectionBuilder(config);
     }
 
@@ -62,6 +71,9 @@ public class JdbcIntegrationTest {
 //        config.put("dataSource.URL", "jdbc:h2:~/test;MODE=MySQL;DATABASE_TO_UPPER=false");
         return config;
     }
+
+    @Override
+    public abstract StorageManager getStorageManager() ;
 
     protected Connection getConnection() {
         return connectionBuilder.getConnection();

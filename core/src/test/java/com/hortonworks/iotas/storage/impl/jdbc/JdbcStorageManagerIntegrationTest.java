@@ -21,34 +21,28 @@ package com.hortonworks.iotas.storage.impl.jdbc;
 import com.hortonworks.IntegrationTest;
 import com.hortonworks.iotas.catalog.Device;
 import com.hortonworks.iotas.storage.AbstractStoreManagerTest;
-import com.hortonworks.iotas.storage.AlreadyExistsException;
 import com.hortonworks.iotas.storage.Storable;
-import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageManager;
+import com.hortonworks.iotas.storage.impl.jdbc.connection.Config;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
+import org.h2.tools.RunScript;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 @Category(IntegrationTest.class)
 public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
-    // TODO
-    //create DB
-    //put stuff
-    //take stuff
     private static StorageManager jdbcStorageManager;
     private static List<Storable> devices;
     private static AbstractStoreManagerTest storageManagerTest;
@@ -63,23 +57,102 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
         setStorageManagerTest();
     }
 
+    @Before
+    public void setUp() throws Exception {
+        createTablesH2();
+//        createTables();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        dropTables();
+    }
+
     private static void setStorageManagerTest() {
         storageManagerTest = new AbstractStoreManagerTest() {
             @Override
             public StorageManager getStorageManager() {
                 return jdbcStorageManager;
             }
+
+            @Override
+            protected void setStorableTests() {
+                return; //TODO
+            }
         };
     }
 
-    @Before
-    public void setUp() throws Exception {
-        createTables();
+    @Override
+    public StorageManager getStorageManager() {
+        return jdbcStorageManager;
     }
 
-    @After
-    public void tearDown() throws Exception {
-        dropTables();
+    //Device has foreign key in DataSource table, which has to be initialized before inserting date in Device table
+    class DeviceJdbcTest extends DeviceTest {
+
+        @Override
+        public void init() {
+            DataSourceTest dataSourceTest = new DataSourceTest();
+            List<Storable> dataSources = dataSourceTest.getStorableList();
+            for (Storable dataSource : dataSources) {
+                jdbcStorageManager.addOrUpdate(dataSource);
+            }
+        }
+
+        @Override
+        public void close() {
+            try {
+                getConnection().rollback();
+            } catch (SQLException e) {
+                throw new RuntimeException("Exception during rollback", e);
+            }
+        }
+    }
+
+    @Override
+    protected Connection getConnection() {
+        try {
+            return ((JdbcStorageManagerForTest)jdbcStorageManager).getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException("Cannot get connection using JdbcStorageManagerForTest", e);
+        }
+    }
+
+    /**
+     * This class overrides the connection methods to allow the tests to rollback the transactions and thus not commit to DB
+     */
+    private static class JdbcStorageManagerForTest extends JdbcStorageManager {
+        public JdbcStorageManagerForTest(ConnectionBuilder connectionBuilder, Config config) {
+            super(connectionBuilder, config);
+        }
+
+        private Connection connection;
+
+        @Override
+        protected Connection getConnection() throws SQLException {
+            if (connection == null) {
+                setConnection(super.config.isAutoCommit());
+            }
+            return connection;
+        }
+
+        private void setConnection(boolean autoCommit) throws SQLException {
+            Connection connection = super.connectionBuilder.getConnection();
+            connection.setAutoCommit(autoCommit);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+            this.connection = connection;
+        }
+
+        @Override
+        protected void closeConnection(Connection connection) {
+            // Do not close the connection
+        }
+    }
+
+
+    //TODO clean this up
+    private void createTablesH2() throws SQLException, FileNotFoundException {
+        RunScript.execute(getConnection(), new FileReader("/Users/hlouro/Hortonworks/Dev/GitHub/hortonworks/iotas/core/src/main/java/com/hortonworks/iotas/storage/impl/jdbc/mysql/script/db-schema.sql"));
     }
 
     private void createTables() throws SQLException {
@@ -94,14 +167,30 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
     }
 
     private void dropTables() throws SQLException {
-        final String sql = "DROP TABLE IF EXISTS devices";
+        final String sql = "DROP TABLE IF EXISTS datafeeds";
+        final String sql1 = "DROP TABLE IF EXISTS parser_info";
+        final String sql2 = "DROP TABLE IF EXISTS devices";
+        final String sql3 = "DROP TABLE IF EXISTS datasources";
         executeSql(sql);
+        executeSql(sql1);
+        executeSql(sql2);
+        executeSql(sql3);
     }
 
     private static void setJdbcStorageManager(ConnectionBuilder connectionBuilder) {
-        jdbcStorageManager = new JdbcStorageManager(connectionBuilder);
+//        jdbcStorageManager = new JdbcStorageManager(connectionBuilder, new Config(-1, false));
+        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new Config(-1, false));
     }
 
+    @Override
+    protected void setStorableTests() {
+        storableTests = new ArrayList<StorableTest>() {{
+            add(new DataSourceTest());
+            add(new DeviceJdbcTest());
+//            add(new ParsersTest());
+//            add(new DataFeedsTest());
+        }};
+    }
 
     private static void setDevices() {
         devices = new ArrayList<>();
@@ -125,9 +214,12 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
     // ===== Test Methods =====
     // Test methods use the widely accepted naming convention  [UnitOfWork_StateUnderTest_ExpectedBehavior]
 
+    //TODO Need to test queryParamsOfAllTypes
+
     @Test
     public void testCrudForAllEntities() {
-        storageManagerTest.testCrudForAllEntities();
+        super.testCrudForAllEntities();
+//        storageManagerTest.testCrudForAllEntities();
     }
 
     /*@Test
@@ -146,7 +238,7 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
         }
     }*/
 
-    @Test
+    /*@Test
     public void testGet_nonExistentKey_null() {
         final Storable device = devices.get(0);
         final Storable retrieved = jdbcStorageManager.get(device.getStorableKey());
@@ -222,13 +314,13 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
 
 
 
-    /*@Test
+    *//*@Test
     public void testAddOrUpdate_newStorable_newStorable() {
         testAdd_nonExistentStorable_void();
         Storable update = newDevice("new_device_id_test", 7L, 8L);
         jdbcStorageManager.addOrUpdate(update);
         dotestAdd_Storable_Get_StorableKey_Storable(update);
-    }*/
+    }*//*
 
 
     public void testAdd_newStorable_AlreadyExistsException() {
@@ -247,7 +339,7 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
     private void testGet_existingStorable_existingStorable(Storable existing) {
         Storable retrieved = jdbcStorageManager.get(existing.getStorableKey());
         assertEquals("Instance put and retrieved from database are different", existing, retrieved);
-    }
+    }*/
 
 
 }
