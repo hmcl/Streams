@@ -19,8 +19,6 @@
 package com.hortonworks.iotas.storage.impl.jdbc;
 
 import com.hortonworks.IntegrationTest;
-import com.hortonworks.iotas.catalog.Device;
-import com.hortonworks.iotas.storage.AbstractStoreManagerTest;
 import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorageManager;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.Config;
@@ -37,15 +35,12 @@ import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Category(IntegrationTest.class)
 public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
     private static StorageManager jdbcStorageManager;
     private static List<Storable> devices;
-    private static AbstractStoreManagerTest storageManagerTest;
 
     // ===== Test Setup ====
 
@@ -53,8 +48,6 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
     public static void setUpClass() throws Exception {
         JdbcIntegrationTest.setUpClass();
         setJdbcStorageManager(connectionBuilder);
-        setDevices();
-        setStorageManagerTest();
     }
 
     @Before
@@ -68,26 +61,13 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
         dropTables();
     }
 
-    private static void setStorageManagerTest() {
-        storageManagerTest = new AbstractStoreManagerTest() {
-            @Override
-            public StorageManager getStorageManager() {
-                return jdbcStorageManager;
-            }
-
-            @Override
-            protected void setStorableTests() {
-                return; //TODO
-            }
-        };
-    }
 
     @Override
-    public StorageManager getStorageManager() {
+    protected StorageManager getStorageManager() {
         return jdbcStorageManager;
     }
 
-    //Device has foreign key in DataSource table, which has to be initialized before inserting date in Device table
+    //Device has foreign key in DataSource table, which has to be initialized before we can insert data in the Device table
     class DeviceJdbcTest extends DeviceTest {
 
         @Override
@@ -103,6 +83,7 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
         public void close() {
             try {
                 getConnection().rollback();
+                super.close();
             } catch (SQLException e) {
                 throw new RuntimeException("Exception during rollback", e);
             }
@@ -130,16 +111,17 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
 
         @Override
         protected Connection getConnection() throws SQLException {
-            if (connection == null) {
-                setConnection(super.config.isAutoCommit());
+            if (connection == null || connection.isClosed()) {
+                setConnection(config.isAutoCommit());
             }
             return connection;
         }
 
         private void setConnection(boolean autoCommit) throws SQLException {
-            Connection connection = super.connectionBuilder.getConnection();
+            Connection connection = connectionBuilder.getConnection();
             connection.setAutoCommit(autoCommit);
             connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+            activeConnections.add(connection);
             this.connection = connection;
         }
 
@@ -187,28 +169,9 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
         storableTests = new ArrayList<StorableTest>() {{
             add(new DataSourceTest());
             add(new DeviceJdbcTest());
-//            add(new ParsersTest());
-//            add(new DataFeedsTest());
+            add(new ParsersTest());
+            add(new DataFeedsTest());
         }};
-    }
-
-    private static void setDevices() {
-        devices = new ArrayList<>();
-        final Map<String, Object> state = new HashMap<>();
-        state.put(Device.DEVICE_ID, "device_id_test");
-        state.put(Device.VERSION, 123L);
-        state.put(Device.DATA_SOURCE_ID, 456L);
-        devices.add(newDevice(state));
-
-        // device with same StorableKey but that does not verify .equals()
-        state.put(Device.DATA_SOURCE_ID, 789L);
-        devices.add(newDevice(state));
-    }
-
-    private static Device newDevice(Map state) {
-        Device device = new Device();
-        device.fromMap(state);
-        return device;
     }
 
     // ===== Test Methods =====

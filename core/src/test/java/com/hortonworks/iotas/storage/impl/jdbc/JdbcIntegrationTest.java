@@ -73,7 +73,7 @@ public abstract class JdbcIntegrationTest extends AbstractStoreManagerTest{
     }
 
     @Override
-    public abstract StorageManager getStorageManager() ;
+    protected abstract StorageManager getStorageManager() ;
 
     protected Connection getConnection() {
         return connectionBuilder.getConnection();
