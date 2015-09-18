@@ -49,6 +49,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +59,7 @@ import java.util.Map;
 public class JdbcStorageManager implements StorageManager {
     private static final Logger log = LoggerFactory.getLogger(StorageManager.class);
 
+    protected final List<Connection> activeConnections;
     protected final ConnectionBuilder connectionBuilder;
     protected final int queryTimeoutSecs;
     protected final Config config;
@@ -66,6 +68,7 @@ public class JdbcStorageManager implements StorageManager {
         this.connectionBuilder = connectionBuilder;
         this.config = config;
         this.queryTimeoutSecs = config.getQueryTimeoutSecs();
+        activeConnections = Collections.synchronizedList(new ArrayList<Connection>());
     }
 
     @Override
@@ -195,8 +198,19 @@ public class JdbcStorageManager implements StorageManager {
 
     @Override
     public void cleanup() throws StorageException {
-        //TODO: Close connection
-        //no-op
+        try {
+            closeAllActiveConnections();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    private void closeAllActiveConnections() throws SQLException {
+        for (Connection activeConnection : activeConnections) {
+            if (!activeConnection.isClosed()) {
+                activeConnection.close();
+            }
+        }
     }
 
     @Override
@@ -362,6 +376,7 @@ public class JdbcStorageManager implements StorageManager {
     private Connection getConnection(boolean autoCommit) throws SQLException {
         Connection connection = connectionBuilder.getConnection();
         connection.setAutoCommit(autoCommit);
+        activeConnections.add(connection);
         return connection;
     }
 
@@ -369,6 +384,7 @@ public class JdbcStorageManager implements StorageManager {
         if (connection != null) {
             try {
                 connection.close();
+                activeConnections.remove(connection);
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to close connection", e);
             }
