@@ -1,4 +1,5 @@
 /*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -72,21 +73,18 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
 
         @Override
         public void init() {
-            DataSourceTest dataSourceTest = new DataSourceTest();
-            List<Storable> dataSources = dataSourceTest.getStorableList();
-            for (Storable dataSource : dataSources) {
-                jdbcStorageManager.addOrUpdate(dataSource);
-            }
+            addStorables(new DataSourceTest().getStorableList());
         }
+    }
+
+    // DataFeed has foreign keys in ParserInfon and DataSource tables, which have to be
+    // initialized before we can insert data in the DataFeed table
+    class DataFeedsJdbcTest extends DataFeedsTest {
 
         @Override
-        public void close() {
-            try {
-                getConnection().rollback();
-                super.close();
-            } catch (SQLException e) {
-                throw new RuntimeException("Exception during rollback", e);
-            }
+        public void init() {
+            addStorables(new ParsersTest().getStorableList());
+            addStorables(new DataSourceTest().getStorableList());
         }
     }
 
@@ -170,7 +168,7 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
             add(new DataSourceTest());
             add(new DeviceJdbcTest());
             add(new ParsersTest());
-            add(new DataFeedsTest());
+            add(new DataFeedsJdbcTest());
         }};
     }
 

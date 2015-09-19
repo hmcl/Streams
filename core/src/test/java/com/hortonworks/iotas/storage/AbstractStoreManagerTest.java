@@ -45,6 +45,12 @@ public abstract class AbstractStoreManagerTest {
 
         }
 
+        protected void addStorables(List<Storable> storables) {
+            for (Storable storable : storables) {
+                getStorageManager().addOrUpdate(storable);
+            }
+        }
+
         public void test() {
             final Storable storable1 = storableList.get(0);
             final Storable storable2 = storableList.get(1);
