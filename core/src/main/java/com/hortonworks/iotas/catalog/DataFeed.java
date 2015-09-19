@@ -116,7 +116,7 @@ public class DataFeed implements Storable {
         this.description = (String)  map.get(DESCRIPTION);
         this.tags = (String)  map.get(TAGS);
         this.parserId = (Long) map.get(PARSER_ID);
-        this.endpoint = (String) map.get(endpoint);
+        this.endpoint = (String) map.get(ENDPOINT);
         this.timestamp = (Long) map.get(TIME_STAMP);
         return this;
     }
