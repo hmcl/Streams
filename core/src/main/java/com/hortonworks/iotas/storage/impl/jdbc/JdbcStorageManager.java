@@ -30,7 +30,7 @@ import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageException;
 import com.hortonworks.iotas.storage.StorageManager;
-import com.hortonworks.iotas.storage.impl.jdbc.connection.Config;
+import com.hortonworks.iotas.storage.impl.jdbc.config.Config;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlDelete;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlInsertUpdateDuplicate;
@@ -369,18 +369,13 @@ public class JdbcStorageManager implements StorageManager {
         return map;
     }
 
-    protected Connection getConnection() throws SQLException {
-        return getConnection(config.isAutoCommit());
-    }
-
-    private Connection getConnection(boolean autoCommit) throws SQLException {
+    Connection getConnection() throws SQLException {
         Connection connection = connectionBuilder.getConnection();
-        connection.setAutoCommit(autoCommit);
         activeConnections.add(connection);
         return connection;
     }
 
-    protected void closeConnection(Connection connection) {
+    void closeConnection(Connection connection) {
         if (connection != null) {
             try {
                 connection.close();

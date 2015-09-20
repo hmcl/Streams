@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.storage.impl.jdbc.connection;
+package com.hortonworks.iotas.storage.impl.jdbc.config;
 
 /**
  * Wrapper object that serves has a placeholder for configuration for for database connections (e.g. {$code autocommit}),
@@ -37,9 +37,5 @@ public class Config {
 
     public int getQueryTimeoutSecs() {
         return queryTimeoutSecs;
-    }
-
-    public boolean isAutoCommit() {
-        return autoCommit;
     }
 }

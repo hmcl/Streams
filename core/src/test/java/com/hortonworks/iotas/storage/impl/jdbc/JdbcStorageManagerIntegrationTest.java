@@ -20,10 +20,12 @@
 package com.hortonworks.iotas.storage.impl.jdbc;
 
 import com.hortonworks.IntegrationTest;
-import com.hortonworks.iotas.storage.Storable;
+import com.hortonworks.iotas.storage.AbstractStoreManagerTest;
 import com.hortonworks.iotas.storage.StorageManager;
-import com.hortonworks.iotas.storage.impl.jdbc.connection.Config;
+import com.hortonworks.iotas.storage.impl.jdbc.config.Config;
+import com.hortonworks.iotas.storage.impl.jdbc.config.HikariBasicConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
+import com.hortonworks.iotas.storage.impl.jdbc.connection.HikariCPConnectionBuilder;
 import org.h2.tools.RunScript;
 import org.junit.After;
 import org.junit.Before;
@@ -36,30 +38,31 @@ import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 @Category(IntegrationTest.class)
-public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
+public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest {
     private static StorageManager jdbcStorageManager;
-    private static List<Storable> devices;
 
     // ===== Test Setup ====
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        JdbcIntegrationTest.setUpClass();
-        setJdbcStorageManager(connectionBuilder);
+        setJdbcStorageManager(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()));
     }
 
     @Before
     public void setUp() throws Exception {
-        createTablesH2();
-//        createTables();
+        createTables();
     }
 
     @After
     public void tearDown() throws Exception {
         dropTables();
+    }
+
+    private static void setJdbcStorageManager(ConnectionBuilder connectionBuilder) {
+//        jdbcStorageManager = new JdbcStorageManager(connectionBuilder, new Config(-1, false));
+        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new Config(-1, false));
     }
 
 
@@ -70,17 +73,15 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
 
     //Device has foreign key in DataSource table, which has to be initialized before we can insert data in the Device table
     class DeviceJdbcTest extends DeviceTest {
-
         @Override
         public void init() {
             addStorables(new DataSourceTest().getStorableList());
         }
     }
 
-    // DataFeed has foreign keys in ParserInfon and DataSource tables, which have to be
+    // DataFeed has foreign keys in ParserInfo and DataSource tables, which have to be
     // initialized before we can insert data in the DataFeed table
     class DataFeedsJdbcTest extends DataFeedsTest {
-
         @Override
         public void init() {
             addStorables(new ParsersTest().getStorableList());
@@ -88,7 +89,6 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
         }
     }
 
-    @Override
     protected Connection getConnection() {
         try {
             return ((JdbcStorageManagerForTest)jdbcStorageManager).getConnection();
@@ -110,17 +110,16 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
         @Override
         protected Connection getConnection() throws SQLException {
             if (connection == null || connection.isClosed()) {
-                setConnection(config.isAutoCommit());
+                setConnection();
             }
             return connection;
         }
 
-        private void setConnection(boolean autoCommit) throws SQLException {
+        private void setConnection() throws SQLException {
             Connection connection = connectionBuilder.getConnection();
-            connection.setAutoCommit(autoCommit);
             connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-            activeConnections.add(connection);
             this.connection = connection;
+            activeConnections.add(connection);
         }
 
         @Override
@@ -131,35 +130,13 @@ public class JdbcStorageManagerIntegrationTest extends JdbcIntegrationTest {
 
 
     //TODO clean this up
-    private void createTablesH2() throws SQLException, FileNotFoundException {
-        RunScript.execute(getConnection(), new FileReader("/Users/hlouro/Hortonworks/Dev/GitHub/hortonworks/iotas/core/src/main/java/com/hortonworks/iotas/storage/impl/jdbc/mysql/script/db-schema.sql"));
+    private void createTables() throws SQLException, FileNotFoundException {
+        RunScript.execute(getConnection(), new FileReader("/Users/hlouro/Hortonworks/Dev/GitHub/hortonworks/iotas/core/src/main/java/com/hortonworks/iotas/storage/impl/jdbc/mysql/schema/create_tables.sql"));
     }
 
-    private void createTables() throws SQLException {
-        final String sql = "CREATE TABLE IF NOT EXISTS devices (\n" +
-                "    deviceId VARCHAR(64) NOT NULL,\n" +
-                "    version BIGINT NOT NULL,\n" +
-                "    dataSourceId BIGINT NOT NULL,\n" +
-                "    PRIMARY KEY (deviceId, version)\n" +
-                ");";
+    private void dropTables() throws SQLException, FileNotFoundException {
+        RunScript.execute(getConnection(), new FileReader("/Users/hlouro/Hortonworks/Dev/GitHub/hortonworks/iotas/core/src/main/java/com/hortonworks/iotas/storage/impl/jdbc/mysql/schema/drop_tables.sql"));
 
-        executeSql(sql);
-    }
-
-    private void dropTables() throws SQLException {
-        final String sql = "DROP TABLE IF EXISTS datafeeds";
-        final String sql1 = "DROP TABLE IF EXISTS parser_info";
-        final String sql2 = "DROP TABLE IF EXISTS devices";
-        final String sql3 = "DROP TABLE IF EXISTS datasources";
-        executeSql(sql);
-        executeSql(sql1);
-        executeSql(sql2);
-        executeSql(sql3);
-    }
-
-    private static void setJdbcStorageManager(ConnectionBuilder connectionBuilder) {
-//        jdbcStorageManager = new JdbcStorageManager(connectionBuilder, new Config(-1, false));
-        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new Config(-1, false));
     }
 
     @Override
