@@ -146,7 +146,7 @@ public class JdbcStorageManager implements StorageManager {
     }
 
     @Override
-    public <T extends Storable> List<T> find(String namespace, List<CatalogService.QueryParam> queryParams) throws StorageException {
+    public <T extends Storable> Collection<T> find(String namespace, List<CatalogService.QueryParam> queryParams) throws StorageException {
         if (queryParams == null) {
             return (List<T>) list(namespace);
         }
@@ -165,7 +165,7 @@ public class JdbcStorageManager implements StorageManager {
             if (log.isDebugEnabled()) {
                 log.debug("Querying table = [{}]\n\t filter = [{}]\n\t returned Storables = [{}]", namespace, queryParams, storables);
             }
-            return (List<T>) storables;
+            return storables;
         } catch (Exception e) {
             throw new StorageException(e);
         } finally {
