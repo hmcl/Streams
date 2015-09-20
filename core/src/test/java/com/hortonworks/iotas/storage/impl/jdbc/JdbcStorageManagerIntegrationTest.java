@@ -33,8 +33,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -130,13 +131,16 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
 
 
     //TODO clean this up
-    private void createTables() throws SQLException, FileNotFoundException {
-        RunScript.execute(getConnection(), new FileReader("/Users/hlouro/Hortonworks/Dev/GitHub/hortonworks/iotas/core/src/main/java/com/hortonworks/iotas/storage/impl/jdbc/mysql/schema/create_tables.sql"));
+    private void createTables() throws SQLException, IOException {
+        RunScript.execute(getConnection(), load("create_tables.sql"));
     }
 
-    private void dropTables() throws SQLException, FileNotFoundException {
-        RunScript.execute(getConnection(), new FileReader("/Users/hlouro/Hortonworks/Dev/GitHub/hortonworks/iotas/core/src/main/java/com/hortonworks/iotas/storage/impl/jdbc/mysql/schema/drop_tables.sql"));
+    private void dropTables() throws SQLException, IOException {
+        RunScript.execute(getConnection(), load("drop_tables.sql"));
+    }
 
+    private Reader load(String fileName) throws IOException {
+        return new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(fileName));
     }
 
     @Override
