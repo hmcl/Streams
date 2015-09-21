@@ -27,12 +27,10 @@ package com.hortonworks.iotas.storage.impl.jdbc.config;
  **/
 public class Config {
     private final int queryTimeoutSecs;
-    private final boolean autoCommit;
 
     // Replace constructors with Builder pattern when more configuration options become available
-    public Config(int queryTimeoutSecs, boolean autoCommit) {
+    public Config(int queryTimeoutSecs) {
         this.queryTimeoutSecs = queryTimeoutSecs;
-        this.autoCommit = autoCommit;
     }
 
     public int getQueryTimeoutSecs() {

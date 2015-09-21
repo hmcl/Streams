@@ -30,7 +30,6 @@ import org.h2.tools.RunScript;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
@@ -48,7 +47,9 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        setJdbcStorageManager(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()));
+        // Connection has autoCommit set to false in order to allow rolling back transactions
+//        setJdbcStorageManager(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()));
+        setJdbcStorageManager(new HikariCPConnectionBuilder(HikariBasicConfig.getH2HikariTestConfig()));
     }
 
     @Before
@@ -62,8 +63,7 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     }
 
     private static void setJdbcStorageManager(ConnectionBuilder connectionBuilder) {
-//        jdbcStorageManager = new JdbcStorageManager(connectionBuilder, new Config(-1, false));
-        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new Config(-1, false));
+        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new Config(-1));
     }
 
 
@@ -129,8 +129,6 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
         }
     }
 
-
-    //TODO clean this up
     private void createTables() throws SQLException, IOException {
         RunScript.execute(getConnection(), load("create_tables.sql"));
     }
@@ -152,136 +150,4 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
             add(new DataFeedsJdbcTest());
         }};
     }
-
-    // ===== Test Methods =====
-    // Test methods use the widely accepted naming convention  [UnitOfWork_StateUnderTest_ExpectedBehavior]
-
-    //TODO Need to test queryParamsOfAllTypes
-
-    @Test
-    public void testCrudForAllEntities() {
-        super.testCrudForAllEntities();
-//        storageManagerTest.testCrudForAllEntities();
-    }
-
-    /*@Test
-    public void testCrud() throws Exception {
-        StorableKey key = devices.getStorableKey();;
-        Storable retrieved;
-        try {
-            testGet_nonExistentKey_null();
-            jdbcStorageManager.add(devices);
-            retrieved = jdbcStorageManager.get(key);
-            assertEquals("Instance put and retrieved from database are different", devices, retrieved);
-        } finally {
-            jdbcStorageManager.remove(key);
-            retrieved = jdbcStorageManager.get(key);
-            assertNull(retrieved);
-        }
-    }*/
-
-    /*@Test
-    public void testGet_nonExistentKey_null() {
-        final Storable device = devices.get(0);
-        final Storable retrieved = jdbcStorageManager.get(device.getStorableKey());
-        assertNull(retrieved);
-    }
-
-    @Test
-    public void testAdd_nonExistentStorable_void() {
-        Storable device = devices.get(0);
-        jdbcStorageManager.add(device);
-        testGet_existingStorable_existingStorable(device);
-    }
-
-    // UnequalExistingStorable => Storable that has the same StorableKey but does NOT verify .equals()
-    @Test(expected = AlreadyExistsException.class)
-    public void testAdd_unequalExistingStorable_AlreadyExistsException() {
-        Assert.assertNotEquals(devices.get(0), devices.get(1));
-        jdbcStorageManager.add(devices.get(0));
-        jdbcStorageManager.add(devices.get(1));     // should throw exception
-    }
-
-    // EqualExistingStorable => Storable that has the same StorableKey and verifies .equals()
-    @Test
-    public void testAdd_equalExistingStorable_void() {
-        final Storable device = devices.get(0);
-        jdbcStorageManager.add(device);
-        jdbcStorageManager.add(device);
-        testGet_existingStorable_existingStorable(device);
-    }
-
-    @Test
-    public void testAddOrUpdate_nonExistentStorable_void() {
-        Storable device = devices.get(0);
-        jdbcStorageManager.addOrUpdate(device);
-        testGet_existingStorable_existingStorable(device);
-    }
-
-    // UnequalExistingStorable => Storable that has the same StorableKey but does NOT verify .equals()
-    @Test
-    public void testAddOrUpdate_unequalExistingStorable_void() {
-        final Storable device0 = devices.get(0);
-        final Storable device1 = devices.get(1);
-        Assert.assertNotEquals(device0, device1);
-        jdbcStorageManager.addOrUpdate(device0);
-        jdbcStorageManager.addOrUpdate(device1);
-        testGet_existingStorable_existingStorable(device1);
-    }
-
-    // EqualExistingStorable => Storable that has the same StorableKey and verifies .equals()
-    @Test
-    public void testAddOrUpdate_equalExistingStorable_void() {
-        final Storable device = devices.get(0);
-        jdbcStorageManager.add(device);
-        jdbcStorageManager.add(device);
-        testGet_existingStorable_existingStorable(device);
-    }
-
-    @Test
-    public void testRemove_existingStorable_existingStorable() {
-        final Storable device = devices.get(0);
-        jdbcStorageManager.add(device);
-        testGet_existingStorable_existingStorable(device);
-        final StorableKey key = device.getStorableKey();
-        Storable removed = jdbcStorageManager.remove(key);
-        assertNotNull(removed);
-        assertEquals(device, removed);
-    }
-
-    @Test
-    public void testRemove_NonExistentStorable_null() {
-
-    }
-
-
-
-    *//*@Test
-    public void testAddOrUpdate_newStorable_newStorable() {
-        testAdd_nonExistentStorable_void();
-        Storable update = newDevice("new_device_id_test", 7L, 8L);
-        jdbcStorageManager.addOrUpdate(update);
-        dotestAdd_Storable_Get_StorableKey_Storable(update);
-    }*//*
-
-
-    public void testAdd_newStorable_AlreadyExistsException() {
-
-
-    }
-
-    // TODO TEST INSERT DUPLICATE KEY
-    // TODO Test null Storable and StorableKey values
-    @Test
-    public void testAddDuplicateStorable() {
-        //TODO
-    }
-
-    // ======= private helper methods ========
-    private void testGet_existingStorable_existingStorable(Storable existing) {
-        Storable retrieved = jdbcStorageManager.get(existing.getStorableKey());
-        assertEquals("Instance put and retrieved from database are different", existing, retrieved);
-    }*/
-
-
 }

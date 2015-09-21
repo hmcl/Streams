@@ -45,12 +45,10 @@ public abstract class AbstractStoreManagerTest {
 
         }
 
-        protected void addStorables(List<Storable> storables) {
-            for (Storable storable : storables) {
-                getStorageManager().addOrUpdate(storable);
-            }
-        }
-
+        /**
+         * Each of the storable entities has its own list and the 0th and 1st index items in that list has same id so
+         * test will use that to test the update operation. the 3rd item is inserted at storage layer and 4th i
+         */
         public void test() {
             final Storable storable1 = storableList.get(0);
             final Storable storable2 = storableList.get(1);
@@ -58,17 +56,18 @@ public abstract class AbstractStoreManagerTest {
             final Storable storable4 = storableList.get(3);
             String namespace = storable1.getNameSpace();
 
+            // test get nonexistent key
             Assert.assertNull(getStorageManager().get(storable1.getStorableKey()));
 
-            //test add by inserting the first item in list.
+            //test add, get by inserting the first item in list.
             getStorageManager().add(storable1);
             Assert.assertEquals(storable1, getStorageManager().get(storable1.getStorableKey()));
 
-            //test update by calling addOrUpdate on second item which should have the same primary key value as first item.
+            //test update by calling addOrUpdate on second item which should have the same primary key value as the first item.
             getStorageManager().addOrUpdate(storable2);
-            Assert.assertEquals(storable2, getStorageManager().get(storable1.getStorableKey()));
+            Assert.assertEquals(storable2, getStorageManager().get(storable2.getStorableKey()));
 
-            //add 3rd item, only added so list operation will return more then one item.
+            //add 3rd item, only added so that list operation will return more then one item.
             getStorageManager().addOrUpdate(storable3);
             Assert.assertEquals(storable3, getStorageManager().get(storable3.getStorableKey()));
 
@@ -77,18 +76,19 @@ public abstract class AbstractStoreManagerTest {
             Assert.assertEquals(storable4, getStorageManager().get(storable4.getStorableKey()));
             Storable removed = getStorageManager().remove(storable4.getStorableKey());
             Assert.assertNull(getStorageManager().get(storable4.getStorableKey()));
-            // check that the correct remoted item got returned
+            // check that the correct removed item gets returned
             Assert.assertEquals(storable4, removed);
 
-            //Test list method. The final state of storage layer should have the 2nd item (updated version of 1st item) and 3rd Item.
+            //Test list method. The storage layer should have the 2nd item (updated version of 1st item) and 3rd Item.
             final Set<Storable> expected = new HashSet<Storable>() {{
                 add(storable2);
                 add(storable3);
             }};
-            Assert.assertEquals(expected, new HashSet(getStorageManager().list(storable2.getStorableKey().getNameSpace())));
+            final HashSet allExisting = new HashSet(getStorageManager().list(storable2.getStorableKey().getNameSpace()));
+            Assert.assertEquals(expected, allExisting);
 
             //Test method with query parameters(filter) matching only the item storable3
-            Collection<Storable> found = getStorageManager().find(namespace, buildQueryParamsForPrimaryKey(storable3));
+            final Collection<Storable> found = getStorageManager().find(namespace, buildQueryParamsForPrimaryKey(storable3));
             Assert.assertEquals(found.size(), 1);
             Assert.assertTrue(found.contains(storable3));
         }
@@ -101,7 +101,13 @@ public abstract class AbstractStoreManagerTest {
             return storableList;
         }
 
-        List<CatalogService.QueryParam> buildQueryParamsForPrimaryKey(Storable storable) {
+        protected void addStorables(List<Storable> storables) {
+            for (Storable storable : storables) {
+                getStorageManager().addOrUpdate(storable);
+            }
+        }
+
+        protected List<CatalogService.QueryParam> buildQueryParamsForPrimaryKey(Storable storable) {
             final Map<Schema.Field, Object> fieldsToVal = storable.getPrimaryKey().getFieldsToVal();
             final List<CatalogService.QueryParam> queryParams = new ArrayList<>(fieldsToVal.size());
 
@@ -212,12 +218,11 @@ public abstract class AbstractStoreManagerTest {
      */
     protected abstract StorageManager getStorageManager();
 
-    /**
-     * Each of the storable entities has its own list and the 0th and 1st index items in that list has same id so
-     * test will use that to test the update operation. the 3rd item is inserted at storage layer and 4th i
-     */
+    // ===== Test Methods =====
+    // Test methods use the widely accepted naming convention  [UnitOfWork_StateUnderTest_ExpectedBehavior]
+
     @Test
-    public void testCrudForAllEntities() {
+    public void testCrud_AllStorableEntities_NoExceptions() {
         for (StorableTest test : storableTests) {
             try {
                 test.init();
@@ -227,4 +232,42 @@ public abstract class AbstractStoreManagerTest {
             }
         }
     }
+
+    // UnequalExistingStorable => Storable that has the same StorableKey but does NOT verify .equals()
+    @Test(expected = AlreadyExistsException.class)
+    public void testAdd_UnequalExistingStorable_AlreadyExistsException() {
+        for (StorableTest test : storableTests) {
+            Storable storable1 = test.getStorableList().get(0);
+            Storable storable2 = test.getStorableList().get(1);
+            Assert.assertNotEquals(storable1, storable2);
+            getStorageManager().add(storable1);
+            getStorageManager().add(storable2);     // should throw exception
+        }
+    }
+
+    @Test
+    public void testRemove_NonExistentStorable_null() {
+        for (StorableTest test : storableTests) {
+            Storable removed = getStorageManager().remove(test.getStorableList().get(0).getStorableKey());
+            Assert.assertNull(removed);
+        }
+    }
+
+    @Test
+    public void testList_EmptyDb_EmptyCollection() {
+        for (StorableTest test : storableTests) {
+            Collection<Storable> found = getStorageManager().list(test.getStorableList().get(0).getStorableKey().getNameSpace());
+            Assert.assertNotNull(found);
+            Assert.assertTrue(found.isEmpty());
+        }
+    }
+
+    // TODO: What to do here? throw exception or empty collection?
+    /*@Test(expected = StorageException.class)
+//    @Test
+    public void testList_NonexistentNameSpace_EmptyCollection() {
+        Collection<Storable> found = getStorageManager().list("NONEXISTENT_NAME_SPACE");
+        Assert.assertNotNull(found);
+        Assert.assertTrue(found.isEmpty());
+    }*/
 }
