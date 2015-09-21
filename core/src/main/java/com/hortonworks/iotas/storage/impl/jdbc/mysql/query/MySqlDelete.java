@@ -27,11 +27,9 @@ public class MySqlDelete extends MySqlStorableKeyBuilder {
 
     // "DELETE FROM DB.TABLE WHERE id1 = val1 AND id2 = val2"
     @Override
-    public String getParameterizedSql() {
-
-        final String sql = "DELETE FROM  " + tableName + " WHERE "
+    protected void setParameterizedSql() {
+        sql = "DELETE FROM  " + tableName + " WHERE "
                 + join(getColumnNames(columns, "%s = ?"), " AND ");
         log.debug(sql);
-        return sql;
     }
 }

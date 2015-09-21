@@ -19,23 +19,8 @@
 package com.hortonworks.iotas.storage.impl.jdbc.config;
 
 /**
- * Wrapper object that serves has a placeholder for configuration for for database connections (e.g. {$code autocommit}),
- * creation oF prepared statements (e.g. {query timeout}), etc..
- *
- * This class should be immutable as the configuration should not change after passed on to the configurable objects
- *
- **/
-public class Config {
-    private final int queryTimeoutSecs;
-    private final boolean autoCommit;
-
-    // Replace constructors with Builder pattern when more configuration options become available
-    public Config(int queryTimeoutSecs, boolean autoCommit) {
-        this.queryTimeoutSecs = queryTimeoutSecs;
-        this.autoCommit = autoCommit;
-    }
-
-    public int getQueryTimeoutSecs() {
-        return queryTimeoutSecs;
-    }
+ * Object representing the configuration used to establish connection to the database
+ */
+public interface ConnectionConfig<T> {
+    T getConfig();
 }

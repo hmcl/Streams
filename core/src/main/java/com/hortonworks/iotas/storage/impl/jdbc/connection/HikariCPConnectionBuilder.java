@@ -17,6 +17,7 @@
  */
 package com.hortonworks.iotas.storage.impl.jdbc.connection;
 
+import com.hortonworks.iotas.storage.impl.jdbc.config.ConnectionConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -28,8 +29,8 @@ import java.util.Properties;
 public class HikariCPConnectionBuilder implements ConnectionBuilder {
 
     private Map<String, Object> configMap;
-    private HikariConfig config;
     private transient HikariDataSource dataSource;
+    private ConnectionConfig config;
 
     public HikariCPConnectionBuilder(Map<String, Object> hikariCPConfig) {
         this.configMap = hikariCPConfig;
@@ -37,7 +38,7 @@ public class HikariCPConnectionBuilder implements ConnectionBuilder {
     }
 
     public HikariCPConnectionBuilder(HikariConfig hikariConfig) {
-        this.config = hikariConfig;
+        this.config = new HikariConnectionConfig(hikariConfig);
         prepare();
     }
 
@@ -47,10 +48,9 @@ public class HikariCPConnectionBuilder implements ConnectionBuilder {
             if (configMap != null) {
                 Properties properties = new Properties();
                 properties.putAll(configMap);
-                config = new HikariConfig(properties);
+                config = new HikariConnectionConfig(new HikariConfig(properties));
             }
-            this.dataSource = new HikariDataSource(config);
-            this.dataSource.setAutoCommit(false);
+            this.dataSource = new HikariDataSource(((HikariConnectionConfig)config).getConfig());
         }
     }
 
@@ -64,9 +64,27 @@ public class HikariCPConnectionBuilder implements ConnectionBuilder {
     }
 
     @Override
+    public ConnectionConfig getConfig() {
+        return config;
+    }
+
+    @Override
     public void cleanup() {
         if(dataSource != null) {
             dataSource.shutdown();
+        }
+    }
+
+    private static class HikariConnectionConfig implements ConnectionConfig<HikariConfig> {
+        private HikariConfig config;
+
+        public HikariConnectionConfig(HikariConfig config) {
+            this.config = config;
+        }
+
+        @Override
+        public HikariConfig getConfig() {
+            return config;
         }
     }
 }

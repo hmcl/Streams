@@ -19,15 +19,23 @@
 
 package com.hortonworks.iotas.storage.impl.jdbc;
 
+import com.google.common.cache.CacheBuilder;
 import com.hortonworks.IntegrationTest;
 import com.hortonworks.iotas.storage.AbstractStoreManagerTest;
+import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorageManager;
-import com.hortonworks.iotas.storage.impl.jdbc.config.Config;
+import com.hortonworks.iotas.storage.exception.NonIncrementalColumnException;
+import com.hortonworks.iotas.storage.impl.jdbc.config.ExecutionConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.config.HikariBasicConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.HikariCPConnectionBuilder;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.factory.MySqlExecutor;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MetadataHelper;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.SqlBuilder;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.statement.PreparedStatementBuilder;
 import org.h2.tools.RunScript;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,16 +47,24 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 @Category(IntegrationTest.class)
 public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest {
     private static StorageManager jdbcStorageManager;
+    private static Database database;
+    private static ConnectionBuilder connectionBuilder;
+
+    private enum Database {MYSQL, H2}
 
     // ===== Test Setup ====
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        setJdbcStorageManager(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()));
+        //MySql DB Configuration. Useful for local testing
+        //setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariConfig()), Database.MYSQL);
+        //H2 DB Configuration. Useful for testing as part of the build
+        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getH2HikariConfig()), Database.H2);
     }
 
     @Before
@@ -58,14 +74,21 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
 
     @After
     public void tearDown() throws Exception {
+        jdbcStorageManager.cleanup();
         dropTables();
     }
 
-    private static void setJdbcStorageManager(ConnectionBuilder connectionBuilder) {
-//        jdbcStorageManager = new JdbcStorageManager(connectionBuilder, new Config(-1, false));
-        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new Config(-1, false));
+    private static void setFields(ConnectionBuilder connectionBuilder, Database db) {
+        JdbcStorageManagerIntegrationTest.connectionBuilder = connectionBuilder;
+        jdbcStorageManager = new JdbcStorageManager(new MySqlExecutorForTest(newGuavaCacheBuilder(),
+                new ExecutionConfig(-1), connectionBuilder));
+        database = db;
     }
 
+    private static CacheBuilder newGuavaCacheBuilder() {
+        final long maxSize = 2;
+        return  CacheBuilder.newBuilder().maximumSize(maxSize);
+    }
 
     @Override
     protected StorageManager getStorageManager() {
@@ -76,67 +99,70 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     class DeviceJdbcTest extends DeviceTest {
         @Override
         public void init() {
-            addStorables(new DataSourceTest().getStorableList());
+            new DataSourceTest().addAllToStorage();
         }
     }
 
-    // DataFeed has foreign keys in ParserInfo and DataSource tables, which have to be
-    // initialized before we can insert data in the DataFeed table
     class DataFeedsJdbcTest extends DataFeedsTest {
+        // DataFeed has foreign keys in ParserInfo and DataSource tables, which have to be
+        // initialized before we can insert data in the DataFeed table
         @Override
         public void init() {
-            addStorables(new ParsersTest().getStorableList());
-            addStorables(new DataSourceTest().getStorableList());
+            new ParsersTest().addAllToStorage();
+            new DataSourceTest().addAllToStorage();
         }
     }
 
-    protected Connection getConnection() {
-        try {
-            return ((JdbcStorageManagerForTest)jdbcStorageManager).getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException("Cannot get connection using JdbcStorageManagerForTest", e);
-        }
+    protected static Connection getConnection() {
+        Connection connection = connectionBuilder.getConnection();
+        log.debug("Opened connection {}", connection);
+        return connection;
     }
 
-    /**
-     * This class overrides the connection methods to allow the tests to rollback the transactions and thus not commit to DB
-     */
-    private static class JdbcStorageManagerForTest extends JdbcStorageManager {
-        public JdbcStorageManagerForTest(ConnectionBuilder connectionBuilder, Config config) {
-            super(connectionBuilder, config);
-        }
-
-        private Connection connection;
-
-        @Override
-        protected Connection getConnection() throws SQLException {
-            if (connection == null || connection.isClosed()) {
-                setConnection();
+    protected void closeConnection(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+                log.debug("Closed connection {}", connection);
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to close connection", e);
             }
-            return connection;
-        }
-
-        private void setConnection() throws SQLException {
-            Connection connection = connectionBuilder.getConnection();
-            connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-            this.connection = connection;
-            activeConnections.add(connection);
-        }
-
-        @Override
-        protected void closeConnection(Connection connection) {
-            // Do not close the connection
         }
     }
 
+    private static class MySqlExecutorForTest extends MySqlExecutor {
+        public MySqlExecutorForTest(CacheBuilder<SqlBuilder, PreparedStatementBuilder> cacheBuilder,
+            ExecutionConfig config, ConnectionBuilder connectionBuilder) { //}, Connection connection) {
+            super(cacheBuilder, config, connectionBuilder);
+        }
 
-    //TODO clean this up
+        @Override
+        protected Long getNextId(Connection connection, String namespace) throws SQLException {
+            if (database.equals(Database.MYSQL)) {
+                return super.nextId(namespace);
+            } else {
+                return MetadataHelper.nextIdH2(connection, namespace, getConfig().getQueryTimeoutSecs());
+            }
+        }
+    }
+
     private void createTables() throws SQLException, IOException {
-        RunScript.execute(getConnection(), load("create_tables.sql"));
+        runScript("create_tables.sql");
     }
 
     private void dropTables() throws SQLException, IOException {
-        RunScript.execute(getConnection(), load("drop_tables.sql"));
+        runScript("drop_tables.sql");
+    }
+
+    private void runScript(String fileName) throws SQLException, IOException {
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            RunScript.execute(connection, load(fileName));
+        } finally {
+            // We need to close the connection because H2 DB running in memory only allows one connection at a time
+            closeConnection(connection);
+        }
     }
 
     private Reader load(String fileName) throws IOException {
@@ -153,135 +179,34 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
         }};
     }
 
-    // ===== Test Methods =====
-    // Test methods use the widely accepted naming convention  [UnitOfWork_StateUnderTest_ExpectedBehavior]
-
-    //TODO Need to test queryParamsOfAllTypes
+    // =============== Test Methods ===============
 
     @Test
-    public void testCrudForAllEntities() {
-        super.testCrudForAllEntities();
-//        storageManagerTest.testCrudForAllEntities();
-    }
-
-    /*@Test
-    public void testCrud() throws Exception {
-        StorableKey key = devices.getStorableKey();;
-        Storable retrieved;
-        try {
-            testGet_nonExistentKey_null();
-            jdbcStorageManager.add(devices);
-            retrieved = jdbcStorageManager.get(key);
-            assertEquals("Instance put and retrieved from database are different", devices, retrieved);
-        } finally {
-            jdbcStorageManager.remove(key);
-            retrieved = jdbcStorageManager.get(key);
-            assertNull(retrieved);
+    public void testList_EmptyDb_EmptyCollection() {
+        for (StorableTest test : storableTests) {
+            Collection<Storable> found = getStorageManager().list(test.getStorableList().get(0).getStorableKey().getNameSpace());
+            Assert.assertNotNull(found);
+            Assert.assertTrue(found.isEmpty());
         }
-    }*/
+    }
 
-    /*@Test
-    public void testGet_nonExistentKey_null() {
-        final Storable device = devices.get(0);
-        final Storable retrieved = jdbcStorageManager.get(device.getStorableKey());
-        assertNull(retrieved);
+    @Test(expected = NonIncrementalColumnException.class)
+    public void testNextId_NoAutoincrementTable_NonIncrementalKeyException() throws Exception {
+        for (StorableTest test : storableTests) {
+            if (test instanceof DeviceTest) {
+                getStorageManager().nextId(test.getNameSpace());    // should throw exception
+
+            }
+        }
     }
 
     @Test
-    public void testAdd_nonExistentStorable_void() {
-        Storable device = devices.get(0);
-        jdbcStorageManager.add(device);
-        testGet_existingStorable_existingStorable(device);
+    public void testNextId_AutoincrementColumn_IdPlusOne() throws Exception {
+        for (StorableTest test : storableTests) {
+            // Device does not have auto_increment, and therefore there is no concept of nextId and should throw exception (tested below)
+            if (!(test instanceof DeviceTest)) {
+                doTestNextId_AutoincrementColumn_IdPlusOne(test);
+            }
+        }
     }
-
-    // UnequalExistingStorable => Storable that has the same StorableKey but does NOT verify .equals()
-    @Test(expected = AlreadyExistsException.class)
-    public void testAdd_unequalExistingStorable_AlreadyExistsException() {
-        Assert.assertNotEquals(devices.get(0), devices.get(1));
-        jdbcStorageManager.add(devices.get(0));
-        jdbcStorageManager.add(devices.get(1));     // should throw exception
-    }
-
-    // EqualExistingStorable => Storable that has the same StorableKey and verifies .equals()
-    @Test
-    public void testAdd_equalExistingStorable_void() {
-        final Storable device = devices.get(0);
-        jdbcStorageManager.add(device);
-        jdbcStorageManager.add(device);
-        testGet_existingStorable_existingStorable(device);
-    }
-
-    @Test
-    public void testAddOrUpdate_nonExistentStorable_void() {
-        Storable device = devices.get(0);
-        jdbcStorageManager.addOrUpdate(device);
-        testGet_existingStorable_existingStorable(device);
-    }
-
-    // UnequalExistingStorable => Storable that has the same StorableKey but does NOT verify .equals()
-    @Test
-    public void testAddOrUpdate_unequalExistingStorable_void() {
-        final Storable device0 = devices.get(0);
-        final Storable device1 = devices.get(1);
-        Assert.assertNotEquals(device0, device1);
-        jdbcStorageManager.addOrUpdate(device0);
-        jdbcStorageManager.addOrUpdate(device1);
-        testGet_existingStorable_existingStorable(device1);
-    }
-
-    // EqualExistingStorable => Storable that has the same StorableKey and verifies .equals()
-    @Test
-    public void testAddOrUpdate_equalExistingStorable_void() {
-        final Storable device = devices.get(0);
-        jdbcStorageManager.add(device);
-        jdbcStorageManager.add(device);
-        testGet_existingStorable_existingStorable(device);
-    }
-
-    @Test
-    public void testRemove_existingStorable_existingStorable() {
-        final Storable device = devices.get(0);
-        jdbcStorageManager.add(device);
-        testGet_existingStorable_existingStorable(device);
-        final StorableKey key = device.getStorableKey();
-        Storable removed = jdbcStorageManager.remove(key);
-        assertNotNull(removed);
-        assertEquals(device, removed);
-    }
-
-    @Test
-    public void testRemove_NonExistentStorable_null() {
-
-    }
-
-
-
-    *//*@Test
-    public void testAddOrUpdate_newStorable_newStorable() {
-        testAdd_nonExistentStorable_void();
-        Storable update = newDevice("new_device_id_test", 7L, 8L);
-        jdbcStorageManager.addOrUpdate(update);
-        dotestAdd_Storable_Get_StorableKey_Storable(update);
-    }*//*
-
-
-    public void testAdd_newStorable_AlreadyExistsException() {
-
-
-    }
-
-    // TODO TEST INSERT DUPLICATE KEY
-    // TODO Test null Storable and StorableKey values
-    @Test
-    public void testAddDuplicateStorable() {
-        //TODO
-    }
-
-    // ======= private helper methods ========
-    private void testGet_existingStorable_existingStorable(Storable existing) {
-        Storable retrieved = jdbcStorageManager.get(existing.getStorableKey());
-        assertEquals("Instance put and retrieved from database are different", existing, retrieved);
-    }*/
-
-
 }

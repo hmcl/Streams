@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -15,36 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hortonworks.iotas.storage.impl.jdbc.connection;
 
-import com.hortonworks.iotas.storage.impl.jdbc.config.ConnectionConfig;
-
-import java.io.Serializable;
-import java.sql.Connection;
+package com.hortonworks.iotas.storage.impl.jdbc.config;
 
 /**
- * Provides a database connection.
- */
-public interface ConnectionBuilder extends Serializable {
-    /**
-     * method must be idempotent.
-     */
-    void prepare();
+ * Wrapper object that serves has a placeholder for configuration that needs to be passed to the JdbcStorageManager.
+ * Examples are configuration of prepared statements (e.g. {query timeout}), specify cache, etc...
+ *
+ * This class should be immutable as the configuration should not change after passed on to the configurable objects
+ *
+ **/
+public class ExecutionConfig {
+    private final int queryTimeoutSecs;
 
-    /**
-     *
-     * @return a database connection over which the queries can be executed.
-     */
-    Connection getConnection();
+    // Replace constructors with Builder pattern as more configuration options become available
+    public ExecutionConfig(int queryTimeoutSecs) {
+        this.queryTimeoutSecs = queryTimeoutSecs;
+    }
 
-    /**
-     *
-     * @return the configuration used to establish connection to the database
-     */
-    ConnectionConfig getConfig();
-
-    /**
-     * called once when the system is shutting down, should be idempotent.
-     */
-    void cleanup();
+    public int getQueryTimeoutSecs() {
+        return queryTimeoutSecs;
+    }
 }

@@ -21,35 +21,44 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Collections2;
 import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.storage.PrimaryKey;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class MySqlBuilder {
+public abstract class MySqlBuilder implements SqlBuilder {
     protected static final Logger log = LoggerFactory.getLogger(MySqlBuilder.class);
     protected List<Schema.Field> columns;
     protected String tableName;
+    protected PrimaryKey primaryKey;
+    protected String sql;
 
-    public abstract String getParameterizedSql();
+    protected abstract void setParameterizedSql();
 
-    public abstract PreparedStatement getPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException;
-
-    protected PreparedStatement prepareStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
-        String parameterizedSql = getParameterizedSql();
-        log.debug("Creating prepared statement with parameterized sql [{}]", parameterizedSql);
-        PreparedStatement preparedStatement = connection.prepareStatement(parameterizedSql);
-
-        if (queryTimeoutSecs > 0) {
-            preparedStatement.setQueryTimeout(queryTimeoutSecs);
-        }
-        return preparedStatement;
+    @Override
+    public String getParametrizedSql() {
+        return sql;
     }
+
+    @Override
+    public List<Schema.Field> getColumns() {
+        return columns;
+    }
+
+    @Override
+    public String getNamespace() {
+        return tableName;
+    }
+
+    @Override
+    public PrimaryKey getPrimaryKey() {
+        return primaryKey;
+    }
+
+    // ==== helper methods used in the query construction process ======
 
     protected String join(Collection<String> in, String separator) {
         return Joiner.on(separator).join(in);
@@ -79,40 +88,37 @@ public abstract class MySqlBuilder {
         });
     }
 
-    protected void setPreparedStatementParams(PreparedStatement preparedStatement,
-                                                             Schema.Type type, int index, Object val) throws SQLException {
-        switch (type) {
-            case BOOLEAN:
-                preparedStatement.setBoolean(index, (Boolean) val);
-                break;
-            case BYTE:
-                preparedStatement.setByte(index, (Byte) val);
-                break;
-            case SHORT:
-                preparedStatement.setShort(index, (Short) val);
-                break;
-            case INTEGER:
-                preparedStatement.setInt(index, (Integer) val);
-                break;
-            case LONG:
-                preparedStatement.setLong(index, (Long) val);
-                break;
-            case FLOAT:
-                preparedStatement.setFloat(index, (Float) val);
-                break;
-            case DOUBLE:
-                preparedStatement.setDouble(index, (Double) val);
-                break;
-            case STRING:
-                preparedStatement.setString(index, (String) val);
-                break;
-            case BINARY:
-                preparedStatement.setBytes(index, (byte[]) val);
-                break;
-            case NESTED:
-            case ARRAY:
-                preparedStatement.setObject(index, val);    //TODO check this
-                break;
-        }
+    //TODO; revisit
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MySqlBuilder that = (MySqlBuilder) o;
+
+        if (columns != null ? !columns.equals(that.columns) : that.columns != null) return false;
+        if (tableName != null ? !tableName.equals(that.tableName) : that.tableName != null) return false;
+        if (primaryKey != null ? !primaryKey.equals(that.primaryKey) : that.primaryKey != null) return false;
+        return !(sql != null ? !sql.equals(that.sql) : that.sql != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = columns != null ? columns.hashCode() : 0;
+        result = 31 * result + (tableName != null ? tableName.hashCode() : 0);
+        result = 31 * result + (primaryKey != null ? primaryKey.hashCode() : 0);
+        result = 31 * result + (sql != null ? sql.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "MySqlBuilder{" +
+                "columns=" + columns +
+                ", tableName='" + tableName + '\'' +
+                ", primaryKey=" + primaryKey +
+                ", sql='" + sql + '\'' +
+                '}';
     }
 }

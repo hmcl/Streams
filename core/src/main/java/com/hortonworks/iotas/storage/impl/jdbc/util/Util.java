@@ -43,6 +43,7 @@ public class Util {
             case Types.CHAR:
             case Types.VARCHAR:
             case Types.LONGVARCHAR:
+            case Types.CLOB:
                 return String.class;
             case Types.BINARY:
             case Types.VARBINARY:

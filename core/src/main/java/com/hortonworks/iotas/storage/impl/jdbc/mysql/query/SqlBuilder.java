@@ -15,25 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.hortonworks.iotas.storage.impl.jdbc.mysql.query;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.storage.PrimaryKey;
 
-public class Executor {
-    public static void executeSql(Connection connection, final String sql) throws SQLException {
-        new MySqlBuilder() {
-            @Override
-            public String getParameterizedSql() {
-                return sql;
-            }
+import java.util.List;
 
-            @Override
-            public PreparedStatement getPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
-                return this.prepareStatement(connection, queryTimeoutSecs);
-            }
-        }.getPreparedStatement(connection, -1).execute();
-    }
+public interface SqlBuilder {
+    /** @return The list of columns that constitute this database table */
+    List<Schema.Field> getColumns();
+
+    /** @return table name or namespace */
+    String getNamespace();
+
+    /** @return The {@link PrimaryKey} used in the query construction process <br/>
+     * null if no {@link PrimaryKey} used */
+    PrimaryKey getPrimaryKey();
+
+    /** @return The SQL query with the place parameters ready to be replaced */
+    String getParametrizedSql();
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -15,22 +15,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hortonworks.iotas.storage.impl.jdbc.mysql.query;
 
-import com.hortonworks.iotas.storage.Storable;
+package com.hortonworks.iotas.storage.exception;
 
-public class MySqlInsert extends MySqlStorableBuilder {
-
-    public MySqlInsert(Storable storable) {
-        super(storable);
+/**
+ * Exception thrown when attempting to build a SQL query that is not syntactically correct,
+ * or that has incomplete or incoherent data to allow unambiguous query construction
+ *
+ */
+public class MalformedQueryException extends RuntimeException {
+    public MalformedQueryException() {
     }
 
-    // "INSERT INTO DB.TABLE (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE id=1, name="A", age=19";
-    @Override
-    protected void setParameterizedSql() {
-        sql = "INSERT INTO " + tableName + " ("
-                + join(getColumnNames(columns, null), ", ")
-                + ") VALUES( " + getBindVariables("?,", columns.size()) + ")";
-        log.debug(sql);
+    public MalformedQueryException(String message) {
+        super(message);
+    }
+
+    public MalformedQueryException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public MalformedQueryException(Throwable cause) {
+        super(cause);
+    }
+
+    public MalformedQueryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

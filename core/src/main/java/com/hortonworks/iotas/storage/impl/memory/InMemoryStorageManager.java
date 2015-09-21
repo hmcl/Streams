@@ -57,9 +57,11 @@ public class InMemoryStorageManager implements StorageManager {
     }
 
     @Override
-    public <T extends Storable> T  remove(StorableKey key) throws StorageException {
+    public <T extends Storable> T remove(StorableKey key) throws StorageException {
         if(storageMap.containsKey(key.getNameSpace())) {
-            return (T) storageMap.get(key.getNameSpace()).remove(key.getPrimaryKey());
+            T oldVal = (T) storageMap.get(key.getNameSpace()).remove(key.getPrimaryKey());
+            decrementIdSequence(key.getNameSpace());
+            return oldVal;
         }
         return null;
     }
@@ -71,6 +73,9 @@ public class InMemoryStorageManager implements StorageManager {
         if(!storageMap.containsKey(namespace)) {
             storageMap.putIfAbsent(namespace, new ConcurrentHashMap<PrimaryKey, Storable>());
             nameSpaceClassMap.putIfAbsent(namespace, storable.getClass());
+        }
+        if (!storageMap.get(namespace).containsKey(id)) {
+            incrementIdSequence(namespace);
         }
         storageMap.get(namespace).put(id, storable);
     }
@@ -106,27 +111,33 @@ public class InMemoryStorageManager implements StorageManager {
     }
 
     public <T extends Storable> Collection<T> find(String namespace, List<QueryParam> queryParams) throws StorageException {
-        List<Storable> result = new ArrayList<Storable>();
-        Class<?> clazz = nameSpaceClassMap.get(namespace);
-        if(clazz != null) {
-            Map<PrimaryKey, Storable> storableMap = storageMap.get(namespace);
-            if (storableMap != null) {
-                for (Storable val : storableMap.values()) {
-                    if (matches(val, queryParams, clazz)) {
-                        result.add(val);
+        Collection <T> result = new ArrayList<>();
+        if(queryParams == null) {
+            result = list(namespace);
+        } else {
+            Class<?> clazz = nameSpaceClassMap.get(namespace);
+            if (clazz != null) {
+                Map<PrimaryKey, Storable> storableMap = storageMap.get(namespace);
+                if (storableMap != null) {
+                    for (Storable val : storableMap.values()) {
+                        if (matches(val, queryParams, clazz)) {
+                            result.add((T) val);
+                        }
                     }
                 }
             }
         }
-        return  (List<T>) result;
+        return  result;
     }
 
 
     @Override
     public <T extends Storable> Collection<T> list(String namespace) throws StorageException {
-        return (Collection<T>) (storageMap.containsKey(namespace)
-                        ? storageMap.get(namespace).values()
-                        : new ArrayList<Storable>());
+        if (storageMap.containsKey(namespace)) {
+            return (Collection<T>) storageMap.get(namespace).values();
+        } else {
+            throw new StorageException("Nonexistent name space " + namespace);
+        }
     }
 
     @Override
@@ -140,8 +151,21 @@ public class InMemoryStorageManager implements StorageManager {
         if(id == null){
             id = 0l;
         }
-        id++;
-        this.sequenceMap.put(namespace, id);
-        return id;
+        return id+1;
+    }
+
+    private void incrementIdSequence(String namespace){
+        Long id = sequenceMap.get(namespace);
+        if(id == null){
+            id = 0l;
+        }
+        this.sequenceMap.put(namespace, ++id);
+    }
+
+    private void decrementIdSequence(String namespace){
+        Long id = sequenceMap.get(namespace);
+        if(id != null && id > 0) {
+                sequenceMap.put(namespace, --id);
+        }
     }
 }

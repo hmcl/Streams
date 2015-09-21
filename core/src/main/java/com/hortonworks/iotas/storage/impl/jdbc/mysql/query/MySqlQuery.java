@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -15,36 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hortonworks.iotas.storage.impl.jdbc.connection;
 
-import com.hortonworks.iotas.storage.impl.jdbc.config.ConnectionConfig;
+package com.hortonworks.iotas.storage.impl.jdbc.mysql.query;
 
-import java.io.Serializable;
-import java.sql.Connection;
+public class MySqlQuery extends MySqlBuilder {
 
-/**
- * Provides a database connection.
- */
-public interface ConnectionBuilder extends Serializable {
-    /**
-     * method must be idempotent.
-     */
-    void prepare();
+    public MySqlQuery(String sql) {
+        this.sql = sql;
+    }
 
-    /**
-     *
-     * @return a database connection over which the queries can be executed.
-     */
-    Connection getConnection();
-
-    /**
-     *
-     * @return the configuration used to establish connection to the database
-     */
-    ConnectionConfig getConfig();
-
-    /**
-     * called once when the system is shutting down, should be idempotent.
-     */
-    void cleanup();
+    @Override
+    protected void setParameterizedSql() {
+        log.debug(sql);
+    }
 }
