@@ -30,8 +30,10 @@ import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageException;
 import com.hortonworks.iotas.storage.StorageManager;
+import com.hortonworks.iotas.storage.exception.IllegalQueryParameterException;
 import com.hortonworks.iotas.storage.impl.jdbc.config.Config;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MetadataHelper;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlDelete;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlInsertUpdateDuplicate;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlSelect;
@@ -217,16 +219,10 @@ public class JdbcStorageManager implements StorageManager {
     public Long nextId(String namespace) {
         // This only works if the table has auto-increment. The TABLE_SCHEMA part is implicitly specified in the Connection object
         // SELECT AUTO_INCREMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'temp' AND TABLE_SCHEMA = 'test'
-        final String sql = "SELECT AUTO_INCREMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = " + namespace;
         Connection connection = null;
         try {
             connection = getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            long nextId = resultSet.getLong("AUTO_INCREMENT");
-            log.debug("Next id for auto increment table [{}] = {}", namespace, nextId);
-            return nextId;
+            return MetadataHelper.nextId(getConnection(), namespace, queryTimeoutSecs);
         } catch (SQLException e) {
             throw new StorageException(e);
         } finally {
@@ -236,20 +232,28 @@ public class JdbcStorageManager implements StorageManager {
 
     // private helper methods
 
-    //TODO: Throw invalid query parameter exception
+    /** Query parameters are typically specified for a column or key in a database table or storage namespace. Therefore, we build
+    the {@link StorableKey} from the list of query parameters, and then can use {@link MySqlSelect} builder to generate the query using
+    the query parameters in the where clause */
     private StorableKey buildStorableKey(String namespace, List<CatalogService.QueryParam> queryParams) throws Exception {
         final Map<Schema.Field, Object> fieldsToVal = new HashMap<>();
+        final StorableKey storableKey;
 
-        for (CatalogService.QueryParam qp : queryParams) {
-            final String val = qp.getValue();
-            final Schema.Type typeOfVal = Schema.Type.getTypeOfVal(val);
-            fieldsToVal.put(new Schema.Field(qp.getName(), typeOfVal),
-                            typeOfVal.getJavaType().getConstructor(String.class).newInstance(val));
+        try {
+            for (CatalogService.QueryParam qp : queryParams) {
+                final String val = qp.getValue();
+                final Schema.Type typeOfVal = Schema.Type.getTypeOfVal(val);
+                fieldsToVal.put(new Schema.Field(qp.getName(), typeOfVal),
+                                typeOfVal.getJavaType().getConstructor(String.class).newInstance(val)); // instantiates object of the appropriate type
+            }
+            final PrimaryKey primaryKey = new PrimaryKey(fieldsToVal);
+            storableKey = new StorableKey(namespace, primaryKey);
+            log.debug("Building StorableKey from QueryParam: \n\tnamespace = [{}]\n\t queryParams = [{}]\n\t StorableKey = [{}]", namespace, queryParams, storableKey);
+        } catch (Exception e) {
+            log.debug("Exception occurred when attempting to generate StorableKey from QueryParam", e);
+            throw new IllegalQueryParameterException(e);
         }
 
-        final PrimaryKey primaryKey = new PrimaryKey(fieldsToVal);
-        final StorableKey storableKey = new StorableKey(namespace, primaryKey);
-        log.debug("namespace = [{}]\n\t queryParams = [{}]\n\t StorableKey = [{}]", namespace, queryParams, storableKey);
         return storableKey;
     }
 

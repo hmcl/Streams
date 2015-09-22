@@ -22,6 +22,7 @@ package com.hortonworks.iotas.storage.impl.jdbc;
 import com.hortonworks.IntegrationTest;
 import com.hortonworks.iotas.storage.AbstractStoreManagerTest;
 import com.hortonworks.iotas.storage.StorageManager;
+import com.hortonworks.iotas.storage.exception.NonIncrementalKeyException;
 import com.hortonworks.iotas.storage.impl.jdbc.config.Config;
 import com.hortonworks.iotas.storage.impl.jdbc.config.HikariBasicConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
@@ -30,6 +31,7 @@ import org.h2.tools.RunScript;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
@@ -48,8 +50,8 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     @BeforeClass
     public static void setUpClass() throws Exception {
         // Connection has autoCommit set to false in order to allow rolling back transactions
-//        setJdbcStorageManager(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()));
-        setJdbcStorageManager(new HikariCPConnectionBuilder(HikariBasicConfig.getH2HikariTestConfig()));
+        setJdbcStorageManager(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()));
+//        setJdbcStorageManager(new HikariCPConnectionBuilder(HikariBasicConfig.getH2HikariTestConfig()));           //TODO Fix metadata lookup
     }
 
     @Before
@@ -76,7 +78,7 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     class DeviceJdbcTest extends DeviceTest {
         @Override
         public void init() {
-            addStorables(new DataSourceTest().getStorableList());
+            new DataSourceTest().addAllToStorage();
         }
     }
 
@@ -85,8 +87,8 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     class DataFeedsJdbcTest extends DataFeedsTest {
         @Override
         public void init() {
-            addStorables(new ParsersTest().getStorableList());
-            addStorables(new DataSourceTest().getStorableList());
+            new ParsersTest().addAllToStorage();
+            new DataSourceTest().addAllToStorage();
         }
     }
 
@@ -109,7 +111,7 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
         private Connection connection;
 
         @Override
-        protected Connection getConnection() throws SQLException {
+        Connection getConnection() throws SQLException {
             if (connection == null || connection.isClosed()) {
                 setConnection();
             }
@@ -149,5 +151,15 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
             add(new ParsersTest());
             add(new DataFeedsJdbcTest());
         }};
+    }
+
+    @Test(expected = NonIncrementalKeyException.class)
+    public void testNextId_NonAutoincrementColumn_NonIncrementalKeyException() throws Exception {
+        for (StorableTest test : storableTests) {
+            if (test instanceof DeviceTest) {
+                getStorageManager().nextId(test.getNameSpace());    // should throw exception
+
+            }
+        }
     }
 }

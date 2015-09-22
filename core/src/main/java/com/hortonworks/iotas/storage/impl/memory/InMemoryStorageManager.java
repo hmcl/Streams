@@ -59,7 +59,9 @@ public class InMemoryStorageManager implements StorageManager {
     @Override
     public <T extends Storable> T  remove(StorableKey key) throws StorageException {
         if(storageMap.containsKey(key.getNameSpace())) {
-            return (T) storageMap.get(key.getNameSpace()).remove(key.getPrimaryKey());
+            T oldVal = (T) storageMap.get(key.getNameSpace()).remove(key.getPrimaryKey());
+            decrementIdSequence(key.getNameSpace());
+            return oldVal;
         }
         return null;
     }
@@ -71,6 +73,9 @@ public class InMemoryStorageManager implements StorageManager {
         if(!storageMap.containsKey(namespace)) {
             storageMap.putIfAbsent(namespace, new ConcurrentHashMap<PrimaryKey, Storable>());
             nameSpaceClassMap.putIfAbsent(namespace, storable.getClass());
+        }
+        if (!storageMap.get(namespace).containsKey(id)) {
+            incrementIdSequence(namespace);
         }
         storageMap.get(namespace).put(id, storable);
     }
@@ -140,8 +145,21 @@ public class InMemoryStorageManager implements StorageManager {
         if(id == null){
             id = 0l;
         }
-        id++;
-        this.sequenceMap.put(namespace, id);
-        return id;
+        return id+1;
+    }
+
+    private void incrementIdSequence(String namespace){
+        Long id = sequenceMap.get(namespace);
+        if(id == null){
+            id = 0l;
+        }
+        this.sequenceMap.put(namespace, ++id);
+    }
+
+    private void decrementIdSequence(String namespace){
+        Long id = sequenceMap.get(namespace);
+        if(id != null && id > 0) {
+                sequenceMap.put(namespace, --id);
+        }
     }
 }

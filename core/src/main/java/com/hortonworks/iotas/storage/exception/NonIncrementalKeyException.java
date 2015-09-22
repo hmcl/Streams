@@ -16,24 +16,25 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.storage.impl.jdbc.mysql.query;
+package com.hortonworks.iotas.storage.exception;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+/**
+ * Exception that gets thrown when attempting to get the next id of a table or namespace for which
+ * the primary key is not defined as auto incremental (e.g. AUTO_INCREMENT in MySQL).
+ */
+public class NonIncrementalKeyException extends RuntimeException {
+    public NonIncrementalKeyException() {
+    }
 
-public class Executor {
-    public static void executeSql(Connection connection, final String sql) throws SQLException {
-        new MySqlBuilder() {
-            @Override
-            public String getParameterizedSql() {
-                return sql;
-            }
+    public NonIncrementalKeyException(String message) {
+        super(message);
+    }
 
-            @Override
-            public PreparedStatement getPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
-                return this.prepareStatement(connection, queryTimeoutSecs);
-            }
-        }.getPreparedStatement(connection, -1).execute();
+    public NonIncrementalKeyException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public NonIncrementalKeyException(Throwable cause) {
+        super(cause);
     }
 }

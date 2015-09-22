@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -101,8 +102,8 @@ public abstract class AbstractStoreManagerTest {
             return storableList;
         }
 
-        protected void addStorables(List<Storable> storables) {
-            for (Storable storable : storables) {
+        public void addAllToStorage() {
+            for (Storable storable : storableList) {
                 getStorageManager().addOrUpdate(storable);
             }
         }
@@ -117,6 +118,10 @@ public abstract class AbstractStoreManagerTest {
             }
 
             return queryParams;
+        }
+
+        public String getNameSpace() {
+            return storableList.get(0).getStorableKey().getNameSpace();
         }
     }
 
@@ -270,4 +275,64 @@ public abstract class AbstractStoreManagerTest {
         Assert.assertNotNull(found);
         Assert.assertTrue(found.isEmpty());
     }*/
+
+    /*@Test
+    public void testNextId_AutoincrementColumn_idPlusOne() throws Exception {
+        for (StorableTest test : storableTests) {
+            Long nextId = getStorageManager().nextId(test.getNameSpace());
+            // nextId == 0 => column does not have auto_increment, and therefore there is no concept of nextId
+            if (nextId != 0) {
+                Assert.assertEquals((Long) 1L, nextId);
+                addAndAssertNextId(test, 0, 2L);
+                addAndAssertNextId(test, 2, 3L);
+                addAndAssertNextId(test, 2, 3L);
+                addAndAssertNextId(test, 3, 4L);
+            }
+        }
+    }
+
+    private void addAndAssertNextId(StorableTest test, int idx, Long expectedId) throws SQLException {
+        getStorageManager().addOrUpdate(test.getStorableList().get(idx));
+        ((JdbcStorageManager)getStorageManager()).getConnection().commit();
+        Long nextId = getStorageManager().nextId(test.getNameSpace());
+        Assert.assertEquals(expectedId, nextId);
+    }
+
+    @Test
+    public void testNextId_NonAutoincrementColumn_NonIncrementableColumnException() throws Exception {
+        for (StorableTest test : storableTests) {
+            Long nextId = getStorageManager().nextId(test.getNameSpace());
+            // nextId == 0 => column does not have auto_increment, and therefore there is no concept of nextId
+            if (nextId != 0) {
+                Assert.assertEquals((Long) 1L, nextId);
+                addAndAssertNextId(test, 0, 2L);
+                addAndAssertNextId(test, 2, 3L);
+                addAndAssertNextId(test, 2, 3L);
+                addAndAssertNextId(test, 3, 4L);
+            }
+        }
+    }*/
+
+    @Test
+    public void testNextId_AutoincrementColumn_IdPlusOne() throws Exception {
+        for (StorableTest test : storableTests) {
+            // Device does not have auto_increment, and therefore there is no concept of nextId and should throw exception
+            if (!(test instanceof DeviceTest)) {
+                Long nextId = getStorageManager().nextId(test.getNameSpace());
+                Assert.assertEquals((Long) 1L, nextId);
+                addAndAssertNextId(test, 0, 2L);
+                addAndAssertNextId(test, 2, 3L);
+                addAndAssertNextId(test, 2, 3L);
+                addAndAssertNextId(test, 3, 4L);
+            }
+        }
+    }
+
+    private void addAndAssertNextId(StorableTest test, int idx, Long expectedId) throws SQLException {
+        getStorageManager().addOrUpdate(test.getStorableList().get(idx));
+        Long nextId = getStorageManager().nextId(test.getNameSpace());
+        Assert.assertEquals(expectedId, nextId);
+    }
+
+
 }
