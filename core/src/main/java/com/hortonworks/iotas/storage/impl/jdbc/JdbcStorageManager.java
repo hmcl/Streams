@@ -34,6 +34,7 @@ import com.hortonworks.iotas.storage.exception.IllegalQueryParameterException;
 import com.hortonworks.iotas.storage.impl.jdbc.config.Config;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MetadataHelper;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlDelete;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlInsertUpdateDuplicate;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlSelect;
@@ -149,20 +150,23 @@ public class JdbcStorageManager implements StorageManager {
 
     @Override
     public <T extends Storable> Collection<T> find(String namespace, List<CatalogService.QueryParam> queryParams) throws StorageException {
+        log.debug("Finding entries in table [{}] that match queryParams [{}]", namespace, queryParams);
+
         if (queryParams == null) {
             return (List<T>) list(namespace);
         }
 
-        log.debug("Finding entries in table [{}] that satisfy queryParams [{}]", namespace, queryParams);
         Connection connection = null;
         try {
             connection = getConnection();
             // Build StorableKey from QueryParam. StorableKey is used to filter the rows in the DB that match the QueryParams
-            final StorableKey storableKey = buildStorableKey(namespace, queryParams);
-            PreparedStatement preparedStatement = new MySqlSelect(storableKey).getPreparedStatement(connection, queryTimeoutSecs);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            final Collection<T> storables = getStorablesFromResultSet(resultSet, namespace);
+            Collection<T> storables = Collections.EMPTY_LIST;
+            final MySqlBuilder sqlBuilder = getMySqlBuilderForQueryParams(namespace, queryParams);
+            if (sqlBuilder != null) {
+                PreparedStatement preparedStatement = sqlBuilder.getPreparedStatement(connection, queryTimeoutSecs);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                storables = getStorablesFromResultSet(resultSet, namespace);
+            }
 
             if (log.isDebugEnabled()) {
                 log.debug("Querying table = [{}]\n\t filter = [{}]\n\t returned Storables = [{}]", namespace, queryParams, storables);
@@ -232,22 +236,46 @@ public class JdbcStorageManager implements StorageManager {
 
     // private helper methods
 
-    /** Query parameters are typically specified for a column or key in a database table or storage namespace. Therefore, we build
-    the {@link StorableKey} from the list of query parameters, and then can use {@link MySqlSelect} builder to generate the query using
-    the query parameters in the where clause */
+    /**
+     * @return null if none of the none of the query parameters specified matches a column in the DB
+     */
+    private MySqlBuilder getMySqlBuilderForQueryParams(String namespace, List<CatalogService.QueryParam> queryParams) throws Exception {
+        final StorableKey storableKey = buildStorableKey(namespace, queryParams);
+        return storableKey == null ?
+                null :
+                new MySqlSelect(storableKey);
+    }
+
+    /**
+     * Query parameters are typically specified for a column or key in a database table or storage namespace. Therefore, we build
+     * the {@link StorableKey} from the list of query parameters, and then can use {@link MySqlSelect} builder to generate the query using
+     * the query parameters in the where clause
+     *
+     * @return null if none of the none of the query parameters specified matches a column in the DB or {@link StorableKey}
+     * with all query parameters that match DB columns
+     */
     private StorableKey buildStorableKey(String namespace, List<CatalogService.QueryParam> queryParams) throws Exception {
         final Map<Schema.Field, Object> fieldsToVal = new HashMap<>();
-        final StorableKey storableKey;
+        StorableKey storableKey = null;
 
         try {
             for (CatalogService.QueryParam qp : queryParams) {
-                final String val = qp.getValue();
-                final Schema.Type typeOfVal = Schema.Type.getTypeOfVal(val);
-                fieldsToVal.put(new Schema.Field(qp.getName(), typeOfVal),
-                                typeOfVal.getJavaType().getConstructor(String.class).newInstance(val)); // instantiates object of the appropriate type
+                if (!MetadataHelper.isColumnInNamespace(getConnection(), queryTimeoutSecs, namespace, qp.getName())) {
+                    log.warn("Query parameter [{}] does not exist for namespace [{}]. Query parameter ignored", qp.getName(), namespace);
+                } else {
+                    final String val = qp.getValue();
+                    final Schema.Type typeOfVal = Schema.Type.getTypeOfVal(val);
+                    fieldsToVal.put(new Schema.Field(qp.getName(), typeOfVal),
+                            typeOfVal.getJavaType().getConstructor(String.class).newInstance(val)); // instantiates object of the appropriate type
+                }
             }
-            final PrimaryKey primaryKey = new PrimaryKey(fieldsToVal);
-            storableKey = new StorableKey(namespace, primaryKey);
+
+            // it is empty when none of the query parameters specified matches a column in the DB
+            if (!fieldsToVal.isEmpty()) {
+                final PrimaryKey primaryKey = new PrimaryKey(fieldsToVal);
+                storableKey = new StorableKey(namespace, primaryKey);
+            }
+
             log.debug("Building StorableKey from QueryParam: \n\tnamespace = [{}]\n\t queryParams = [{}]\n\t StorableKey = [{}]", namespace, queryParams, storableKey);
         } catch (Exception e) {
             log.debug("Exception occurred when attempting to generate StorableKey from QueryParam", e);

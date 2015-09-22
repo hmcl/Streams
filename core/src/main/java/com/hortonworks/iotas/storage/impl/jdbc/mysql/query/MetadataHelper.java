@@ -64,4 +64,17 @@ public class MetadataHelper {
         return sql;
     }
 
+    public static boolean isColumnInNamespace(Connection connection, int queryTimeoutSecs, String namespace, String columnName) throws SQLException {
+        final ResultSetMetaData rsMetadata = new MySqlSelect(namespace)
+                .getPreparedStatement(connection, queryTimeoutSecs).executeQuery().getMetaData();
+        final int columnCount = rsMetadata.getColumnCount();
+
+        for (int i = 1 ; i <= columnCount; i++) {
+            if (rsMetadata.getColumnName(i).equalsIgnoreCase(columnName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

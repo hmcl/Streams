@@ -21,6 +21,7 @@ package com.hortonworks.iotas.storage.impl.jdbc;
 
 import com.hortonworks.IntegrationTest;
 import com.hortonworks.iotas.storage.AbstractStoreManagerTest;
+import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorageManager;
 import com.hortonworks.iotas.storage.exception.NonIncrementalKeyException;
 import com.hortonworks.iotas.storage.impl.jdbc.config.Config;
@@ -29,6 +30,7 @@ import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.HikariCPConnectionBuilder;
 import org.h2.tools.RunScript;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,6 +42,7 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 @Category(IntegrationTest.class)
 public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest {
@@ -153,8 +156,32 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
         }};
     }
 
+    @Test
+    public void testNextId_AutoincrementColumn_IdPlusOne() throws Exception {
+        for (StorableTest test : storableTests) {
+            // Device does not have auto_increment, and therefore there is no concept of nextId and should throw exception
+            if (!(test instanceof DeviceTest)) {
+                Long nextId = getStorageManager().nextId(test.getNameSpace());
+                Assert.assertEquals((Long) 1L, nextId);
+                addAndAssertNextId(test, 0, 2L);
+                addAndAssertNextId(test, 2, 3L);
+                addAndAssertNextId(test, 2, 3L);
+                addAndAssertNextId(test, 3, 4L);
+            }
+        }
+    }
+
+    @Test
+    public void testList_EmptyDb_EmptyCollection() {
+        for (StorableTest test : storableTests) {
+            Collection<Storable> found = getStorageManager().list(test.getStorableList().get(0).getStorableKey().getNameSpace());
+            Assert.assertNotNull(found);
+            Assert.assertTrue(found.isEmpty());
+        }
+    }
+
     @Test(expected = NonIncrementalKeyException.class)
-    public void testNextId_NonAutoincrementColumn_NonIncrementalKeyException() throws Exception {
+    public void testNextId_NoAutoincrementTable_NonIncrementalKeyException() throws Exception {
         for (StorableTest test : storableTests) {
             if (test instanceof DeviceTest) {
                 getStorageManager().nextId(test.getNameSpace());    // should throw exception

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +86,7 @@ public abstract class AbstractStoreManagerTest {
                 add(storable2);
                 add(storable3);
             }};
-            final HashSet allExisting = new HashSet(getStorageManager().list(storable2.getStorableKey().getNameSpace()));
+            final HashSet allExisting = new HashSet(getStorageManager().list(getNameSpace()));
             Assert.assertEquals(expected, allExisting);
 
             //Test method with query parameters(filter) matching only the item storable3
@@ -244,9 +245,21 @@ public abstract class AbstractStoreManagerTest {
         for (StorableTest test : storableTests) {
             Storable storable1 = test.getStorableList().get(0);
             Storable storable2 = test.getStorableList().get(1);
+            Assert.assertEquals(storable1.getStorableKey(), storable2.getStorableKey());
             Assert.assertNotEquals(storable1, storable2);
             getStorageManager().add(storable1);
             getStorageManager().add(storable2);     // should throw exception
+        }
+    }
+
+    // EqualExistingStorable => Storable that has the same StorableKey and verifies .equals()
+    @Test
+    public void testAdd_EqualExistingStorable_AlreadyExistsException() {
+        for (StorableTest test : storableTests) {
+            Storable storable1 = test.getStorableList().get(0);
+            getStorageManager().add(storable1);
+            getStorageManager().add(storable1);     // should throw exception
+            Assert.assertEquals(storable1, getStorageManager().get(storable1.getStorableKey()));
         }
     }
 
@@ -258,81 +271,55 @@ public abstract class AbstractStoreManagerTest {
         }
     }
 
-    @Test
-    public void testList_EmptyDb_EmptyCollection() {
-        for (StorableTest test : storableTests) {
-            Collection<Storable> found = getStorageManager().list(test.getStorableList().get(0).getStorableKey().getNameSpace());
-            Assert.assertNotNull(found);
-            Assert.assertTrue(found.isEmpty());
-        }
-    }
-
-    // TODO: What to do here? throw exception or empty collection?
-    /*@Test(expected = StorageException.class)
-//    @Test
-    public void testList_NonexistentNameSpace_EmptyCollection() {
+    @Test(expected = StorageException.class)
+    public void testList_NonexistentNameSpace_StorageException() {
         Collection<Storable> found = getStorageManager().list("NONEXISTENT_NAME_SPACE");
-        Assert.assertNotNull(found);
-        Assert.assertTrue(found.isEmpty());
-    }*/
-
-    /*@Test
-    public void testNextId_AutoincrementColumn_idPlusOne() throws Exception {
-        for (StorableTest test : storableTests) {
-            Long nextId = getStorageManager().nextId(test.getNameSpace());
-            // nextId == 0 => column does not have auto_increment, and therefore there is no concept of nextId
-            if (nextId != 0) {
-                Assert.assertEquals((Long) 1L, nextId);
-                addAndAssertNextId(test, 0, 2L);
-                addAndAssertNextId(test, 2, 3L);
-                addAndAssertNextId(test, 2, 3L);
-                addAndAssertNextId(test, 3, 4L);
-            }
-        }
     }
-
-    private void addAndAssertNextId(StorableTest test, int idx, Long expectedId) throws SQLException {
-        getStorageManager().addOrUpdate(test.getStorableList().get(idx));
-        ((JdbcStorageManager)getStorageManager()).getConnection().commit();
-        Long nextId = getStorageManager().nextId(test.getNameSpace());
-        Assert.assertEquals(expectedId, nextId);
-    }
-
-    @Test
-    public void testNextId_NonAutoincrementColumn_NonIncrementableColumnException() throws Exception {
-        for (StorableTest test : storableTests) {
-            Long nextId = getStorageManager().nextId(test.getNameSpace());
-            // nextId == 0 => column does not have auto_increment, and therefore there is no concept of nextId
-            if (nextId != 0) {
-                Assert.assertEquals((Long) 1L, nextId);
-                addAndAssertNextId(test, 0, 2L);
-                addAndAssertNextId(test, 2, 3L);
-                addAndAssertNextId(test, 2, 3L);
-                addAndAssertNextId(test, 3, 4L);
-            }
-        }
-    }*/
 
     @Test
     public void testNextId_AutoincrementColumn_IdPlusOne() throws Exception {
         for (StorableTest test : storableTests) {
             // Device does not have auto_increment, and therefore there is no concept of nextId and should throw exception
-            if (!(test instanceof DeviceTest)) {
+//            if (!(test instanceof DeviceTest)) {
                 Long nextId = getStorageManager().nextId(test.getNameSpace());
                 Assert.assertEquals((Long) 1L, nextId);
                 addAndAssertNextId(test, 0, 2L);
                 addAndAssertNextId(test, 2, 3L);
                 addAndAssertNextId(test, 2, 3L);
                 addAndAssertNextId(test, 3, 4L);
-            }
+//            }
         }
     }
 
-    private void addAndAssertNextId(StorableTest test, int idx, Long expectedId) throws SQLException {
+    protected void addAndAssertNextId(StorableTest test, int idx, Long expectedId) throws SQLException {
         getStorageManager().addOrUpdate(test.getStorableList().get(idx));
         Long nextId = getStorageManager().nextId(test.getNameSpace());
         Assert.assertEquals(expectedId, nextId);
     }
 
+    @Test
+    public void testFind_NullQueryParams_AllEntries() {
+        for (StorableTest test : storableTests) {
+            test.addAllToStorage();
+            Collection<Storable> allExisting = getStorageManager().list(test.getNameSpace());
+            Collection<Storable> allMatchingQueryParamsFilter = getStorageManager().find(test.getNameSpace(), null);
+            Assert.assertEquals(allExisting, allMatchingQueryParamsFilter);
+        }
+    }
 
+    @Test
+    public void testFind_NonExistentQueryParams_EmptyList() {
+        for (StorableTest test : storableTests) {
+            test.addAllToStorage();
+            List<CatalogService.QueryParam> queryParams = new ArrayList<CatalogService.QueryParam>() {
+                {
+                    add(new CatalogService.QueryParam("NON_EXISTING_FIELD_1", "NON_EXISTING_VAL_1"));
+                    add(new CatalogService.QueryParam("NON_EXISTING_FIELD_2", "NON_EXISTING_VAL_2"));
+                }
+            };
+
+            final Collection<Storable> allMatchingQueryParamsFilter = getStorageManager().find(test.getNameSpace(), queryParams);
+            Assert.assertEquals(Collections.EMPTY_LIST, allMatchingQueryParamsFilter);
+        }
+    }
 }
