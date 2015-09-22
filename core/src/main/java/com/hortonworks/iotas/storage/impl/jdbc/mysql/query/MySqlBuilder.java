@@ -80,7 +80,7 @@ public abstract class MySqlBuilder {
     }
 
     protected void setPreparedStatementParams(PreparedStatement preparedStatement,
-                                                             Schema.Type type, int index, Object val) throws SQLException {
+                                              Schema.Type type, int index, Object val) throws SQLException {
         switch (type) {
             case BOOLEAN:
                 preparedStatement.setBoolean(index, (Boolean) val);

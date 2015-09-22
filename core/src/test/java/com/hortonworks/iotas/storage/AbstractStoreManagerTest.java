@@ -43,9 +43,7 @@ public abstract class AbstractStoreManagerTest {
          * Performs any initialization steps that are required to test this storable instance, for instance
          * initialize the a parent table that a child table refers to (e.g. DataSource and Device)
          */
-        public void init() {
-
-        }
+        public void init() { }
 
         /**
          * Each of the storable entities has its own list and the 0th and 1st index items in that list has same id so
@@ -277,27 +275,6 @@ public abstract class AbstractStoreManagerTest {
     }
 
     @Test
-    public void testNextId_AutoincrementColumn_IdPlusOne() throws Exception {
-        for (StorableTest test : storableTests) {
-            // Device does not have auto_increment, and therefore there is no concept of nextId and should throw exception
-//            if (!(test instanceof DeviceTest)) {
-                Long nextId = getStorageManager().nextId(test.getNameSpace());
-                Assert.assertEquals((Long) 1L, nextId);
-                addAndAssertNextId(test, 0, 2L);
-                addAndAssertNextId(test, 2, 3L);
-                addAndAssertNextId(test, 2, 3L);
-                addAndAssertNextId(test, 3, 4L);
-//            }
-        }
-    }
-
-    protected void addAndAssertNextId(StorableTest test, int idx, Long expectedId) throws SQLException {
-        getStorageManager().addOrUpdate(test.getStorableList().get(idx));
-        Long nextId = getStorageManager().nextId(test.getNameSpace());
-        Assert.assertEquals(expectedId, nextId);
-    }
-
-    @Test
     public void testFind_NullQueryParams_AllEntries() {
         for (StorableTest test : storableTests) {
             test.addAllToStorage();
@@ -321,5 +298,29 @@ public abstract class AbstractStoreManagerTest {
             final Collection<Storable> allMatchingQueryParamsFilter = getStorageManager().find(test.getNameSpace(), queryParams);
             Assert.assertEquals(Collections.EMPTY_LIST, allMatchingQueryParamsFilter);
         }
+    }
+
+    @Test
+    public void testNextId_AutoincrementColumn_IdPlusOne() throws Exception {
+        for (StorableTest test : storableTests) {
+            // Device does not have auto_increment, and therefore there is no concept of nextId and should throw exception
+            doTestNextId_AutoincrementColumn_IdPlusOne(test);
+        }
+    }
+
+    protected void doTestNextId_AutoincrementColumn_IdPlusOne(StorableTest test) throws SQLException {
+        Long actualNextId = getStorageManager().nextId(test.getNameSpace());
+        Long expectedNextId = actualNextId;
+        Assert.assertEquals(expectedNextId, actualNextId);
+        addAndAssertNextId(test, 0, ++expectedNextId);
+        addAndAssertNextId(test, 2, ++expectedNextId);
+        addAndAssertNextId(test, 2, expectedNextId);
+        addAndAssertNextId(test, 3, ++expectedNextId);
+    }
+
+    protected void addAndAssertNextId(StorableTest test, int idx, Long expectedId) throws SQLException {
+        getStorageManager().addOrUpdate(test.getStorableList().get(idx));
+        Long nextId = getStorageManager().nextId(test.getNameSpace());
+        Assert.assertEquals(expectedId, nextId);
     }
 }

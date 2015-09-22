@@ -157,21 +157,6 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     }
 
     @Test
-    public void testNextId_AutoincrementColumn_IdPlusOne() throws Exception {
-        for (StorableTest test : storableTests) {
-            // Device does not have auto_increment, and therefore there is no concept of nextId and should throw exception
-            if (!(test instanceof DeviceTest)) {
-                Long nextId = getStorageManager().nextId(test.getNameSpace());
-                Assert.assertEquals((Long) 1L, nextId);
-                addAndAssertNextId(test, 0, 2L);
-                addAndAssertNextId(test, 2, 3L);
-                addAndAssertNextId(test, 2, 3L);
-                addAndAssertNextId(test, 3, 4L);
-            }
-        }
-    }
-
-    @Test
     public void testList_EmptyDb_EmptyCollection() {
         for (StorableTest test : storableTests) {
             Collection<Storable> found = getStorageManager().list(test.getStorableList().get(0).getStorableKey().getNameSpace());
@@ -186,6 +171,16 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
             if (test instanceof DeviceTest) {
                 getStorageManager().nextId(test.getNameSpace());    // should throw exception
 
+            }
+        }
+    }
+
+    @Test
+    public void testNextId_AutoincrementColumn_IdPlusOne() throws Exception {
+        for (StorableTest test : storableTests) {
+            // Device does not have auto_increment, and therefore there is no concept of nextId and should throw exception (tested below)
+            if (!(test instanceof DeviceTest)) {
+                doTestNextId_AutoincrementColumn_IdPlusOne(test);
             }
         }
     }
