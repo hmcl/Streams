@@ -226,12 +226,17 @@ public class JdbcStorageManager implements StorageManager {
         Connection connection = null;
         try {
             connection = getConnection();
-            return MetadataHelper.nextId(getConnection(), namespace, queryTimeoutSecs);
+            return getNextId(connection, namespace);
         } catch (SQLException e) {
             throw new StorageException(e);
         } finally {
             closeConnection(connection);
         }
+    }
+
+    // Package protected to be able to override it in the test framework
+    Long getNextId(Connection connection, String namespace) throws SQLException {
+        return MetadataHelper.nextIdMySql(connection, namespace, queryTimeoutSecs);
     }
 
     // private helper methods
