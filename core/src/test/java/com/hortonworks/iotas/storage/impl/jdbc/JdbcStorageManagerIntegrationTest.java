@@ -24,8 +24,8 @@ import com.hortonworks.iotas.storage.AbstractStoreManagerTest;
 import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorageManager;
 import com.hortonworks.iotas.storage.exception.NonIncrementalKeyException;
-import com.hortonworks.iotas.storage.impl.jdbc.config.Config;
 import com.hortonworks.iotas.storage.impl.jdbc.config.HikariBasicConfig;
+import com.hortonworks.iotas.storage.impl.jdbc.config.JdbcStorageManagerConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.HikariCPConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MetadataHelper;
@@ -72,7 +72,7 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     }
 
     private static void setFields(ConnectionBuilder connectionBuilder, Database db) {
-        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new Config(-1));
+        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new JdbcStorageManagerConfig(-1));
         database = db;
     }
 
@@ -112,7 +112,7 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
      * This class overrides the connection methods to allow the tests to rollback the transactions and thus not commit to DB
      */
     private static class JdbcStorageManagerForTest extends JdbcStorageManager {
-        public JdbcStorageManagerForTest(ConnectionBuilder connectionBuilder, Config config) {
+        public JdbcStorageManagerForTest(ConnectionBuilder connectionBuilder, JdbcStorageManagerConfig config) {
             super(connectionBuilder, config);
         }
 

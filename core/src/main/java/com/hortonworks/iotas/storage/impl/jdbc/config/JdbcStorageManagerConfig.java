@@ -19,17 +19,17 @@
 package com.hortonworks.iotas.storage.impl.jdbc.config;
 
 /**
- * Wrapper object that serves has a placeholder for configuration for for database connections (e.g. {$code autocommit}),
- * creation oF prepared statements (e.g. {query timeout}), etc..
+ * Wrapper object that serves has a placeholder for configuration that needs to be passed to the JdbcStorageManager.
+ * Examples are configuration of prepared statements (e.g. {query timeout}), specify cache, etc...
  *
  * This class should be immutable as the configuration should not change after passed on to the configurable objects
  *
  **/
-public class Config {
+public class JdbcStorageManagerConfig {
     private final int queryTimeoutSecs;
 
-    // Replace constructors with Builder pattern when more configuration options become available
-    public Config(int queryTimeoutSecs) {
+    // Replace constructors with Builder pattern as more configuration options become available
+    public JdbcStorageManagerConfig(int queryTimeoutSecs) {
         this.queryTimeoutSecs = queryTimeoutSecs;
     }
 

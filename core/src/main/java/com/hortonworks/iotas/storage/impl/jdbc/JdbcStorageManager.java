@@ -31,7 +31,7 @@ import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageException;
 import com.hortonworks.iotas.storage.StorageManager;
 import com.hortonworks.iotas.storage.exception.IllegalQueryParameterException;
-import com.hortonworks.iotas.storage.impl.jdbc.config.Config;
+import com.hortonworks.iotas.storage.impl.jdbc.config.JdbcStorageManagerConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MetadataHelper;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlBuilder;
@@ -65,9 +65,9 @@ public class JdbcStorageManager implements StorageManager {
     protected final List<Connection> activeConnections;
     protected final ConnectionBuilder connectionBuilder;
     protected final int queryTimeoutSecs;
-    protected final Config config;
+    protected final JdbcStorageManagerConfig config;
 
-    public JdbcStorageManager(ConnectionBuilder connectionBuilder, Config config) {
+    public JdbcStorageManager(ConnectionBuilder connectionBuilder, JdbcStorageManagerConfig config) {
         this.connectionBuilder = connectionBuilder;
         this.config = config;
         this.queryTimeoutSecs = config.getQueryTimeoutSecs();
