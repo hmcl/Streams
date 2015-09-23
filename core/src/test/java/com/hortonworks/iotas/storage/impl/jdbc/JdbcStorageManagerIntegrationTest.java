@@ -28,6 +28,7 @@ import com.hortonworks.iotas.storage.impl.jdbc.config.Config;
 import com.hortonworks.iotas.storage.impl.jdbc.config.HikariBasicConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.HikariCPConnectionBuilder;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MetadataHelper;
 import org.h2.tools.RunScript;
 import org.junit.After;
 import org.junit.Assert;
@@ -47,14 +48,17 @@ import java.util.Collection;
 @Category(IntegrationTest.class)
 public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest {
     private static StorageManager jdbcStorageManager;
+    private static Database database;
+
+    private enum Database {MYSQL, H2}
 
     // ===== Test Setup ====
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         // Connection has autoCommit set to false in order to allow rolling back transactions
-        setJdbcStorageManager(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()));
-//        setJdbcStorageManager(new HikariCPConnectionBuilder(HikariBasicConfig.getH2HikariTestConfig()));           //TODO Fix metadata lookup
+//        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()), Database.MYSQL);
+        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getH2HikariTestConfig()), Database.H2);
     }
 
     @Before
@@ -67,8 +71,9 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
         dropTables();
     }
 
-    private static void setJdbcStorageManager(ConnectionBuilder connectionBuilder) {
+    private static void setFields(ConnectionBuilder connectionBuilder, Database db) {
         jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new Config(-1));
+        database = db;
     }
 
 
@@ -131,6 +136,15 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
         @Override
         protected void closeConnection(Connection connection) {
             // Do not close the connection
+        }
+
+        @Override
+        Long getNextId(Connection connection, String namespace) throws SQLException {
+            if (database.equals(Database.MYSQL)) {
+                return super.getNextId(connection, namespace);
+            } else {
+                return MetadataHelper.nextIdH2(connection, namespace, queryTimeoutSecs);
+            }
         }
     }
 

@@ -226,12 +226,17 @@ public class JdbcStorageManager implements StorageManager {
         Connection connection = null;
         try {
             connection = getConnection();
-            return MetadataHelper.nextId(getConnection(), namespace, queryTimeoutSecs);
+            return getNextId(connection, namespace);
         } catch (SQLException e) {
             throw new StorageException(e);
         } finally {
             closeConnection(connection);
         }
+    }
+
+    // Package protected to be able to override it in the test framework
+    Long getNextId(Connection connection, String namespace) throws SQLException {
+        return MetadataHelper.nextIdMySql(connection, namespace, queryTimeoutSecs);
     }
 
     // private helper methods
@@ -261,7 +266,7 @@ public class JdbcStorageManager implements StorageManager {
         try {
             for (CatalogService.QueryParam qp : queryParams) {
                 if (!MetadataHelper.isColumnInNamespace(getConnection(), queryTimeoutSecs, namespace, qp.getName())) {
-                    log.warn("Query parameter [{}] does not exist for namespace [{}]. Query parameter ignored", qp.getName(), namespace);
+                    log.warn("Query parameter [{}] does not exist for namespace [{}]. Query parameter ignored.", qp.getName(), namespace);
                 } else {
                     final String val = qp.getValue();
                     final Schema.Type typeOfVal = Schema.Type.getTypeOfVal(val);
