@@ -16,33 +16,23 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.storage.impl.jdbc.mysql.query;
+package com.hortonworks.iotas.storage.impl.jdbc.mysql.factory;
+
+import com.hortonworks.iotas.storage.Storable;
+import com.hortonworks.iotas.storage.StorableKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.Collection;
 
-public class MySqlQuery extends MySqlBuilder {
-    private String sql;
+public interface SqlExecutor {
+    Logger log = LoggerFactory.getLogger(SqlExecutor.class);
 
-    public MySqlQuery(String sql) {
-        this.sql = sql;
-    }
-
-    @Override
-    public String getParametrizedSql() {
-        return sql;
-    }
-
-    @Override
-    public PreparedStatement getParametrizedPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
-        return prepareStatement(connection, queryTimeoutSecs);
-    }
-
-    @Override
-    public String toString() {
-        return "MySqlQuery{" +
-                "sql='" + sql + '\'' +
-                "} " + super.toString();
-    }
+    void insert(Storable storable);
+    void insertOrUpdate(Storable storable);
+    void delete(StorableKey storableKey);
+    <T extends Storable> Collection<T> select(String namespace);
+    <T extends Storable> Collection<T> select(StorableKey storableKey);
+    Connection getConnection();
 }

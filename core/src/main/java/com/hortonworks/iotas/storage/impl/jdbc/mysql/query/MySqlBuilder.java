@@ -31,17 +31,29 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class MySqlBuilder {
+public abstract class MySqlBuilder implements SqlBuilder {
     protected static final Logger log = LoggerFactory.getLogger(MySqlBuilder.class);
     protected List<Schema.Field> columns;
     protected String tableName;
+    protected String paramSql;
+    protected PreparedStatement preparedStatement;
 
-    public abstract String getParameterizedSql();
+    @Override
+    public List<Schema.Field> getColumns() {
+        return columns;
+    }
 
-    public abstract PreparedStatement getPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException;
+    @Override
+    public abstract String getParametrizedSql();
 
+    public abstract PreparedStatement getParametrizedPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException;
+
+    /**
+     * @return The prepared statement with parameters
+     */
     protected PreparedStatement prepareStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
-        String parameterizedSql = getParameterizedSql();
+
+        String parameterizedSql = getParametrizedSql();
         log.debug("Creating prepared statement with parameterized sql [{}]", parameterizedSql);
         PreparedStatement preparedStatement = connection.prepareStatement(parameterizedSql);
 
@@ -114,5 +126,13 @@ public abstract class MySqlBuilder {
                 preparedStatement.setObject(index, val);    //TODO check this
                 break;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "MySqlBuilder{" +
+                "columns=" + columns +
+                ", tableName='" + tableName + '\'' +
+                '}';
     }
 }

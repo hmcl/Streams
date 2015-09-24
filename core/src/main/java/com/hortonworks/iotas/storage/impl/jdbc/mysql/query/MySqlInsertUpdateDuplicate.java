@@ -30,16 +30,16 @@ public class MySqlInsertUpdateDuplicate extends MySqlStorableBuilder {
     }
 
     @Override
-    public PreparedStatement getPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
+    public PreparedStatement getParametrizedPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
         // the factor of 2 comes from the fact that each column is referred twice in the MySql query as
-        // exemplified in the method getParameterizedSql()
+        // exemplified in the method getParametrizedSql()
         return super.doGetPreparedStatement(connection, queryTimeoutSecs, 2);
     }
 
     // the factor of 2 comes from the fact that each column is referred twice in the MySql query as follows
     // "INSERT INTO DB.TABLE (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE id=1, name="A", age=19";
     @Override
-    public String getParameterizedSql() {
+    public String getParametrizedSql() {
 
         String sql = "INSERT INTO " + tableName + " ("
                 + join(getColumnNames(columns, null), ", ")
@@ -48,5 +48,10 @@ public class MySqlInsertUpdateDuplicate extends MySqlStorableBuilder {
 
         log.debug(sql);
         return sql;
+    }
+
+    @Override
+    public String toString() {
+        return "MySqlInsertUpdateDuplicate{} " + super.toString();
     }
 }

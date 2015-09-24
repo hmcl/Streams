@@ -20,7 +20,7 @@ package com.hortonworks.iotas.storage.exception;
 
 /**
  * Exception that gets thrown when attempting to get the next id of a table or namespace for which
- * the primary key is not defined as auto incremental (e.g. AUTO_INCREMENT in MySQL).
+ * the primary key is not defined as auto increment (e.g. AUTO_INCREMENT in MySQL).
  */
 public class NonIncrementalKeyException extends RuntimeException {
     public NonIncrementalKeyException() {
@@ -36,5 +36,9 @@ public class NonIncrementalKeyException extends RuntimeException {
 
     public NonIncrementalKeyException(Throwable cause) {
         super(cause);
+    }
+
+    public NonIncrementalKeyException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

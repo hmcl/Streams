@@ -23,6 +23,9 @@ package com.hortonworks.iotas.storage.exception;
  * Query parameters are typically specified for a column or key in a database table or storage namespace, hence type is important
  */
 public class IllegalQueryParameterException extends RuntimeException {
+    public IllegalQueryParameterException() {
+    }
+
     public IllegalQueryParameterException(String message) {
         super(message);
     }
@@ -33,5 +36,9 @@ public class IllegalQueryParameterException extends RuntimeException {
 
     public IllegalQueryParameterException(Throwable cause) {
         super(cause);
+    }
+
+    public IllegalQueryParameterException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

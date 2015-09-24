@@ -34,7 +34,7 @@ public class MetadataHelper {
 
     public static boolean isAutoIncrement(Connection connection, String namespace, int queryTimeoutSecs) throws SQLException {
         final ResultSetMetaData rsMetadata = new MySqlSelect(namespace)
-                .getPreparedStatement(connection, queryTimeoutSecs).executeQuery().getMetaData();
+                .getParametrizedPreparedStatement(connection, queryTimeoutSecs).executeQuery().getMetaData();
         final int columnCount = rsMetadata.getColumnCount();
 
         for (int i = 1 ; i <= columnCount; i++) {
@@ -47,7 +47,7 @@ public class MetadataHelper {
 
     public static boolean isColumnInNamespace(Connection connection, int queryTimeoutSecs, String namespace, String columnName) throws SQLException {
         final ResultSetMetaData rsMetadata = new MySqlSelect(namespace)
-                .getPreparedStatement(connection, queryTimeoutSecs).executeQuery().getMetaData();
+                .getParametrizedPreparedStatement(connection, queryTimeoutSecs).executeQuery().getMetaData();
         final int columnCount = rsMetadata.getColumnCount();
 
         for (int i = 1 ; i <= columnCount; i++) {
@@ -64,7 +64,7 @@ public class MetadataHelper {
         }
 
         final ResultSet resultSet = new MySqlQuery(buildNextIdMySql(connection, namespace))
-                .getPreparedStatement(connection, queryTimeoutSecs).executeQuery();
+                .getParametrizedPreparedStatement(connection, queryTimeoutSecs).executeQuery();
         resultSet.next();
         final long nextId = resultSet.getLong("AUTO_INCREMENT");
         log.debug("Next id for auto increment table [{}] = {}", namespace, nextId);
@@ -85,7 +85,7 @@ public class MetadataHelper {
         }
 
         final ResultSet resultSet = new MySqlQuery(buildNextIdH2(getH2SequenceName(connection, namespace, queryTimeoutSecs)))
-                .getPreparedStatement(connection, queryTimeoutSecs).executeQuery();
+                .getParametrizedPreparedStatement(connection, queryTimeoutSecs).executeQuery();
         resultSet.next();
         final long nextId = resultSet.getLong("CURRENT_VALUE");
         log.debug("Next id for auto increment table [{}] = {}", namespace, nextId);
@@ -100,7 +100,7 @@ public class MetadataHelper {
 
     private static String getH2SequenceName(Connection connection, String namespace, int queryTimeoutSecs) throws SQLException {
         final ResultSet resultSet = new MySqlQuery(getH2InfoSchemaSql(namespace))
-                .getPreparedStatement(connection, queryTimeoutSecs).executeQuery();
+                .getParametrizedPreparedStatement(connection, queryTimeoutSecs).executeQuery();
 
         resultSet.next();
         String sql = resultSet.getString("SQL");

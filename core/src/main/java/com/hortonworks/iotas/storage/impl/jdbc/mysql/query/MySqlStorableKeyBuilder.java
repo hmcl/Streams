@@ -39,13 +39,14 @@ public abstract class MySqlStorableKeyBuilder extends MySqlBuilder {
         tableName = storableKey.getNameSpace();
         primaryKey = storableKey.getPrimaryKey();
         columns = new LinkedList<>(storableKey.getPrimaryKey().getFieldsToVal().keySet());
-        Collections.sort(columns);  // Sorting is needed because keySet() view does not guarantee ordering TODO: ???
+        Collections.sort(columns);  // Sorting is needed because keySet() view does not guarantee ordering TODO: DO I need to sort ???
     }
 
     @Override
-    public PreparedStatement getPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
+    public PreparedStatement getParametrizedPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
         return doGetPreparedStatement(connection, queryTimeoutSecs, 1);
     }
+
 
     protected PreparedStatement doGetPreparedStatement(Connection connection, int queryTimeoutSecs, int nTimes) throws SQLException {
         final PreparedStatement preparedStatement = prepareStatement(connection, queryTimeoutSecs);
@@ -63,5 +64,12 @@ public abstract class MySqlStorableKeyBuilder extends MySqlBuilder {
         }
 
         return preparedStatement;
+    }
+
+    @Override
+    public String toString() {
+        return "MySqlStorableKeyBuilder{" +
+                "primaryKey=" + primaryKey +
+                "} " + super.toString();
     }
 }

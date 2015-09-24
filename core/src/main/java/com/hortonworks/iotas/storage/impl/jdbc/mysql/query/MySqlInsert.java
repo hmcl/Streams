@@ -27,12 +27,17 @@ public class MySqlInsert extends MySqlStorableBuilder {
 
     // "INSERT INTO DB.TABLE (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE id=1, name="A", age=19";
     @Override
-    public String getParameterizedSql() {
+    public String getParametrizedSql() {
         final String sql = "INSERT INTO " + tableName + " ("
                 + join(getColumnNames(columns, null), ", ")
                 + ") VALUES( " + getBindVariables("?,", columns.size()) + ")";
 
         log.debug(sql);
         return sql;
+    }
+
+    @Override
+    public String toString() {
+        return "MySqlInsert{} " + super.toString();
     }
 }

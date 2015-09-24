@@ -31,7 +31,7 @@ public class MySqlSelect extends MySqlStorableKeyBuilder {
 
     // "SELECT * FROM DB.TABLE [WHERE C1 = ?, C2 = ?]"
     @Override
-    public String getParameterizedSql() {
+    public String getParametrizedSql() {
         String sql = "SELECT * FROM " + tableName;
         //where clause is defined by columns specified in the PrimaryKey
         if (columns != null) {
@@ -40,5 +40,10 @@ public class MySqlSelect extends MySqlStorableKeyBuilder {
 
         log.debug(sql);
         return sql;
+    }
+
+    @Override
+    public String toString() {
+        return "MySqlSelect{} " + super.toString();
     }
 }

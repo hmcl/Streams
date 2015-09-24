@@ -37,25 +37,35 @@ public abstract class MySqlStorableBuilder extends MySqlBuilder {
     }
 
     @Override
-    public PreparedStatement getPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
+    public PreparedStatement getParametrizedPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
         return doGetPreparedStatement(connection, queryTimeoutSecs, 1);
     }
 
     protected PreparedStatement doGetPreparedStatement(Connection connection, int queryTimeoutSecs, int nTimes) throws SQLException {
-        final PreparedStatement preparedStatement = prepareStatement(connection, queryTimeoutSecs);
+        if (preparedStatement != null) {
+            final PreparedStatement prepStmnt;
+            prepStmnt = prepareStatement(connection, queryTimeoutSecs);
 
-        if (columns != null) {
-            final int len = columns.size();
-            final Map columnsToValues = storable.toMap();
+            if (columns != null) {
+                final int len = columns.size();
+                final Map columnsToValues = storable.toMap();
 
-            for (int j = 0; j < len*nTimes; j++) {
-                Schema.Field column = columns.get(j % len);
-                Schema.Type javaType = column.getType();
-                String columnName = column.getName();
-                setPreparedStatementParams(preparedStatement, javaType, j + 1, columnsToValues.get(columnName));
+                for (int j = 0; j < len*nTimes; j++) {
+                    Schema.Field column = columns.get(j % len);
+                    Schema.Type javaType = column.getType();
+                    String columnName = column.getName();
+                    setPreparedStatementParams(prepStmnt, javaType, j + 1, columnsToValues.get(columnName));
+                }
             }
+            preparedStatement = prepStmnt;
         }
-
         return preparedStatement;
+    }
+
+    @Override
+    public String toString() {
+        return "MySqlStorableBuilder{" +
+                "storable=" + storable +
+                "} " + super.toString();
     }
 }

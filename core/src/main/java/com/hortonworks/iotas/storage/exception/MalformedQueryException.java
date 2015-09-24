@@ -16,33 +16,30 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.storage.impl.jdbc.mysql.query;
+package com.hortonworks.iotas.storage.exception;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-public class MySqlQuery extends MySqlBuilder {
-    private String sql;
-
-    public MySqlQuery(String sql) {
-        this.sql = sql;
+/**
+ * Exception thrown when attempting to build a SQL query that is not syntactically correct,
+ * or that has incomplete or incoherent data to allow unambiguous query construction
+ *
+ */
+public class MalformedQueryException extends RuntimeException {
+    public MalformedQueryException() {
     }
 
-    @Override
-    public String getParametrizedSql() {
-        return sql;
+    public MalformedQueryException(String message) {
+        super(message);
     }
 
-    @Override
-    public PreparedStatement getParametrizedPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
-        return prepareStatement(connection, queryTimeoutSecs);
+    public MalformedQueryException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    @Override
-    public String toString() {
-        return "MySqlQuery{" +
-                "sql='" + sql + '\'' +
-                "} " + super.toString();
+    public MalformedQueryException(Throwable cause) {
+        super(cause);
+    }
+
+    public MalformedQueryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }
