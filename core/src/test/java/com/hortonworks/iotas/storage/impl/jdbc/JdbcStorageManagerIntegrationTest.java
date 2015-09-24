@@ -23,9 +23,9 @@ import com.hortonworks.IntegrationTest;
 import com.hortonworks.iotas.storage.AbstractStoreManagerTest;
 import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorageManager;
-import com.hortonworks.iotas.storage.exception.NonIncrementalKeyException;
+import com.hortonworks.iotas.storage.exception.NonIncrementalColumnException;
+import com.hortonworks.iotas.storage.impl.jdbc.config.ExecutionConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.config.HikariBasicConfig;
-import com.hortonworks.iotas.storage.impl.jdbc.config.JdbcStorageManagerConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.HikariCPConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MetadataHelper;
@@ -72,7 +72,7 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     }
 
     private static void setFields(ConnectionBuilder connectionBuilder, Database db) {
-        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new JdbcStorageManagerConfig(-1));
+        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new ExecutionConfig(-1));
         database = db;
     }
 
@@ -112,7 +112,7 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
      * This class overrides the connection methods to allow the tests to rollback the transactions and thus not commit to DB
      */
     private static class JdbcStorageManagerForTest extends JdbcStorageManager {
-        public JdbcStorageManagerForTest(ConnectionBuilder connectionBuilder, JdbcStorageManagerConfig config) {
+        public JdbcStorageManagerForTest(ConnectionBuilder connectionBuilder, ExecutionConfig config) {
             super(connectionBuilder, config);
         }
 
@@ -179,7 +179,7 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
         }
     }
 
-    @Test(expected = NonIncrementalKeyException.class)
+    @Test(expected = NonIncrementalColumnException.class)
     public void testNextId_NoAutoincrementTable_NonIncrementalKeyException() throws Exception {
         for (StorableTest test : storableTests) {
             if (test instanceof DeviceTest) {

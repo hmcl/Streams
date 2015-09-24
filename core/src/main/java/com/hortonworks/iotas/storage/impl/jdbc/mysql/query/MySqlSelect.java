@@ -37,13 +37,7 @@ public class MySqlSelect extends MySqlStorableKeyBuilder {
         if (columns != null) {
             sql += " WHERE " + join(getColumnNames(columns, "%s = ?")," AND ");
         }
-
         log.debug(sql);
         return sql;
-    }
-
-    @Override
-    public String toString() {
-        return "MySqlSelect{} " + super.toString();
     }
 }

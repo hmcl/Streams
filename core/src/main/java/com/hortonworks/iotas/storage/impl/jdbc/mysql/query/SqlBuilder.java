@@ -20,21 +20,19 @@ package com.hortonworks.iotas.storage.impl.jdbc.mysql.query;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.storage.PrimaryKey;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 
 public interface SqlBuilder {
     /** @return The list of columns that constitute this database table */
     List<Schema.Field> getColumns();
 
+    /** @return table name or namespace */
     String getNamespace();
 
+    /** @return The {@link PrimaryKey} used in the query construction process <br/>
+     * null if no {@link PrimaryKey} used */
     PrimaryKey getPrimaryKey();
 
     /** @return The SQL query with the place parameters ready to be replaced */
     String getParametrizedSql();
-
-    PreparedStatement getParametrizedPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException;
 }

@@ -33,7 +33,7 @@ import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageException;
 import com.hortonworks.iotas.storage.exception.IllegalQueryParameterException;
-import com.hortonworks.iotas.storage.impl.jdbc.config.JdbcStorageManagerConfig;
+import com.hortonworks.iotas.storage.impl.jdbc.config.ExecutionConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MetadataHelper;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlBuilder;
@@ -65,14 +65,14 @@ import java.util.concurrent.ExecutionException;
 
 public class MySqlExecutor implements SqlExecutor {
     private Cache<String, PreparedStatementBuilder> cache;
-    private final JdbcStorageManagerConfig config;
+    private final ExecutionConfig config;
     private final int queryTimeoutSecs;
     private final ConnectionBuilder connectionBuilder;
     private final List<Connection> activeConnections;
 
 
     public MySqlExecutor(CacheBuilder<String, PreparedStatementBuilder> cacheBuilder,
-                         JdbcStorageManagerConfig config, ConnectionBuilder connectionBuilder) {
+                         ExecutionConfig config, ConnectionBuilder connectionBuilder) {
         this.connectionBuilder = connectionBuilder;
         this.config = config;
         this.queryTimeoutSecs = config.getQueryTimeoutSecs();
@@ -91,8 +91,10 @@ public class MySqlExecutor implements SqlExecutor {
                     closeConnection(val.getConnection());;
                 }
             }
-        }).build();
+        }).build(); cache.cleanUp();
     }
+
+    // ============= Public API methods =============
 
     @Override
     public void insert(Storable storable) {
@@ -120,6 +122,27 @@ public class MySqlExecutor implements SqlExecutor {
     }
 
     @Override
+    public Long nextId(String namespace) {
+        // This only works if the table has auto-increment. The TABLE_SCHEMA part is implicitly specified in the Connection object
+        // SELECT AUTO_INCREMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'temp' AND TABLE_SCHEMA = 'test'
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            return getNextId(connection, namespace);
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        } finally {
+            closeConnection(connection);
+        }
+    }
+
+
+    // Package protected to be able to override it in the test framework
+    Long getNextId(Connection connection, String namespace) throws SQLException {
+        return MetadataHelper.nextIdMySql(connection, namespace, queryTimeoutSecs);
+    }
+
+    @Override
     public Connection getConnection() {
         Connection connection = connectionBuilder.getConnection();
         activeConnections.add(connection);
@@ -135,6 +158,15 @@ public class MySqlExecutor implements SqlExecutor {
                 throw new RuntimeException("Failed to close connection", e);
             }
         }
+    }
+
+    public void cleanup() {
+        cache.cleanUp();  //TODO Confirm that the onRemoval callback gets called and connections closed.
+        //TODO: if sessions not closed close them manually
+    }
+
+    public ExecutionConfig getConfig() {
+        return config;
     }
 
     // =============== Private helper Methods ===============
@@ -170,14 +202,8 @@ public class MySqlExecutor implements SqlExecutor {
             result = getStorablesFromResultSet(resultSet, namespace);
         } catch (ExecutionException | SQLException e) {
             throw new StorageException(e);
-        } finally {
-            closeConnection();
         }
         return result;
-    }
-
-    private void closeConnection() {
-
     }
 
     private PreparedStatement getPreparedStatement(SqlBuilder sqlBuilder, String namespace)

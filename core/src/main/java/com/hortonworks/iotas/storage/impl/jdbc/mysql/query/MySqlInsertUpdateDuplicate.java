@@ -19,21 +19,10 @@ package com.hortonworks.iotas.storage.impl.jdbc.mysql.query;
 
 import com.hortonworks.iotas.storage.Storable;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 public class MySqlInsertUpdateDuplicate extends MySqlStorableBuilder {
 
     public MySqlInsertUpdateDuplicate(Storable storable) {
         super(storable);
-    }
-
-    @Override
-    public PreparedStatement getParametrizedPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
-        // the factor of 2 comes from the fact that each column is referred twice in the MySql query as
-        // exemplified in the method getParametrizedSql()
-        return super.doGetPreparedStatement(connection, queryTimeoutSecs, 2);
     }
 
     // the factor of 2 comes from the fact that each column is referred twice in the MySql query as follows
@@ -48,10 +37,5 @@ public class MySqlInsertUpdateDuplicate extends MySqlStorableBuilder {
 
         log.debug(sql);
         return sql;
-    }
-
-    @Override
-    public String toString() {
-        return "MySqlInsertUpdateDuplicate{} " + super.toString();
     }
 }

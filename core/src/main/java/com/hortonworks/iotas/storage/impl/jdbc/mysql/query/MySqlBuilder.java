@@ -21,13 +21,11 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Collections2;
 import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.storage.PrimaryKey;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,8 +33,7 @@ public abstract class MySqlBuilder implements SqlBuilder {
     protected static final Logger log = LoggerFactory.getLogger(MySqlBuilder.class);
     protected List<Schema.Field> columns;
     protected String tableName;
-    protected String paramSql;
-    protected PreparedStatement preparedStatement;
+    protected PrimaryKey primaryKey;
 
     @Override
     public List<Schema.Field> getColumns() {
@@ -46,22 +43,17 @@ public abstract class MySqlBuilder implements SqlBuilder {
     @Override
     public abstract String getParametrizedSql();
 
-    public abstract PreparedStatement getParametrizedPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException;
-
-    /**
-     * @return The prepared statement with parameters
-     */
-    protected PreparedStatement prepareStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
-
-        String parameterizedSql = getParametrizedSql();
-        log.debug("Creating prepared statement with parameterized sql [{}]", parameterizedSql);
-        PreparedStatement preparedStatement = connection.prepareStatement(parameterizedSql);
-
-        if (queryTimeoutSecs > 0) {
-            preparedStatement.setQueryTimeout(queryTimeoutSecs);
-        }
-        return preparedStatement;
+    @Override
+    public String getNamespace() {
+        return tableName;
     }
+
+    @Override
+    public PrimaryKey getPrimaryKey() {
+        return primaryKey;
+    }
+
+    // ==== helper methods used in the query construction process ======
 
     protected String join(Collection<String> in, String separator) {
         return Joiner.on(separator).join(in);
@@ -89,50 +81,5 @@ public abstract class MySqlBuilder implements SqlBuilder {
                 return formatter == null ? field.getName() : String.format(formatter, field.getName());
             }
         });
-    }
-
-    protected void setPreparedStatementParams(PreparedStatement preparedStatement,
-                                              Schema.Type type, int index, Object val) throws SQLException {
-        switch (type) {
-            case BOOLEAN:
-                preparedStatement.setBoolean(index, (Boolean) val);
-                break;
-            case BYTE:
-                preparedStatement.setByte(index, (Byte) val);
-                break;
-            case SHORT:
-                preparedStatement.setShort(index, (Short) val);
-                break;
-            case INTEGER:
-                preparedStatement.setInt(index, (Integer) val);
-                break;
-            case LONG:
-                preparedStatement.setLong(index, (Long) val);
-                break;
-            case FLOAT:
-                preparedStatement.setFloat(index, (Float) val);
-                break;
-            case DOUBLE:
-                preparedStatement.setDouble(index, (Double) val);
-                break;
-            case STRING:
-                preparedStatement.setString(index, (String) val);
-                break;
-            case BINARY:
-                preparedStatement.setBytes(index, (byte[]) val);
-                break;
-            case NESTED:
-            case ARRAY:
-                preparedStatement.setObject(index, val);    //TODO check this
-                break;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "MySqlBuilder{" +
-                "columns=" + columns +
-                ", tableName='" + tableName + '\'' +
-                '}';
     }
 }

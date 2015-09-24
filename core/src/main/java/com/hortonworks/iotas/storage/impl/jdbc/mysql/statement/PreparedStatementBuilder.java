@@ -20,7 +20,7 @@ package com.hortonworks.iotas.storage.impl.jdbc.mysql.statement;
 
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.storage.exception.MalformedQueryException;
-import com.hortonworks.iotas.storage.impl.jdbc.config.JdbcStorageManagerConfig;
+import com.hortonworks.iotas.storage.impl.jdbc.config.ExecutionConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.SqlBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class PreparedStatementBuilder {
     private PreparedStatement preparedStatement;
     private int numParams;                          // Number of prepared statement parameters
 
-    public PreparedStatementBuilder(Connection connection, JdbcStorageManagerConfig config,
+    public PreparedStatementBuilder(Connection connection, ExecutionConfig config,
                                     SqlBuilder sqlBuilder) throws SQLException {
         this.connection = connection;
         setPreparedStatement(config, sqlBuilder);
@@ -47,7 +47,7 @@ public class PreparedStatementBuilder {
     }
 
     /** Creates the prepared statement with the parameters in place to be replaced */
-    private void setPreparedStatement(JdbcStorageManagerConfig config,
+    private void setPreparedStatement(ExecutionConfig config,
                                       SqlBuilder sqlBuilder) throws SQLException {
 
         final String parameterizedSql = sqlBuilder.getParametrizedSql();

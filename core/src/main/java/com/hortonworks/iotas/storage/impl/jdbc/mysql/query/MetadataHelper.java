@@ -18,7 +18,7 @@
 
 package com.hortonworks.iotas.storage.impl.jdbc.mysql.query;
 
-import com.hortonworks.iotas.storage.exception.NonIncrementalKeyException;
+import com.hortonworks.iotas.storage.exception.NonIncrementalColumnException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ public class MetadataHelper {
 
     public static long nextIdMySql(Connection connection, String namespace, int queryTimeoutSecs) throws SQLException {
         if (!isAutoIncrement(connection, namespace, queryTimeoutSecs)) {
-            throw new NonIncrementalKeyException();
+            throw new NonIncrementalColumnException();
         }
 
         final ResultSet resultSet = new MySqlQuery(buildNextIdMySql(connection, namespace))
@@ -81,7 +81,7 @@ public class MetadataHelper {
 
     public static long nextIdH2(Connection connection, String namespace, int queryTimeoutSecs) throws SQLException {
         if (!isAutoIncrement(connection, namespace, queryTimeoutSecs)) {
-            throw new NonIncrementalKeyException();
+            throw new NonIncrementalColumnException();
         }
 
         final ResultSet resultSet = new MySqlQuery(buildNextIdH2(getH2SequenceName(connection, namespace, queryTimeoutSecs)))

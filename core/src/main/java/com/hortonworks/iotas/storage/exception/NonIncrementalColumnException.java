@@ -22,23 +22,23 @@ package com.hortonworks.iotas.storage.exception;
  * Exception that gets thrown when attempting to get the next id of a table or namespace for which
  * the primary key is not defined as auto increment (e.g. AUTO_INCREMENT in MySQL).
  */
-public class NonIncrementalKeyException extends RuntimeException {
-    public NonIncrementalKeyException() {
+public class NonIncrementalColumnException extends RuntimeException {
+    public NonIncrementalColumnException() {
     }
 
-    public NonIncrementalKeyException(String message) {
+    public NonIncrementalColumnException(String message) {
         super(message);
     }
 
-    public NonIncrementalKeyException(String message, Throwable cause) {
+    public NonIncrementalColumnException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public NonIncrementalKeyException(Throwable cause) {
+    public NonIncrementalColumnException(Throwable cause) {
         super(cause);
     }
 
-    public NonIncrementalKeyException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public NonIncrementalColumnException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

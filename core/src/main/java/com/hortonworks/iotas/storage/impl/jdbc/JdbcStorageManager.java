@@ -28,15 +28,14 @@ import com.hortonworks.iotas.storage.StorageException;
 import com.hortonworks.iotas.storage.StorageManager;
 import com.hortonworks.iotas.storage.exception.IllegalQueryParameterException;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.factory.MySqlExecutor;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.factory.SqlExecutor;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MetadataHelper;
-import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlSelect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -105,32 +104,25 @@ public class JdbcStorageManager implements StorageManager {
     }
 
     @Override
-    public <T extends Storable> Collection<T> find(String namespace, List<CatalogService.QueryParam> queryParams) throws StorageException {
-        log.debug("Finding entries in table [{}] that match queryParams [{}]", namespace, queryParams);
+    public <T extends Storable> Collection<T> find(String namespace, List<CatalogService.QueryParam> queryParams)
+            throws StorageException {
+        log.debug("Searching for entries in table [{}] that match queryParams [{}]", namespace, queryParams);
 
         if (queryParams == null) {
             return list(namespace);
         }
+        Collection<T> entries = Collections.EMPTY_LIST;
 
-        Connection connection = null;
         try {
-            // Build StorableKey from QueryParam. StorableKey is used to filter the rows in the DB that match the QueryParams
-            Collection<T> entries = Collections.EMPTY_LIST;
-
             StorableKey storableKey = buildStorableKey(namespace, queryParams);
             if (storableKey != null) {
                 entries = sqlExecutor.select(storableKey);
             }
-
-            if (log.isDebugEnabled()) {
-                log.debug("Querying table = [{}]\n\t filter = [{}]\n\t returned [{}]", namespace, queryParams, entries);
-            }
-            return entries;
         } catch (Exception e) {
             throw new StorageException(e);
-        } finally {
-            closeConnection(connection);
         }
+        log.debug("Querying table = [{}]\n\t filter = [{}]\n\t returned [{}]", namespace, queryParams, entries);
+        return entries;
     }
 
     @Override
@@ -143,69 +135,18 @@ public class JdbcStorageManager implements StorageManager {
 
     @Override
     public void cleanup() throws StorageException {
-        try {
-            closeAllActiveConnections();
-        } catch (SQLException e) {
-            throw new StorageException(e);
-        }
-    }
-
-    private void closeAllActiveConnections() throws SQLException {
-        for (Connection activeConnection : activeConnections) {
-            if (!activeConnection.isClosed()) {
-                activeConnection.close();
-            }
-        }
+        ((MySqlExecutor)sqlExecutor).cleanup();
     }
 
     @Override
     public Long nextId(String namespace) {
+        log.debug("Finding nextId for table [{}]", namespace);
         // This only works if the table has auto-increment. The TABLE_SCHEMA part is implicitly specified in the Connection object
         // SELECT AUTO_INCREMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'temp' AND TABLE_SCHEMA = 'test'
-        Connection connection = null;
-        try {
-            connection = getConnection();
-            return getNextId(connection, namespace);
-        } catch (SQLException e) {
-            throw new StorageException(e);
-        } finally {
-            closeConnection(connection);
-        }
-    }
-
-    // Package protected to be able to override it in the test framework
-    Long getNextId(Connection connection, String namespace) throws SQLException {
-        return MetadataHelper.nextIdMySql(connection, namespace, queryTimeoutSecs);
+        return sqlExecutor.nextId(namespace);
     }
 
     // private helper methods
-
-    Connection getConnection() throws SQLException {
-        Connection connection = connectionBuilder.getConnection();
-        activeConnections.add(connection);
-        return connection;
-    }
-
-    void closeConnection(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-                activeConnections.remove(connection);
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to close connection", e);
-            }
-        }
-    }
-
-    /**
-     * @return null if none of the none of the query parameters specified matches a column in the DB
-     */
-    private MySqlBuilder getMySqlBuilderForQueryParams(String namespace, List<CatalogService.QueryParam> queryParams) throws Exception {
-        final StorableKey storableKey = buildStorableKey(namespace, queryParams);
-        return storableKey == null ?
-                null :
-                new MySqlSelect(storableKey);
-    }
 
     /**
      * Query parameters are typically specified for a column or key in a database table or storage namespace. Therefore, we build
@@ -217,17 +158,22 @@ public class JdbcStorageManager implements StorageManager {
      */
     private StorableKey buildStorableKey(String namespace, List<CatalogService.QueryParam> queryParams) throws Exception {
         final Map<Schema.Field, Object> fieldsToVal = new HashMap<>();
+        final Connection connection = sqlExecutor.getConnection();
+
         StorableKey storableKey = null;
 
         try {
             for (CatalogService.QueryParam qp : queryParams) {
-                if (!MetadataHelper.isColumnInNamespace(getConnection(), queryTimeoutSecs, namespace, qp.getName())) {
+
+
+                int queryTimeoutSecs = ((MySqlExecutor)sqlExecutor).getConfig().getQueryTimeoutSecs();
+                if (!MetadataHelper.isColumnInNamespace(connection, queryTimeoutSecs, namespace, qp.getName())) {
                     log.warn("Query parameter [{}] does not exist for namespace [{}]. Query parameter ignored.", qp.getName(), namespace);
                 } else {
                     final String val = qp.getValue();
                     final Schema.Type typeOfVal = Schema.Type.getTypeOfVal(val);
                     fieldsToVal.put(new Schema.Field(qp.getName(), typeOfVal),
-                            typeOfVal.getJavaType().getConstructor(String.class).newInstance(val)); // instantiates object of the appropriate type
+                        typeOfVal.getJavaType().getConstructor(String.class).newInstance(val)); // instantiates object of the appropriate type
                 }
             }
 
@@ -237,10 +183,14 @@ public class JdbcStorageManager implements StorageManager {
                 storableKey = new StorableKey(namespace, primaryKey);
             }
 
-            log.debug("Building StorableKey from QueryParam: \n\tnamespace = [{}]\n\t queryParams = [{}]\n\t StorableKey = [{}]", namespace, queryParams, storableKey);
+            log.debug("Building StorableKey from QueryParam: \n\tnamespace = [{}]\n\t queryParams = [{}]\n\t StorableKey = [{}]",
+                    namespace, queryParams, storableKey);
         } catch (Exception e) {
             log.debug("Exception occurred when attempting to generate StorableKey from QueryParam", e);
             throw new IllegalQueryParameterException(e);
+        } finally {
+
+            ((MySqlExecutor)sqlExecutor).closeConnection(connection);
         }
 
         return storableKey;

@@ -18,10 +18,6 @@
 
 package com.hortonworks.iotas.storage.impl.jdbc.mysql.query;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 public class MySqlQuery extends MySqlBuilder {
     private String sql;
 
@@ -32,17 +28,5 @@ public class MySqlQuery extends MySqlBuilder {
     @Override
     public String getParametrizedSql() {
         return sql;
-    }
-
-    @Override
-    public PreparedStatement getParametrizedPreparedStatement(Connection connection, int queryTimeoutSecs) throws SQLException {
-        return prepareStatement(connection, queryTimeoutSecs);
-    }
-
-    @Override
-    public String toString() {
-        return "MySqlQuery{" +
-                "sql='" + sql + '\'' +
-                "} " + super.toString();
     }
 }

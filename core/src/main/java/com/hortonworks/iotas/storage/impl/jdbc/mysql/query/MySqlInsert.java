@@ -35,9 +35,4 @@ public class MySqlInsert extends MySqlStorableBuilder {
         log.debug(sql);
         return sql;
     }
-
-    @Override
-    public String toString() {
-        return "MySqlInsert{} " + super.toString();
-    }
 }

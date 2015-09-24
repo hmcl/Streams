@@ -25,11 +25,11 @@ package com.hortonworks.iotas.storage.impl.jdbc.config;
  * This class should be immutable as the configuration should not change after passed on to the configurable objects
  *
  **/
-public class JdbcStorageManagerConfig {
+public class ExecutionConfig {
     private final int queryTimeoutSecs;
 
     // Replace constructors with Builder pattern as more configuration options become available
-    public JdbcStorageManagerConfig(int queryTimeoutSecs) {
+    public ExecutionConfig(int queryTimeoutSecs) {
         this.queryTimeoutSecs = queryTimeoutSecs;
     }
 
