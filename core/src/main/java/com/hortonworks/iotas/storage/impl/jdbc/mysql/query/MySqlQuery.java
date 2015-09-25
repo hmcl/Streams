@@ -19,14 +19,13 @@
 package com.hortonworks.iotas.storage.impl.jdbc.mysql.query;
 
 public class MySqlQuery extends MySqlBuilder {
-    private String sql;
 
     public MySqlQuery(String sql) {
         this.sql = sql;
     }
 
     @Override
-    public String getParametrizedSql() {
-        return sql;
+    protected void setParameterizedSql() {
+        log.debug(sql);
     }
 }

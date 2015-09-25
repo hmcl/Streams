@@ -31,5 +31,6 @@ public abstract class MySqlStorableKeyBuilder extends MySqlBuilder {
         primaryKey = storableKey.getPrimaryKey();
         columns = new LinkedList<>(storableKey.getPrimaryKey().getFieldsToVal().keySet());
 //        Collections.sort(columns);  // Sorting is needed because keySet() view does not guarantee ordering TODO: DO I need to sort ???
+        setParameterizedSql();
     }
 }

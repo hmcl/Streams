@@ -226,16 +226,6 @@ public class MySqlExecutor implements SqlExecutor {
         return storables;
     }
 
-    private <T extends Storable> T getStorableFromResultSet(ResultSet resultSet, String nameSpace) {
-        T storable = null;
-        Map<String, Object> mapFromResultSet = getMapFromResultSet(resultSet);
-        if (mapFromResultSet != null) {
-            storable = newStorableInstance(nameSpace);
-            storable.fromMap(mapFromResultSet);
-        }
-        return storable;
-    }
-
     // returns null for empty ResultSet or ResultSet with no rows
     private List<Map<String, Object>> getMapsFromResultSet(ResultSet resultSet) {
         List<Map<String, Object>> maps = null;

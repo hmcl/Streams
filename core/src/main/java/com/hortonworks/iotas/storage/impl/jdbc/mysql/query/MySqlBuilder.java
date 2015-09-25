@@ -34,14 +34,19 @@ public abstract class MySqlBuilder implements SqlBuilder {
     protected List<Schema.Field> columns;
     protected String tableName;
     protected PrimaryKey primaryKey;
+    protected String sql;
+
+    protected abstract void setParameterizedSql();
+
+    @Override
+    public String getParametrizedSql() {
+        return sql;
+    }
 
     @Override
     public List<Schema.Field> getColumns() {
         return columns;
     }
-
-    @Override
-    public abstract String getParametrizedSql();
 
     @Override
     public String getNamespace() {
@@ -81,5 +86,15 @@ public abstract class MySqlBuilder implements SqlBuilder {
                 return formatter == null ? field.getName() : String.format(formatter, field.getName());
             }
         });
+    }
+
+    @Override
+    public String toString() {
+        return "MySqlBuilder{" +
+                "columns=" + columns +
+                ", tableName='" + tableName + '\'' +
+                ", primaryKey=" + primaryKey +
+                ", sql='" + sql + '\'' +
+                '}';
     }
 }

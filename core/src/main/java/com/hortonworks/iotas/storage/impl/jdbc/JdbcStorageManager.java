@@ -89,10 +89,13 @@ public class JdbcStorageManager implements StorageManager {
         log.debug("Removing storable key [{}]", key);
 
         final Collection<T> entries = sqlExecutor.select(key);
-        if (entries.size() > 1) {
-            log.debug("More than one entry found for storable key [{}]", key);
+        T entry = null;
+        if (entries.size() > 0) {
+            if (entries.size() > 1) {
+                log.debug("More than one entry found for storable key [{}]", key);
+            }
+            entry = entries.iterator().next();
         }
-        final T entry = entries.iterator().next();
         log.debug("Querying key = [{}]\n\t returned [{}]", key, entry);
         return entry;
     }

@@ -38,18 +38,21 @@ public class PreparedStatementBuilder {
     private static final Logger log = LoggerFactory.getLogger(PreparedStatementBuilder.class);
     private final Connection connection;
     private PreparedStatement preparedStatement;
+    private final SqlBuilder sqlBuilder;
+    private final ExecutionConfig config;
     private int numParams;                          // Number of prepared statement parameters
 
     public PreparedStatementBuilder(Connection connection, ExecutionConfig config,
                                     SqlBuilder sqlBuilder) throws SQLException {
         this.connection = connection;
-        setPreparedStatement(config, sqlBuilder);
-        setNumParams(sqlBuilder);
+        this.config = config;
+        this.sqlBuilder = sqlBuilder;
+        setPreparedStatement();
+        setNumParams();
     }
 
     /** Creates the prepared statement with the parameters in place to be replaced */
-    private void setPreparedStatement(ExecutionConfig config,
-                                      SqlBuilder sqlBuilder) throws SQLException {
+    private void setPreparedStatement() throws SQLException {
 
         final String parameterizedSql = sqlBuilder.getParametrizedSql();
         log.debug("Creating prepared statement for parameterized sql [{}]", parameterizedSql);
@@ -62,7 +65,7 @@ public class PreparedStatementBuilder {
         this.preparedStatement = preparedStatement;
     }
 
-    private void setNumParams(SqlBuilder sqlBuilder) {
+    private void setNumParams() {
         Pattern p = Pattern.compile("[?]");
         Matcher m = p.matcher(sqlBuilder.getParametrizedSql());
         int groupCount = 0;
@@ -98,7 +101,7 @@ public class PreparedStatementBuilder {
             Map<Schema.Field, Object> columnsToValues = sqlBuilder.getPrimaryKey().getFieldsToVal();
 
 
-            int nTimes = len % numParams;   // Number of times each column must be replaced on a query parameter
+            int nTimes = len / numParams;   // Number of times each column must be replaced on a query parameter
             for (int j = 0; j < len * nTimes; j++) {
                 Schema.Field column = columns.get(j % len);
                 Schema.Type javaType = column.getType();
@@ -114,6 +117,14 @@ public class PreparedStatementBuilder {
 
     public ResultSetMetaData getMetaData() throws SQLException {
         return preparedStatement.getMetaData();
+    }
+
+    @Override
+    public String toString() {
+        return "PreparedStatementBuilder{" +
+                "sqlBuilder=" + sqlBuilder +
+                ", numParams=" + numParams +
+                '}';
     }
 
     private void setPreparedStatementParams(PreparedStatement preparedStatement,

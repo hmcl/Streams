@@ -27,5 +27,6 @@ public abstract class MySqlStorableBuilder extends MySqlBuilder {
         tableName = storableKey.getNameSpace();
         primaryKey = storableKey.getPrimaryKey();
         columns = storable.getSchema().getFields();
+        setParameterizedSql();
     }
 }
