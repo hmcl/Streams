@@ -19,6 +19,7 @@
 
 package com.hortonworks.iotas.storage.impl.jdbc;
 
+import com.google.common.cache.CacheBuilder;
 import com.hortonworks.IntegrationTest;
 import com.hortonworks.iotas.storage.AbstractStoreManagerTest;
 import com.hortonworks.iotas.storage.Storable;
@@ -28,7 +29,7 @@ import com.hortonworks.iotas.storage.impl.jdbc.config.ExecutionConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.config.HikariBasicConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.HikariCPConnectionBuilder;
-import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MetadataHelper;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.factory.MySqlExecutor;
 import org.h2.tools.RunScript;
 import org.junit.After;
 import org.junit.Assert;
@@ -49,6 +50,7 @@ import java.util.Collection;
 public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest {
     private static StorageManager jdbcStorageManager;
     private static Database database;
+    private static ConnectionBuilder connectionBuilder;
 
     private enum Database {MYSQL, H2}
 
@@ -57,8 +59,8 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     @BeforeClass
     public static void setUpClass() throws Exception {
         // Connection has autoCommit set to false in order to allow rolling back transactions
-//        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()), Database.MYSQL);
-        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getH2HikariTestConfig()), Database.H2);
+        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()), Database.MYSQL);
+//        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getH2HikariTestConfig()), Database.H2);
     }
 
     @Before
@@ -72,10 +74,17 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     }
 
     private static void setFields(ConnectionBuilder connectionBuilder, Database db) {
-        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new ExecutionConfig(-1));
+        JdbcStorageManagerIntegrationTest.connectionBuilder = connectionBuilder;
+        jdbcStorageManager = new JdbcStorageManager(connectionBuilder, new MySqlExecutor(getGuavaCacheBuilder(),
+                new ExecutionConfig(-1), connectionBuilder));
+//        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new ExecutionConfig(-1));
         database = db;
     }
 
+    private static CacheBuilder getGuavaCacheBuilder() {
+        final long maxSize = 20;
+        return  CacheBuilder.newBuilder().maximumSize(maxSize);
+    }
 
     @Override
     protected StorageManager getStorageManager() {
@@ -100,17 +109,25 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
         }
     }
 
-    protected Connection getConnection() {
-        try {
-            return ((JdbcStorageManagerForTest)jdbcStorageManager).getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException("Cannot get connection using JdbcStorageManagerForTest", e);
+    protected static Connection getConnection() {
+        return connectionBuilder.getConnection();
+    }
+
+    protected void closeConnection(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to close connection", e);
+            }
         }
     }
 
+
+
     /**
      * This class overrides the connection methods to allow the tests to rollback the transactions and thus not commit to DB
-     */
+     *//*
     private static class JdbcStorageManagerForTest extends JdbcStorageManager {
         public JdbcStorageManagerForTest(ConnectionBuilder connectionBuilder, ExecutionConfig config) {
             super(connectionBuilder, config);
@@ -146,10 +163,17 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
                 return MetadataHelper.nextIdH2(connection, namespace, queryTimeoutSecs);
             }
         }
-    }
+    }*/
 
     private void createTables() throws SQLException, IOException {
-        RunScript.execute(getConnection(), load("create_tables.sql"));
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            RunScript.execute(connection, load("create_tables.sql"));
+        } finally {
+            // We need to close the connection because H2 DB running in memory only allows one connection at a time     //TODO: Check this
+            closeConnection(connection);
+        }
     }
 
     private void dropTables() throws SQLException, IOException {

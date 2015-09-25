@@ -19,6 +19,8 @@
 package com.hortonworks.iotas.storage.impl.jdbc.mysql.query;
 
 import com.hortonworks.iotas.storage.exception.NonIncrementalColumnException;
+import com.hortonworks.iotas.storage.impl.jdbc.config.ExecutionConfig;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.statement.PreparedStatementBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +35,9 @@ public class MetadataHelper {
     private static final Logger log = LoggerFactory.getLogger(MetadataHelper.class);
 
     public static boolean isAutoIncrement(Connection connection, String namespace, int queryTimeoutSecs) throws SQLException {
-        final ResultSetMetaData rsMetadata = new MySqlSelect(namespace)
-                .getParametrizedPreparedStatement(connection, queryTimeoutSecs).executeQuery().getMetaData();
+        final ResultSetMetaData rsMetadata = new PreparedStatementBuilder(connection, new ExecutionConfig(queryTimeoutSecs),
+                new MySqlSelect(namespace)).getMetaData();
+
         final int columnCount = rsMetadata.getColumnCount();
 
         for (int i = 1 ; i <= columnCount; i++) {
@@ -45,9 +48,12 @@ public class MetadataHelper {
         return false;
     }
 
+
+
     public static boolean isColumnInNamespace(Connection connection, int queryTimeoutSecs, String namespace, String columnName) throws SQLException {
-        final ResultSetMetaData rsMetadata = new MySqlSelect(namespace)
-                .getParametrizedPreparedStatement(connection, queryTimeoutSecs).executeQuery().getMetaData();
+        final ResultSetMetaData rsMetadata = new PreparedStatementBuilder(connection, new ExecutionConfig(queryTimeoutSecs),
+                new MySqlSelect(namespace)).getMetaData();
+
         final int columnCount = rsMetadata.getColumnCount();
 
         for (int i = 1 ; i <= columnCount; i++) {
@@ -63,12 +69,17 @@ public class MetadataHelper {
             throw new NonIncrementalColumnException();
         }
 
-        final ResultSet resultSet = new MySqlQuery(buildNextIdMySql(connection, namespace))
-                .getParametrizedPreparedStatement(connection, queryTimeoutSecs).executeQuery();
+        final ResultSet resultSet = getResultSet(connection, queryTimeoutSecs, buildNextIdMySql(connection, namespace));
         resultSet.next();
         final long nextId = resultSet.getLong("AUTO_INCREMENT");
         log.debug("Next id for auto increment table [{}] = {}", namespace, nextId);
         return nextId;
+    }
+
+    private static ResultSet getResultSet(Connection connection, int queryTimeoutSecs, String sql) throws SQLException {
+        final MySqlQuery sqlBuilder = new MySqlQuery(sql);
+        return new PreparedStatementBuilder(connection, new ExecutionConfig(queryTimeoutSecs),
+                sqlBuilder).getPreparedStatement(sqlBuilder).executeQuery();
     }
 
     private static String buildNextIdMySql(Connection connection, String namespace) throws SQLException {
@@ -84,8 +95,9 @@ public class MetadataHelper {
             throw new NonIncrementalColumnException();
         }
 
-        final ResultSet resultSet = new MySqlQuery(buildNextIdH2(getH2SequenceName(connection, namespace, queryTimeoutSecs)))
-                .getParametrizedPreparedStatement(connection, queryTimeoutSecs).executeQuery();
+        final ResultSet resultSet = getResultSet(connection, queryTimeoutSecs,
+                buildNextIdH2(getH2SequenceName(connection, namespace, queryTimeoutSecs)));
+
         resultSet.next();
         final long nextId = resultSet.getLong("CURRENT_VALUE");
         log.debug("Next id for auto increment table [{}] = {}", namespace, nextId);
@@ -94,13 +106,12 @@ public class MetadataHelper {
 
     private static String buildNextIdH2(String sequenceName) throws SQLException {
         final String sql = "SELECT CURRENT_VALUE FROM INFORMATION_SCHEMA.SEQUENCES WHERE SEQUENCE_NAME = '" + sequenceName + "'";
-        log.debug("nextIdMySql() SQL query: {}", sql);
+        log.debug("nextIdH2() SQL query: {}", sql);
         return sql;
     }
 
     private static String getH2SequenceName(Connection connection, String namespace, int queryTimeoutSecs) throws SQLException {
-        final ResultSet resultSet = new MySqlQuery(getH2InfoSchemaSql(namespace))
-                .getParametrizedPreparedStatement(connection, queryTimeoutSecs).executeQuery();
+        final ResultSet resultSet = getResultSet(connection, queryTimeoutSecs, getH2InfoSchemaSql(namespace));
 
         resultSet.next();
         String sql = resultSet.getString("SQL");

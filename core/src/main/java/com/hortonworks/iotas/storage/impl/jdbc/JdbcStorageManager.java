@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//TODO: The synchronization is broken right now, so all the methods dont guarantee the semantics as described in the interface.
+//TODO: Need to assess synchronization
 public class JdbcStorageManager implements StorageManager {
     private static final Logger log = LoggerFactory.getLogger(StorageManager.class);
 
