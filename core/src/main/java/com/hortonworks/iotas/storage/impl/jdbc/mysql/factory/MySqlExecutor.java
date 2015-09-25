@@ -20,6 +20,7 @@ package com.hortonworks.iotas.storage.impl.jdbc.mysql.factory;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheStats;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.hortonworks.iotas.catalog.DataFeed;
@@ -88,6 +89,21 @@ public class MySqlExecutor implements SqlExecutor {
         }).build();
     }
 
+    public Cache<SqlBuilder, PreparedStatementBuilder> getCache() {
+        return cache;
+    }
+
+    public void printCacheState() {
+        long size = cache.size();
+        CacheStats stats = cache.stats();
+        log.debug("size = " + size);
+        log.debug("stats = " + stats);
+    }
+
+    public void printActiveConnections() {
+        log.debug("ACTIVE CONNECTIONS: ", activeConnections);
+    }
+
     // ============= Public API methods =============
 
     @Override
@@ -138,6 +154,7 @@ public class MySqlExecutor implements SqlExecutor {
     @Override
     public Connection getConnection() {
         Connection connection = connectionBuilder.getConnection();
+//        log.debug("OPENED CONNECTION {}", connection);
         activeConnections.add(connection);
         return connection;
     }
@@ -146,6 +163,7 @@ public class MySqlExecutor implements SqlExecutor {
         if (connection != null) {
             try {
                 connection.close();
+//                log.debug("CLOSED CONNECTION {}", connection);
                 activeConnections.remove(connection);
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to close connection", e);
@@ -172,7 +190,9 @@ public class MySqlExecutor implements SqlExecutor {
 
         @Override
         public PreparedStatementBuilder call() throws Exception {
-            return new PreparedStatementBuilder(getConnection(), config, sqlBuilder);
+            final PreparedStatementBuilder preparedStatementBuilder = new PreparedStatementBuilder(getConnection(), config, sqlBuilder);
+            log.debug("Loading cache with [{}]", preparedStatementBuilder);
+            return preparedStatementBuilder;
         }
     }
 

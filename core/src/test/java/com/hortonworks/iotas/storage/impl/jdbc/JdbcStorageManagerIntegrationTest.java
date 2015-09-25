@@ -51,6 +51,7 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     private static StorageManager jdbcStorageManager;
     private static Database database;
     private static ConnectionBuilder connectionBuilder;
+    private static MySqlExecutor sqlExecutor;
 
     private enum Database {MYSQL, H2}
 
@@ -66,24 +67,33 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
 
     @Before
     public void setUp() throws Exception {
+        log.debug("Creating tables for test {}", testName.getMethodName());
         createTables();
     }
 
     @After
     public void tearDown() throws Exception {
+        log.debug("Tearing down test {}", testName.getMethodName());
         jdbcStorageManager.cleanup();
         dropTables();
+        log.debug("Test name: {}, Cache: {}", testName.getMethodName(), sqlExecutor.getCache().toString());
+        sqlExecutor.printCacheState();
+        sqlExecutor.printActiveConnections();
     }
 
     private static void setFields(ConnectionBuilder connectionBuilder, Database db) {
         JdbcStorageManagerIntegrationTest.connectionBuilder = connectionBuilder;
-        jdbcStorageManager = new JdbcStorageManager(new MySqlExecutor(newGuavaCacheBuilder(),
-                new ExecutionConfig(-1), connectionBuilder));
+        sqlExecutor = new MySqlExecutor(newGuavaCacheBuilder(),
+                new ExecutionConfig(-1), connectionBuilder);
+        jdbcStorageManager = new JdbcStorageManager(sqlExecutor);
+
+//        jdbcStorageManager = new JdbcStorageManager(new MySqlExecutor(newGuavaCacheBuilder(),
+//                new ExecutionConfig(-1), connectionBuilder));
         database = db;
     }
 
     private static CacheBuilder newGuavaCacheBuilder() {
-        final long maxSize = 3;
+        final long maxSize = 1;
         return  CacheBuilder.newBuilder().maximumSize(maxSize);
     }
 
@@ -111,22 +121,23 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     }
 
     protected static Connection getConnection() {
-        return connectionBuilder.getConnection();
+        Connection connection = connectionBuilder.getConnection();
+        log.debug("OPENED CONNECTION {}", connection);
+        return connection;
     }
 
     protected void closeConnection(Connection connection) {
         if (connection != null) {
             try {
                 connection.close();
+                log.debug("CLOSED CONNECTION {}", connection);
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to close connection", e);
             }
         }
     }
 
-
-
-    /**
+    /** //TODO: DELETE THIS
      * This class overrides the connection methods to allow the tests to rollback the transactions and thus not commit to DB
      *//*
     private static class JdbcStorageManagerForTest extends JdbcStorageManager {
@@ -178,7 +189,14 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     }
 
     private void dropTables() throws SQLException, IOException {
-        RunScript.execute(getConnection(), load("drop_tables.sql"));
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            RunScript.execute(connection, load("drop_tables.sql"));
+        } finally {
+            // We need to close the connection because H2 DB running in memory only allows one connection at a time     //TODO: Check this
+            closeConnection(connection);
+        }
     }
 
     private Reader load(String fileName) throws IOException {

@@ -86,7 +86,7 @@ public class JdbcStorageManager implements StorageManager {
 
     @Override
     public <T extends Storable> T get(StorableKey key) throws StorageException {
-        log.debug("Removing storable key [{}]", key);
+        log.debug("Searching entry for storable key [{}]", key);
 
         final Collection<T> entries = sqlExecutor.select(key);
         T entry = null;

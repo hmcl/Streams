@@ -153,6 +153,9 @@ public class PreparedStatementBuilder {
         return "PreparedStatementBuilder{" +
                 "sqlBuilder=" + sqlBuilder +
                 ", numParams=" + numParams +
+                ", connection=" + connection +
+                ", preparedStatement=" + preparedStatement +
+                ", config=" + config +
                 '}';
     }
 

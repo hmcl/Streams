@@ -8,7 +8,11 @@ import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.service.CatalogService;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +27,17 @@ import java.util.Set;
 
 public abstract class AbstractStoreManagerTest {
     protected static final Logger log = LoggerFactory.getLogger(AbstractStoreManagerTest.class);
+
+    @Rule
+    public TestName testName = new TestName();
+
+    @Rule
+    public TestWatcher watchman = new TestWatcher() {
+        @Override
+        public void starting(final Description method) {
+            log.info("RUNNING TEST [{}] ", method.getMethodName());
+        }
+    };
 
     //NOTE: If you are adding a new entity, create a list of 4 items where the 1st and 2nd item has same value for primary key.
     //and then add this list to storables variable defined below.
@@ -252,7 +267,7 @@ public abstract class AbstractStoreManagerTest {
 
     // EqualExistingStorable => Storable that has the same StorableKey and verifies .equals()
     @Test
-    public void testAdd_EqualExistingStorable_AlreadyExistsException() {
+    public void testAdd_EqualExistingStorable_NoOperation() {
         for (StorableTest test : storableTests) {
             Storable storable1 = test.getStorableList().get(0);
             getStorageManager().add(storable1);
