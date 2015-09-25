@@ -21,12 +21,18 @@ import com.hortonworks.iotas.storage.Storable;
 import com.hortonworks.iotas.storage.StorableKey;
 
 public abstract class MySqlStorableBuilder extends MySqlBuilder {
+    final Storable storable;
 
     public MySqlStorableBuilder(Storable storable) {
-        final StorableKey storableKey = storable.getStorableKey();
+        this.storable = storable;
+        StorableKey storableKey = storable.getStorableKey();
         tableName = storableKey.getNameSpace();
         primaryKey = storableKey.getPrimaryKey();
         columns = storable.getSchema().getFields();
         setParameterizedSql();
+    }
+
+    public Storable getStorable() {
+        return storable;
     }
 }

@@ -59,7 +59,8 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     @BeforeClass
     public static void setUpClass() throws Exception {
         // Connection has autoCommit set to false in order to allow rolling back transactions
-        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()), Database.MYSQL);
+        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariConfig()), Database.MYSQL);
+//        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()), Database.MYSQL);
 //        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getH2HikariTestConfig()), Database.H2);
     }
 

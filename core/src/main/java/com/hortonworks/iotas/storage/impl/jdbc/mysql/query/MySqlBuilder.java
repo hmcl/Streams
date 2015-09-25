@@ -88,6 +88,30 @@ public abstract class MySqlBuilder implements SqlBuilder {
         });
     }
 
+    //TODO; revisit
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MySqlBuilder that = (MySqlBuilder) o;
+
+        if (columns != null ? !columns.equals(that.columns) : that.columns != null) return false;
+        if (tableName != null ? !tableName.equals(that.tableName) : that.tableName != null) return false;
+        if (primaryKey != null ? !primaryKey.equals(that.primaryKey) : that.primaryKey != null) return false;
+        return !(sql != null ? !sql.equals(that.sql) : that.sql != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = columns != null ? columns.hashCode() : 0;
+        result = 31 * result + (tableName != null ? tableName.hashCode() : 0);
+        result = 31 * result + (primaryKey != null ? primaryKey.hashCode() : 0);
+        result = 31 * result + (sql != null ? sql.hashCode() : 0);
+        return result;
+    }
+
     @Override
     public String toString() {
         return "MySqlBuilder{" +

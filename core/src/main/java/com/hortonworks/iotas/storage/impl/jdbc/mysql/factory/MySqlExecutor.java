@@ -59,14 +59,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 public class MySqlExecutor implements SqlExecutor {
-    private Cache<String, PreparedStatementBuilder> cache;
+    private Cache<SqlBuilder, PreparedStatementBuilder> cache;
     private final ExecutionConfig config;
     private final int queryTimeoutSecs;
     private final ConnectionBuilder connectionBuilder;
     private final List<Connection> activeConnections;
 
-
-    public MySqlExecutor(CacheBuilder<String, PreparedStatementBuilder> cacheBuilder,
+    public MySqlExecutor(CacheBuilder<SqlBuilder, PreparedStatementBuilder> cacheBuilder,
                          ExecutionConfig config, ConnectionBuilder connectionBuilder) {
         this.connectionBuilder = connectionBuilder;
         this.config = config;
@@ -75,18 +74,18 @@ public class MySqlExecutor implements SqlExecutor {
         setCache(cacheBuilder);
     }
 
-    protected void setCache(CacheBuilder<String, PreparedStatementBuilder> cacheBuilder) {
-        cache = cacheBuilder.removalListener(new RemovalListener<String, PreparedStatementBuilder>() {
-            /** Remove database connection when the entry is removed from cache*/
+    protected void setCache(CacheBuilder<SqlBuilder, PreparedStatementBuilder> cacheBuilder) {
+        cache = cacheBuilder.removalListener(new RemovalListener<SqlBuilder, PreparedStatementBuilder>() {
+            /** Removes database connection when the entry is removed from cache*/
             @Override
-            public void onRemoval(RemovalNotification<String, PreparedStatementBuilder> notification) {
+            public void onRemoval(RemovalNotification<SqlBuilder, PreparedStatementBuilder> notification) {
                 final PreparedStatementBuilder val = notification.getValue();
                 log.debug("Removing entry from cache and closing connection [key:{}, val: {}]", notification.getKey(), val);
                 if (val != null) {
                     closeConnection(val.getConnection());;
                 }
             }
-        }).build(); cache.cleanUp();
+        }).build();
     }
 
     // ============= Public API methods =============
@@ -131,7 +130,6 @@ public class MySqlExecutor implements SqlExecutor {
         }
     }
 
-
     // Package protected to be able to override it in the test framework
     Long getNextId(Connection connection, String namespace) throws SQLException {
         return MetadataHelper.nextIdMySql(connection, namespace, queryTimeoutSecs);
@@ -157,8 +155,6 @@ public class MySqlExecutor implements SqlExecutor {
 
     public void cleanup() {
         cache.invalidateAll();
-        cache.cleanUp();  //TODO Confirm that the onRemoval callback gets called and connections closed.
-        //TODO: if sessions not closed close them manually
     }
 
     public ExecutionConfig getConfig() {
@@ -205,7 +201,7 @@ public class MySqlExecutor implements SqlExecutor {
     private PreparedStatement getPreparedStatement(SqlBuilder sqlBuilder, String namespace)
             throws ExecutionException, SQLException {
         PreparedStatementBuilder preparedStatementBuilder =
-                cache.get(namespace, new PreparedStatementBuilderCallable(sqlBuilder));
+                cache.get(sqlBuilder, new PreparedStatementBuilderCallable(sqlBuilder));
         return preparedStatementBuilder.getPreparedStatement(sqlBuilder);
     }
 

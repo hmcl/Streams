@@ -21,6 +21,8 @@ package com.hortonworks.iotas.storage.impl.jdbc.mysql.statement;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.storage.exception.MalformedQueryException;
 import com.hortonworks.iotas.storage.impl.jdbc.config.ExecutionConfig;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlStorableBuilder;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MySqlStorableKeyBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.SqlBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,18 +72,17 @@ public class PreparedStatementBuilder {
         Matcher m = p.matcher(sqlBuilder.getParametrizedSql());
         int groupCount = 0;
         while (m.find()) {
-            System.out.println(m.group());
             groupCount++;
         }
         log.debug("{} ? query parameters found for {} ", groupCount, sqlBuilder.getParametrizedSql());
 
-        if (!isColumnsMultipleOfParameters(sqlBuilder, groupCount)) {
+        if (!isNumColumnsMultipleOfNumParameters(sqlBuilder, groupCount)) {
             throw new MalformedQueryException("Number of columns must be a multiple of the number of query parameters");
         }
         numParams = groupCount;
     }
 
-    private boolean isColumnsMultipleOfParameters(SqlBuilder sqlBuilder, int groupCount) {
+    private boolean isNumColumnsMultipleOfNumParameters(SqlBuilder sqlBuilder, int groupCount) {
         final List<Schema.Field> columns = sqlBuilder.getColumns();
         boolean isMultiple = false;
 
@@ -94,18 +95,46 @@ public class PreparedStatementBuilder {
     }
 
     public PreparedStatement getPreparedStatement(SqlBuilder sqlBuilder) throws SQLException {
+        // If more types become available consider subclassing instead of going with this approach, which was chosen here for simplicity
+        if (sqlBuilder instanceof MySqlStorableKeyBuilder) {
+            return getStorableKeyPreparedStatement(sqlBuilder);
+        } else if (sqlBuilder instanceof MySqlStorableBuilder) {
+            return getStorablePreparedStatement(sqlBuilder);
+        } else {
+            return preparedStatement;
+        }
+    }
+
+    private PreparedStatement getStorableKeyPreparedStatement(SqlBuilder sqlBuilder) throws SQLException {
         final List<Schema.Field> columns = sqlBuilder.getColumns();
 
         if (columns != null) {
             final int len = columns.size();
             Map<Schema.Field, Object> columnsToValues = sqlBuilder.getPrimaryKey().getFieldsToVal();
 
-
-            int nTimes = len / numParams;   // Number of times each column must be replaced on a query parameter
+            int nTimes = numParams/len;   // Number of times each column must be replaced on a query parameter
             for (int j = 0; j < len * nTimes; j++) {
                 Schema.Field column = columns.get(j % len);
                 Schema.Type javaType = column.getType();
                 setPreparedStatementParams(preparedStatement, javaType, j + 1, columnsToValues.get(column));
+            }
+        }
+        return preparedStatement;
+    }
+
+    private PreparedStatement getStorablePreparedStatement(SqlBuilder sqlBuilder) throws SQLException {
+        final List<Schema.Field> columns = sqlBuilder.getColumns();
+
+        if (columns != null) {
+            final int len = columns.size();
+            final Map columnsToValues = ((MySqlStorableBuilder)sqlBuilder).getStorable().toMap();
+            final int nTimes = numParams/len;   // Number of times each column must be replaced on a query parameter
+
+            for (int j = 0; j < len*nTimes; j++) {
+                Schema.Field column = columns.get(j % len);
+                Schema.Type javaType = column.getType();
+                String columnName = column.getName();
+                setPreparedStatementParams(preparedStatement, javaType, j + 1, columnsToValues.get(columnName));
             }
         }
         return preparedStatement;

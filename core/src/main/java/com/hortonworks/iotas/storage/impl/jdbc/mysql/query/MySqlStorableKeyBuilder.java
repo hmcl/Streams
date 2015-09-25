@@ -24,6 +24,7 @@ import java.util.LinkedList;
 public abstract class MySqlStorableKeyBuilder extends MySqlBuilder {
     public MySqlStorableKeyBuilder(String nameSpace) {
         tableName = nameSpace;
+        setParameterizedSql();
     }
 
     public MySqlStorableKeyBuilder(StorableKey storableKey) {
