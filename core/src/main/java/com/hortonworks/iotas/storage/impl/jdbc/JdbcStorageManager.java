@@ -27,7 +27,6 @@ import com.hortonworks.iotas.storage.StorableKey;
 import com.hortonworks.iotas.storage.StorageException;
 import com.hortonworks.iotas.storage.StorageManager;
 import com.hortonworks.iotas.storage.exception.IllegalQueryParameterException;
-import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.factory.MySqlExecutor;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.factory.SqlExecutor;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MetadataHelper;
@@ -36,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,14 +45,10 @@ import java.util.Map;
 public class JdbcStorageManager implements StorageManager {
     private static final Logger log = LoggerFactory.getLogger(StorageManager.class);
 
-    protected final List<Connection> activeConnections;
-    protected final ConnectionBuilder connectionBuilder;
     protected final SqlExecutor sqlExecutor;
 
-    public JdbcStorageManager(ConnectionBuilder connectionBuilder, SqlExecutor sqlExecutor) {
-        this.connectionBuilder = connectionBuilder;
+    public JdbcStorageManager(SqlExecutor sqlExecutor) {
         this.sqlExecutor = sqlExecutor;
-        activeConnections = Collections.synchronizedList(new ArrayList<Connection>());
     }
 
     @Override

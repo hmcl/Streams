@@ -81,7 +81,7 @@ public class MySqlExecutor implements SqlExecutor {
             @Override
             public void onRemoval(RemovalNotification<String, PreparedStatementBuilder> notification) {
                 final PreparedStatementBuilder val = notification.getValue();
-                log.debug("Removing entry from cache and closing connection [{}: {}]", notification.getKey(), val);
+                log.debug("Removing entry from cache and closing connection [key:{}, val: {}]", notification.getKey(), val);
                 if (val != null) {
                     closeConnection(val.getConnection());;
                 }
@@ -156,6 +156,7 @@ public class MySqlExecutor implements SqlExecutor {
     }
 
     public void cleanup() {
+        cache.invalidateAll();
         cache.cleanUp();  //TODO Confirm that the onRemoval callback gets called and connections closed.
         //TODO: if sessions not closed close them manually
     }

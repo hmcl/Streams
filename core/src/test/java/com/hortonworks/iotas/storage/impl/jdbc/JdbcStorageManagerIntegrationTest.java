@@ -70,19 +70,19 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
 
     @After
     public void tearDown() throws Exception {
+        jdbcStorageManager.cleanup();
         dropTables();
     }
 
     private static void setFields(ConnectionBuilder connectionBuilder, Database db) {
         JdbcStorageManagerIntegrationTest.connectionBuilder = connectionBuilder;
-        jdbcStorageManager = new JdbcStorageManager(connectionBuilder, new MySqlExecutor(getGuavaCacheBuilder(),
+        jdbcStorageManager = new JdbcStorageManager(new MySqlExecutor(newGuavaCacheBuilder(),
                 new ExecutionConfig(-1), connectionBuilder));
-//        jdbcStorageManager = new JdbcStorageManagerForTest(connectionBuilder, new ExecutionConfig(-1));
         database = db;
     }
 
-    private static CacheBuilder getGuavaCacheBuilder() {
-        final long maxSize = 20;
+    private static CacheBuilder newGuavaCacheBuilder() {
+        final long maxSize = 3;
         return  CacheBuilder.newBuilder().maximumSize(maxSize);
     }
 

@@ -72,10 +72,22 @@ public class PreparedStatementBuilder {
         }
         log.debug("{} ? query parameters found for {} ", groupCount, sqlBuilder.getParametrizedSql());
 
-        if ((groupCount % sqlBuilder.getColumns().size()) != 0) {
+        if (!isColumnsMultipleOfParameters(sqlBuilder, groupCount)) {
             throw new MalformedQueryException("Number of columns must be a multiple of the number of query parameters");
         }
         numParams = groupCount;
+    }
+
+    private boolean isColumnsMultipleOfParameters(SqlBuilder sqlBuilder, int groupCount) {
+        final List<Schema.Field> columns = sqlBuilder.getColumns();
+        boolean isMultiple = false;
+
+        if (columns == null || columns.size() == 0) {
+            isMultiple = groupCount == 0;
+        } else {
+            isMultiple = ((groupCount % sqlBuilder.getColumns().size()) == 0);
+        }
+        return isMultiple;
     }
 
     public PreparedStatement getPreparedStatement(SqlBuilder sqlBuilder) throws SQLException {
