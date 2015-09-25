@@ -39,9 +39,7 @@ public abstract class AbstractStoreManagerTest {
         }
     };
 
-    //NOTE: If you are adding a new entity, create a list of 4 items where the 1st and 2nd item has same value for primary key.
-    //and then add this list to storables variable defined below.
-
+    // To test a new Storable entity type, add it to this list by implementing the the method setStorableTests
     protected List<StorableTest> storableTests;
 
     @Before
@@ -49,6 +47,7 @@ public abstract class AbstractStoreManagerTest {
         setStorableTests();
     }
 
+    // Method that sets the list of CRUD tests to be run
     protected abstract void setStorableTests();
 
     protected class StorableTest {

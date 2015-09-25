@@ -51,7 +51,6 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     private static StorageManager jdbcStorageManager;
     private static Database database;
     private static ConnectionBuilder connectionBuilder;
-    private static MySqlExecutor sqlExecutor;
 
     private enum Database {MYSQL, H2}
 
@@ -67,33 +66,24 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
 
     @Before
     public void setUp() throws Exception {
-        log.debug("Creating tables for test {}", testName.getMethodName());
         createTables();
     }
 
     @After
     public void tearDown() throws Exception {
-        log.debug("Tearing down test {}", testName.getMethodName());
         jdbcStorageManager.cleanup();
         dropTables();
-        log.debug("Test name: {}, Cache: {}", testName.getMethodName(), sqlExecutor.getCache().toString());
-        sqlExecutor.printCacheState();
-        sqlExecutor.printActiveConnections();
     }
 
     private static void setFields(ConnectionBuilder connectionBuilder, Database db) {
         JdbcStorageManagerIntegrationTest.connectionBuilder = connectionBuilder;
-        sqlExecutor = new MySqlExecutor(newGuavaCacheBuilder(),
-                new ExecutionConfig(-1), connectionBuilder);
-        jdbcStorageManager = new JdbcStorageManager(sqlExecutor);
-
-//        jdbcStorageManager = new JdbcStorageManager(new MySqlExecutor(newGuavaCacheBuilder(),
-//                new ExecutionConfig(-1), connectionBuilder));
+        jdbcStorageManager = new JdbcStorageManager(new MySqlExecutor(newGuavaCacheBuilder(),
+                new ExecutionConfig(-1), connectionBuilder));
         database = db;
     }
 
     private static CacheBuilder newGuavaCacheBuilder() {
-        final long maxSize = 1;
+        final long maxSize = 8;
         return  CacheBuilder.newBuilder().maximumSize(maxSize);
     }
 
@@ -110,9 +100,9 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
         }
     }
 
-    // DataFeed has foreign keys in ParserInfo and DataSource tables, which have to be
-    // initialized before we can insert data in the DataFeed table
     class DataFeedsJdbcTest extends DataFeedsTest {
+        // DataFeed has foreign keys in ParserInfo and DataSource tables, which have to be
+        // initialized before we can insert data in the DataFeed table
         @Override
         public void init() {
             new ParsersTest().addAllToStorage();
@@ -122,7 +112,7 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
 
     protected static Connection getConnection() {
         Connection connection = connectionBuilder.getConnection();
-        log.debug("OPENED CONNECTION {}", connection);
+        log.debug("Opened connection {}", connection);
         return connection;
     }
 
@@ -130,7 +120,7 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
         if (connection != null) {
             try {
                 connection.close();
-                log.debug("CLOSED CONNECTION {}", connection);
+                log.debug("Closed connection {}", connection);
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to close connection", e);
             }
@@ -178,23 +168,20 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
     }*/
 
     private void createTables() throws SQLException, IOException {
-        Connection connection = null;
-        try {
-            connection = getConnection();
-            RunScript.execute(connection, load("create_tables.sql"));
-        } finally {
-            // We need to close the connection because H2 DB running in memory only allows one connection at a time     //TODO: Check this
-            closeConnection(connection);
-        }
+        runScript("create_tables.sql");
     }
 
     private void dropTables() throws SQLException, IOException {
+        runScript("drop_tables.sql");
+    }
+
+    private void runScript(String fileName) throws SQLException, IOException {
         Connection connection = null;
         try {
             connection = getConnection();
-            RunScript.execute(connection, load("drop_tables.sql"));
+            RunScript.execute(connection, load(fileName));
         } finally {
-            // We need to close the connection because H2 DB running in memory only allows one connection at a time     //TODO: Check this
+            // We need to close the connection because H2 DB running in memory only allows one connection at a time
             closeConnection(connection);
         }
     }

@@ -20,7 +20,6 @@ package com.hortonworks.iotas.storage.impl.jdbc.mysql.factory;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheStats;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.hortonworks.iotas.catalog.DataFeed;
@@ -66,6 +65,12 @@ public class MySqlExecutor implements SqlExecutor {
     private final ConnectionBuilder connectionBuilder;
     private final List<Connection> activeConnections;
 
+    /**
+     * @param cacheBuilder Guava cache configuration. The maximum number of entries (open connections) must not exceed the maximum
+     *                     number of open database connections
+     * @param config Object that contains arbitrary configuration that may be needed for any of the steps of the query execution process
+     * @param connectionBuilder Object that establishes the connection to the database
+     */
     public MySqlExecutor(CacheBuilder<SqlBuilder, PreparedStatementBuilder> cacheBuilder,
                          ExecutionConfig config, ConnectionBuilder connectionBuilder) {
         this.connectionBuilder = connectionBuilder;
@@ -77,7 +82,7 @@ public class MySqlExecutor implements SqlExecutor {
 
     protected void setCache(CacheBuilder<SqlBuilder, PreparedStatementBuilder> cacheBuilder) {
         cache = cacheBuilder.removalListener(new RemovalListener<SqlBuilder, PreparedStatementBuilder>() {
-            /** Removes database connection when the entry is removed from cache*/
+            /** Removes database connection when the entry is removed from cache */
             @Override
             public void onRemoval(RemovalNotification<SqlBuilder, PreparedStatementBuilder> notification) {
                 final PreparedStatementBuilder val = notification.getValue();
@@ -87,21 +92,6 @@ public class MySqlExecutor implements SqlExecutor {
                 }
             }
         }).build();
-    }
-
-    public Cache<SqlBuilder, PreparedStatementBuilder> getCache() {
-        return cache;
-    }
-
-    public void printCacheState() {
-        long size = cache.size();
-        CacheStats stats = cache.stats();
-        log.debug("size = " + size);
-        log.debug("stats = " + stats);
-    }
-
-    public void printActiveConnections() {
-        log.debug("ACTIVE CONNECTIONS: ", activeConnections);
     }
 
     // ============= Public API methods =============
@@ -154,7 +144,7 @@ public class MySqlExecutor implements SqlExecutor {
     @Override
     public Connection getConnection() {
         Connection connection = connectionBuilder.getConnection();
-//        log.debug("OPENED CONNECTION {}", connection);
+        log.debug("Opened connection {}", connection);
         activeConnections.add(connection);
         return connection;
     }
@@ -163,7 +153,7 @@ public class MySqlExecutor implements SqlExecutor {
         if (connection != null) {
             try {
                 connection.close();
-//                log.debug("CLOSED CONNECTION {}", connection);
+                log.debug("Closed connection {}", connection);
                 activeConnections.remove(connection);
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to close connection", e);
@@ -191,7 +181,7 @@ public class MySqlExecutor implements SqlExecutor {
         @Override
         public PreparedStatementBuilder call() throws Exception {
             final PreparedStatementBuilder preparedStatementBuilder = new PreparedStatementBuilder(getConnection(), config, sqlBuilder);
-            log.debug("Loading cache with [{}]", preparedStatementBuilder);
+            log.debug("Loading cache with [key: {}, val: {}]", sqlBuilder, preparedStatementBuilder);
             return preparedStatementBuilder;
         }
     }

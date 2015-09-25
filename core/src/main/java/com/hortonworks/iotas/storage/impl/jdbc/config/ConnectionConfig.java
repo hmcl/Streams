@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -15,36 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hortonworks.iotas.storage.impl.jdbc.connection;
 
-import com.hortonworks.iotas.storage.impl.jdbc.config.ConnectionConfig;
-
-import java.io.Serializable;
-import java.sql.Connection;
+package com.hortonworks.iotas.storage.impl.jdbc.config;
 
 /**
- * Provides a database connection.
+ * Object representing the configuration used to establish connection to the database
  */
-public interface ConnectionBuilder extends Serializable {
-    /**
-     * method must be idempotent.
-     */
-    void prepare();
-
-    /**
-     *
-     * @return a database connection over which the queries can be executed.
-     */
-    Connection getConnection();
-
-    /**
-     *
-     * @return the configuration used to establish connection to the database
-     */
-    ConnectionConfig getConfig();
-
-    /**
-     * called once when the system is shutting down, should be idempotent.
-     */
-    void cleanup();
+public interface ConnectionConfig<T> {
+    T getConfig();
 }
