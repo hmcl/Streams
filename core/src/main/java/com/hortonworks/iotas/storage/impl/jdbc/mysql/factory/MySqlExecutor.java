@@ -87,6 +87,7 @@ public class MySqlExecutor implements SqlExecutor {
             public void onRemoval(RemovalNotification<SqlBuilder, PreparedStatementBuilder> notification) {
                 final PreparedStatementBuilder val = notification.getValue();
                 log.debug("Removing entry from cache and closing connection [key:{}, val: {}]", notification.getKey(), val);
+                log.debug("Cache size: {}", cache.size());
                 if (val != null) {
                     closeConnection(val.getConnection());;
                 }
@@ -136,8 +137,8 @@ public class MySqlExecutor implements SqlExecutor {
         }
     }
 
-    // Package protected to be able to override it in the test framework
-    Long getNextId(Connection connection, String namespace) throws SQLException {
+    // Protected to be able to override it in the test framework
+    protected Long getNextId(Connection connection, String namespace) throws SQLException {
         return MetadataHelper.nextIdMySql(connection, namespace, queryTimeoutSecs);
     }
 

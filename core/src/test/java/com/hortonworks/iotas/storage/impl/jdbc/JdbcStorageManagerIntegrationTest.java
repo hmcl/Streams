@@ -30,6 +30,9 @@ import com.hortonworks.iotas.storage.impl.jdbc.config.HikariBasicConfig;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.ConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.connection.HikariCPConnectionBuilder;
 import com.hortonworks.iotas.storage.impl.jdbc.mysql.factory.MySqlExecutor;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.MetadataHelper;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.query.SqlBuilder;
+import com.hortonworks.iotas.storage.impl.jdbc.mysql.statement.PreparedStatementBuilder;
 import org.h2.tools.RunScript;
 import org.junit.After;
 import org.junit.Assert;
@@ -58,10 +61,10 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        // Connection has autoCommit set to false in order to allow rolling back transactions
-        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariConfig()), Database.MYSQL);
-//        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariTestConfig()), Database.MYSQL);
-//        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getH2HikariTestConfig()), Database.H2);
+        //MySql DB Configuration. Useful for local testing
+        //setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getMySqlHikariConfig()), Database.MYSQL);
+        //H2 DB Configuration. Useful for testing as part of the build
+        setFields(new HikariCPConnectionBuilder(HikariBasicConfig.getH2HikariConfig()), Database.H2);
     }
 
     @Before
@@ -77,13 +80,13 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
 
     private static void setFields(ConnectionBuilder connectionBuilder, Database db) {
         JdbcStorageManagerIntegrationTest.connectionBuilder = connectionBuilder;
-        jdbcStorageManager = new JdbcStorageManager(new MySqlExecutor(newGuavaCacheBuilder(),
+        jdbcStorageManager = new JdbcStorageManager(new MySqlExecutorForTest(newGuavaCacheBuilder(),
                 new ExecutionConfig(-1), connectionBuilder));
         database = db;
     }
 
     private static CacheBuilder newGuavaCacheBuilder() {
-        final long maxSize = 8;
+        final long maxSize = 2;
         return  CacheBuilder.newBuilder().maximumSize(maxSize);
     }
 
@@ -127,45 +130,21 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
         }
     }
 
-    /** //TODO: DELETE THIS
-     * This class overrides the connection methods to allow the tests to rollback the transactions and thus not commit to DB
-     *//*
-    private static class JdbcStorageManagerForTest extends JdbcStorageManager {
-        public JdbcStorageManagerForTest(ConnectionBuilder connectionBuilder, ExecutionConfig config) {
-            super(connectionBuilder, config);
-        }
-
-        private Connection connection;
-
-        @Override
-        Connection getConnection() throws SQLException {
-            if (connection == null || connection.isClosed()) {
-                setConnection();
-            }
-            return connection;
-        }
-
-        private void setConnection() throws SQLException {
-            Connection connection = connectionBuilder.getConnection();
-            connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-            this.connection = connection;
-            activeConnections.add(connection);
+    private static class MySqlExecutorForTest extends MySqlExecutor {
+        public MySqlExecutorForTest(CacheBuilder<SqlBuilder, PreparedStatementBuilder> cacheBuilder,
+            ExecutionConfig config, ConnectionBuilder connectionBuilder) { //}, Connection connection) {
+            super(cacheBuilder, config, connectionBuilder);
         }
 
         @Override
-        protected void closeConnection(Connection connection) {
-            // Do not close the connection
-        }
-
-        @Override
-        Long getNextId(Connection connection, String namespace) throws SQLException {
+        protected Long getNextId(Connection connection, String namespace) throws SQLException {
             if (database.equals(Database.MYSQL)) {
-                return super.getNextId(connection, namespace);
+                return super.nextId(namespace);
             } else {
-                return MetadataHelper.nextIdH2(connection, namespace, queryTimeoutSecs);
+                return MetadataHelper.nextIdH2(connection, namespace, getConfig().getQueryTimeoutSecs());
             }
         }
-    }*/
+    }
 
     private void createTables() throws SQLException, IOException {
         runScript("create_tables.sql");
@@ -199,6 +178,8 @@ public class JdbcStorageManagerIntegrationTest extends AbstractStoreManagerTest 
             add(new DataFeedsJdbcTest());
         }};
     }
+
+    // =============== Test Methods ===============
 
     @Test
     public void testList_EmptyDb_EmptyCollection() {
