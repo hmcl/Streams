@@ -78,6 +78,7 @@ public abstract class AbstractStoreManagerTest {
             Assert.assertEquals(storable1, getStorageManager().get(storable1.getStorableKey()));
 
             //test update by calling addOrUpdate on second item which should have the same primary key value as the first item.
+            Assert.assertEquals(storable1.getPrimaryKey(), storable2.getPrimaryKey());
             getStorageManager().addOrUpdate(storable2);
             Assert.assertEquals(storable2, getStorageManager().get(storable2.getStorableKey()));
 
@@ -213,7 +214,7 @@ public abstract class AbstractStoreManagerTest {
         {
             storableList = new ArrayList<Storable>() {{
                 add(createDevice("device-1", 0l, 1l));
-                add(createDevice("device-1", 0l, 2l));
+                add(createDevice("device-1", 1l, 1l));
                 add(createDevice("device-2", 2l, 2l));
                 add(createDevice("device-3", 3l, 3l));
             }};

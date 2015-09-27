@@ -39,7 +39,7 @@ public class Device implements DataSourceSubType {
     private Long version;
 
     /**
-     * Foreign key to reference to the parent table 'dataSources'.
+     * Primary key that is also a foreign key to referencing to the parent table 'dataSources'.
      */
     private Long dataSourceId;
 
