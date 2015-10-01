@@ -49,11 +49,10 @@ public class RuleProcessorRuntimeDependenciesBuilder<I, E> {
 
         if (rules != null) {
             for (Rule rule : rules) {
-                ruleRuntimeBuilder.setRule(rule);
-                ruleRuntimeBuilder.buildExpression();
+                ruleRuntimeBuilder.buildExpression(rule);
                 ruleRuntimeBuilder.buildScriptEngine();
                 ruleRuntimeBuilder.buildScript();
-                RuleRuntime<I, E> ruleRuntime = ruleRuntimeBuilder.buildRuleRuntime();
+                RuleRuntime<I, E> ruleRuntime = ruleRuntimeBuilder.getRuleRuntime(rule);
                 rulesRuntime.add(ruleRuntime);
                 log.trace("Added {}", ruleRuntime);
             }

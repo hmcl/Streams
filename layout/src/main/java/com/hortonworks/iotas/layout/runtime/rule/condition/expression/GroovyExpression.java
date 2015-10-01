@@ -23,6 +23,7 @@ import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 import java.util.Arrays;
 
 public class GroovyExpression extends Expression {
+
     public GroovyExpression(Condition condition) {
         super(condition);
     }
@@ -79,6 +80,4 @@ public class GroovyExpression extends Expression {
                         operation, Arrays.toString(Condition.ConditionElement.Operation.values())));
         }
     }
-
-
 }
