@@ -18,10 +18,29 @@
 
 package com.hortonworks.iotas.rules.action;
 
+import com.hortonworks.iotas.rules.processor.Processor;
+import com.hortonworks.iotas.rules.processor.Sink;
+
+import java.util.Collection;
+
 /** Action that has as part of its responsibilities to emit the output (i.e. Schema - tuple for a Storm deployment)
- * that is necessary for the next component (e.g. HDFS sink), already declared in th the layout, to be able to do its job.
- * A rule of this type will always another forward it's output to the predefined next element.
+ * that is necessary for the next component, already declared in th the layout, (e.g. HDFS sink, or another processor)
+ * to be able to do its job.
+ *
+ * All the sinks and processors associated with this action will be evaluated with the output set by this action. The output set
+ * in here becomes the input of the either the Sink or Processor. The output is related to the input received by this emitted by this
  * */
 public interface ProcessableAction extends Action {
 
+    //TODO: Setters ???
+
+    /**
+     * @return the sinks that are going to be executed as part of this action
+     */
+    Collection<Sink> getSinks();
+
+    /**
+     * @return the processors that are going to be executed as part of this action
+     */
+    Collection<Processor> getProcessors();
 }
