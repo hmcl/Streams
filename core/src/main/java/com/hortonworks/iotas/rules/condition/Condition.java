@@ -19,6 +19,7 @@
 package com.hortonworks.iotas.rules.condition;
 
 import java.util.Collection;
+import java.util.Map;
 
 public interface Condition {
     /** Evaluates this condition */
@@ -32,6 +33,8 @@ public interface Condition {
     /** @return The collection of condition elements that define this condition */
     Collection<ConditionElement> getConditionElements();
 
+    boolean evaluate(Map<String, Object> input);
+
      /*TODO
          String s = "int x = 5; int y = 3; x > 2 && y > 1"
         Binding binding = new Binding();
@@ -39,7 +42,4 @@ public interface Condition {
         shell.evaluate(s)
         true
     */
-
-    //build condition elements
-    //
 }

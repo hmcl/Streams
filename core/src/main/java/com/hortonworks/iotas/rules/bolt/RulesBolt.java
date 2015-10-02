@@ -46,7 +46,6 @@ public class RulesBolt extends BaseRichBolt {
     public void execute(Tuple input) {
         for (Rule rule : rules) {
             Map<String, Object> stringObjectMap = buildMap(input);
-            if ()
             if (rule.evaluate(stringObjectMap)) {
                 rule.execute(stringObjectMap);
             }

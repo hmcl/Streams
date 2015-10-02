@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition.expression;
+package com.hortonworks.iotas.rules.condition.scrip;
 
-import com.hortonworks.iotas.rules.condition.ConditionElement;
+import com.hortonworks.iotas.rules.condition.Condition;
 
-public interface ExpressionBuilder {
-    String getLogicalOperator(ConditionElement.LogicalOperator operator);
-    String getOperation(ConditionElement.Operation operation);
+import javax.script.ScriptException;
+
+public interface ScriptExecutor {
+    boolean evaluate(Condition condition) throws ScriptException;
 }

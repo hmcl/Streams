@@ -18,24 +18,26 @@
 
 package com.hortonworks.iotas.rules.condition;
 
-import com.hortonworks.iotas.rules.condition.expression.ExpressionBuilder;
+import com.hortonworks.iotas.rules.condition.expression.Expression;
+import com.hortonworks.iotas.rules.condition.scrip.ScriptExecutor;
 
 import java.util.Collection;
 
 public class ConditionImpl implements Condition {
     private ScriptExecutor scriptExecutor;
-    private ExpressionBuilder expressionBuilder;
+    private Expression expression;
     private Collection<ConditionElement> conditionElements;
     private String condString;
 
-    public ConditionImpl(ScriptExecutor scriptExecutor, ExpressionBuilder expressionBuilder) {
+    public ConditionImpl(ScriptExecutor scriptExecutor, Expression expression) {
         this.scriptExecutor = scriptExecutor;
-        this.expressionBuilder = expressionBuilder;
+        this.expression = expression;
     }
 
     @Override
     public boolean evaluate() {
-        return scriptExecutor.evaluate(this);
+        return true;    //TODO
+//        return scriptExecutor.evaluate(this);
     }
 
     @Override
@@ -52,8 +54,8 @@ public class ConditionImpl implements Condition {
     public String getConditionString() {
         if (condString != null) {
             for (ConditionElement conditionElement : conditionElements) {
-                condString += expressionBuilder.getOperation(conditionElement.getOperation());
-                condString += expressionBuilder.getLogicalOperator(conditionElement.getLogicalOperator());
+                condString += expression.getOperation(conditionElement.getOperation());
+                condString += expression.getLogicalOperator(conditionElement.getLogicalOperator());
             }
         }
         return condString;

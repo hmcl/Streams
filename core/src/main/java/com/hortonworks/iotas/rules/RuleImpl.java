@@ -64,7 +64,7 @@ public class RuleImpl implements Rule {
 
     @Override
     public boolean evaluate(Map<String, Object> input) {
-        return condition.evaluate();
+        return condition.evaluate(input);
     }
 
     @Override
