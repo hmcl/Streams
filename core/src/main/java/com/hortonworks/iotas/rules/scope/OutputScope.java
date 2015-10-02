@@ -16,16 +16,12 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.action;
+package com.hortonworks.iotas.rules.scope;
 
 import com.hortonworks.iotas.common.Schema;
-
-/** Action that has as part of its responsibilities to emit the output (i.e. Schema - tuple for in a Storm deployment)
- * that is necessary for the next component (Storm Bolt) declared in th the layout to be able to do its job.
- * A Storm Bolt is an example of a Processor. A rule of this type will always cause the next processor in the chain
- * to be executed and receive the declared output.
- * */
-public interface ProcessorAction {
-    void execute();
-    Schema getOutputSchema();
+/** Schema that defines the output of the execution of the rule. Not all rules return output.
+ * Some rules simply terminate once finished executing */
+public interface OutputScope {
+    /** Returns the schema that defines the output of the execution of the rule */
+    Schema getSchema();
 }

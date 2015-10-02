@@ -16,21 +16,12 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition;
+package com.hortonworks.iotas.rules.action;
 
-import com.hortonworks.iotas.common.Schema;
+/** Action that has as part of its responsibilities to emit the output (i.e. Schema - tuple for a Storm deployment)
+ * that is necessary for the next component (e.g. HDFS sink), already declared in th the layout, to be able to do its job.
+ * A rule of this type will always another forward it's output to the predefined next element.
+ * */
+public interface ProcessableAction extends Action {
 
-/** {@code T} is the type of the value */
-public interface ConditionElement<T> {
-    enum Operation { EQUALS, NOT_EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_EQUALS_TO, LESS_THAN_EQUALS_TO, BETWEEN }
-
-    enum LogicalOperator {AND, OR}
-
-    Schema.Field getField();
-
-    T getValue();
-
-    LogicalOperator getLogicalOperator();
-
-    Operation getOperation();
 }

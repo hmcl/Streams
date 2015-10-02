@@ -16,12 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.scope;
+package com.hortonworks.iotas.rules.processor;
 
-import com.hortonworks.iotas.common.Schema;
-/** Schema that defines the output of the execution of the rule. Not all rules return output.
- * Some rules simply terminate once finished executing */
-public interface OuputScope {
-    /** Returns the schema that defines the output of the execution of the rule */
-    Schema getSchema();
+public interface ProcessorElement {
 }

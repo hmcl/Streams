@@ -18,6 +18,9 @@
 
 package com.hortonworks.iotas.rules.action;
 
+/** Action that is at the end of the chain of execution. Once this action is complete, this rule will not be evaluated anymore.
+ *  The actions performed by this rule will not interact directly with any other components of the rule system, e.g., other rules,
+ *  processors, sinks, ... */
 public interface Action {
     void execute();
 }

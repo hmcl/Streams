@@ -22,16 +22,21 @@ import com.hortonworks.iotas.rules.action.Action;
 import com.hortonworks.iotas.rules.condition.Condition;
 import com.hortonworks.iotas.rules.scope.InputScope;
 
+import java.util.Map;
+
 public interface Rule {
     InputScope getInputScope();
 
     Condition getCondition();
 
-    /** Evaluates Condition */
-    boolean evaluate();
+    /** Evaluates Condition
+     *  @param input The output of a parser. Key is the field name, value is the field value */
+    boolean evaluate(Map<String, Object> input);
 
     Action getAction();
 
-    /** Executes Action */
-    void execute();
+    /** Executes Action
+     *  @param input The output of a parser. Key is the field name, value is the field value
+     **/
+    void execute(Map<String, Object> input);
 }

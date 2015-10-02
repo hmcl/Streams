@@ -16,11 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.action;
+package com.hortonworks.iotas.rules.processor;
 
-/** Action that is at the end of the chain of execution. Once this action is complete, this rule will not be evaluated anymore.
- *  The actions performed by this rule will interact directly with any other components of the rule system, e.g., other rules,
- *  bolts, ... */
-public interface FinalAction extends Action {
-    void execute();
+public interface Sink {
 }
