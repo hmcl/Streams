@@ -18,9 +18,11 @@
 
 package com.hortonworks.iotas.rules.scope;
 
-import com.hortonworks.iotas.common.Schema;
-
-public interface InputScope {
+/**
+ *
+ * @param <T> Type of the scope, for example Schema.
+ */
+public interface Definition<T> {
     /** Returns the schema that defines the scope of the rule */
-    Schema getSchema();
+    T getDefinition();
 }

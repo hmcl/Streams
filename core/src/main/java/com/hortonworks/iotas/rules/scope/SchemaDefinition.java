@@ -20,15 +20,15 @@ package com.hortonworks.iotas.rules.scope;
 
 import com.hortonworks.iotas.common.Schema;
 
-public class SchemaScope implements InputScope, OutputScope {
+public class SchemaDefinition implements Definition, OutputScope {
     private Schema schema;
 
-    public SchemaScope(Schema schema) {
+    public SchemaDefinition(Schema schema) {
         this.schema = schema;
     }
 
     @Override
-    public Schema getSchema() {
+    public Object getDefinition() {
         return schema;
     }
 }

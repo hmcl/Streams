@@ -20,13 +20,13 @@ package com.hortonworks.iotas.rules;
 
 import com.hortonworks.iotas.rules.action.Action;
 import com.hortonworks.iotas.rules.condition.Condition;
-import com.hortonworks.iotas.rules.scope.InputScope;
+import com.hortonworks.iotas.rules.scope.Definition;
 
 import java.util.Map;
 
 public interface Rule {
     // ===== Design Time =====
-    InputScope getInputScope();
+    Definition getDefinition();
 
     Condition getCondition();
 

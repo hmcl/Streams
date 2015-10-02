@@ -20,28 +20,28 @@ package com.hortonworks.iotas.rules;
 
 import com.hortonworks.iotas.rules.action.Action;
 import com.hortonworks.iotas.rules.condition.Condition;
-import com.hortonworks.iotas.rules.scope.InputScope;
+import com.hortonworks.iotas.rules.scope.Definition;
 
 import java.util.Map;
 
 public class RuleImpl implements Rule {
-    private InputScope inputScope;
+    private Definition definition;
     private Condition condition;
     private Action action;
 
-    public RuleImpl(InputScope inputScope, Condition condition, Action action) {
-        this.inputScope = inputScope;
+    public RuleImpl(Definition definition, Condition condition, Action action) {
+        this.definition = definition;
         this.condition = condition;
         this.action = action;
     }
 
     @Override
-    public InputScope getInputScope() {
-        return inputScope;
+    public Definition getDefinition() {
+        return definition;
     }
 
-    public void setInputScope(InputScope inputScope) {
-        this.inputScope = inputScope;
+    public void setDefinition(Definition definition) {
+        this.definition = definition;
     }
 
     @Override
