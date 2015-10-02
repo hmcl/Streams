@@ -18,8 +18,6 @@
 
 package com.hortonworks.iotas.rules.condition;
 
-public interface ConditionScript {
-    void execute(Condition condition);
-
-
+public interface ScriptExecutor {
+    boolean evaluate(Condition condition);
 }

@@ -25,9 +25,9 @@ public interface Condition {
     boolean evaluate();
 
     /** @return The string representation of this condition as it is evaluated by the script language */
-    String toString();
+    String getConditionString();
 
-    void addConditionElement(ConditionElement conditionElement);
+    void setConditionElements(Collection<ConditionElement> conditionElements);
 
     /** @return The collection of condition elements that define this condition */
     Collection<ConditionElement> getConditionElements();

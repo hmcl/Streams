@@ -18,22 +18,44 @@
 
 package com.hortonworks.iotas.rules.condition;
 
+import com.hortonworks.iotas.rules.condition.expression.ExpressionBuilder;
+
 import java.util.Collection;
 
 public class ConditionImpl implements Condition {
+    private ScriptExecutor scriptExecutor;
+    private ExpressionBuilder expressionBuilder;
+    private Collection<ConditionElement> conditionElements;
+    private String condString;
 
-    @Override
-    public boolean evaluate() {
-        return false;
+    public ConditionImpl(ScriptExecutor scriptExecutor, ExpressionBuilder expressionBuilder) {
+        this.scriptExecutor = scriptExecutor;
+        this.expressionBuilder = expressionBuilder;
     }
 
     @Override
-    public void addConditionElement(ConditionElement conditionElement) {
+    public boolean evaluate() {
+        return scriptExecutor.evaluate(this);
+    }
 
+    @Override
+    public void setConditionElements(Collection<ConditionElement> conditionElements) {
+        this.conditionElements = conditionElements;
     }
 
     @Override
     public Collection<ConditionElement> getConditionElements() {
-        return null;
+        return conditionElements;
+    }
+
+    @Override
+    public String getConditionString() {
+        if (condString != null) {
+            for (ConditionElement conditionElement : conditionElements) {
+                condString += expressionBuilder.getOperation(conditionElement.getOperation());
+                condString += expressionBuilder.getLogicalOperator(conditionElement.getLogicalOperator());
+            }
+        }
+        return condString;
     }
 }
