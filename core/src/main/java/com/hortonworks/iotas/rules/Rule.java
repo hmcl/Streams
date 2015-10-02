@@ -25,15 +25,19 @@ import com.hortonworks.iotas.rules.scope.InputScope;
 import java.util.Map;
 
 public interface Rule {
+    // ===== Design Time =====
     InputScope getInputScope();
 
     Condition getCondition();
 
-    /** Evaluates Condition
-     *  @param input The output of a parser. Key is the field name, value is the field value */
-    boolean evaluate(Map<String, Object> input);
-
     Action getAction();
+
+    // ===== Runtime =====
+
+    /** Evaluates Condition
+     *  @param input The output of a parser. Key is the field name, value is the field value
+     **/
+    boolean evaluate(Map<String, Object> input);
 
     /** Executes Action
      *  @param input The output of a parser. Key is the field name, value is the field value

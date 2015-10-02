@@ -25,7 +25,7 @@ import java.util.Collection;
 /** Rule that has part of its execution will invoke another rule or collection of rules  */
 public interface RuleAction extends Action {
     /**
-     * @return collection of rules that get evaluated during the execution of this rule
+     * @return collection of rules that get evaluated during the execution of this action
      */
     Collection<Rule> getChainedRules();
 }

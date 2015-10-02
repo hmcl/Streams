@@ -18,16 +18,57 @@
 
 package com.hortonworks.iotas.rules;
 
+import com.hortonworks.iotas.rules.action.Action;
+import com.hortonworks.iotas.rules.condition.Condition;
+import com.hortonworks.iotas.rules.scope.InputScope;
+
+import java.util.Map;
+
 public class RuleImpl implements Rule {
-    /*public RuleImpl(ConditionFactory conditionFactory) {
+    private InputScope inputScope;
+    private Condition condition;
+    private Action action;
+
+    public RuleImpl(InputScope inputScope, Condition condition, Action action) {
+        this.inputScope = inputScope;
+        this.condition = condition;
+        this.action = action;
     }
 
-    InputScope getInputScope() {}
+    @Override
+    public InputScope getInputScope() {
+        return inputScope;
+    }
 
-    Condition getCondition() {}
-    *//** Evaluates Condition *//*
-    boolean evaluate(){}
-    Action getAction(){}
-    *//** Executes Action *//*
-    void execute() {}*/
+    public void setInputScope(InputScope inputScope) {
+        this.inputScope = inputScope;
+    }
+
+    @Override
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public void setCondition(Condition condition) {
+        this.condition = condition;
+    }
+
+    @Override
+    public Action getAction() {
+        return action;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
+
+    @Override
+    public boolean evaluate(Map<String, Object> input) {
+        return condition.evaluate();
+    }
+
+    @Override
+    public void execute(Map<String, Object> input) {
+        action.execute(input);
+    }
 }

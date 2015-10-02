@@ -18,28 +18,9 @@
 
 package com.hortonworks.iotas.rules.condition;
 
-import java.util.Collection;
+public interface ConditionBuilder {
+    void setConditionElements();
+    void setScript();
 
-public interface Condition {
-    /** Evaluates this condition */
-    boolean evaluate();
-
-    /** @return The string representation of this condition as it is evaluated by the script language */
-    String toString();
-
-    void addConditionElement(ConditionElement conditionElement);
-
-    /** @return The collection of condition elements that define this condition */
-    Collection<ConditionElement> getConditionElements();
-
-     /*TODO
-         String s = "int x = 5; int y = 3; x > 2 && y > 1"
-        Binding binding = new Binding();
-        GroovyShell shell = new GroovyShell(binding);
-        shell.evaluate(s)
-        true
-    */
-
-    //build condition elements
-    //
+    Condition getCondition();
 }

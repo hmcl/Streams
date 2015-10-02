@@ -20,26 +20,20 @@ package com.hortonworks.iotas.rules.condition;
 
 import java.util.Collection;
 
-public interface Condition {
-    /** Evaluates this condition */
-    boolean evaluate();
+public class ConditionImpl implements Condition {
 
-    /** @return The string representation of this condition as it is evaluated by the script language */
-    String toString();
+    @Override
+    public boolean evaluate() {
+        return false;
+    }
 
-    void addConditionElement(ConditionElement conditionElement);
+    @Override
+    public void addConditionElement(ConditionElement conditionElement) {
 
-    /** @return The collection of condition elements that define this condition */
-    Collection<ConditionElement> getConditionElements();
+    }
 
-     /*TODO
-         String s = "int x = 5; int y = 3; x > 2 && y > 1"
-        Binding binding = new Binding();
-        GroovyShell shell = new GroovyShell(binding);
-        shell.evaluate(s)
-        true
-    */
-
-    //build condition elements
-    //
+    @Override
+    public Collection<ConditionElement> getConditionElements() {
+        return null;
+    }
 }

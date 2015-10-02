@@ -16,30 +16,19 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition;
+package com.hortonworks.iotas.rules.scope;
 
-import java.util.Collection;
+import com.hortonworks.iotas.common.Schema;
 
-public interface Condition {
-    /** Evaluates this condition */
-    boolean evaluate();
+public class SchemaScope implements InputScope, OutputScope {
+    private Schema schema;
 
-    /** @return The string representation of this condition as it is evaluated by the script language */
-    String toString();
+    public SchemaScope(Schema schema) {
+        this.schema = schema;
+    }
 
-    void addConditionElement(ConditionElement conditionElement);
-
-    /** @return The collection of condition elements that define this condition */
-    Collection<ConditionElement> getConditionElements();
-
-     /*TODO
-         String s = "int x = 5; int y = 3; x > 2 && y > 1"
-        Binding binding = new Binding();
-        GroovyShell shell = new GroovyShell(binding);
-        shell.evaluate(s)
-        true
-    */
-
-    //build condition elements
-    //
+    @Override
+    public Schema getSchema() {
+        return schema;
+    }
 }
