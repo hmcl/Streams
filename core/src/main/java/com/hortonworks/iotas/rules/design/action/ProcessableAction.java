@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.action;
+package com.hortonworks.iotas.rules.design.action;
 
-import com.hortonworks.iotas.rules.processor.Processor;
-import com.hortonworks.iotas.rules.processor.Sink;
+import com.hortonworks.iotas.rules.design.processor.Processor;
+import com.hortonworks.iotas.rules.design.processor.Sink;
 
 import java.util.Collection;
 
@@ -30,7 +30,7 @@ import java.util.Collection;
  * All the sinks and processors associated with this action will be evaluated with the output set by this action. The output set
  * in here becomes the input of the either the Sink or Processor. The output is related to the input received by this emitted by this
  * */
-public interface ProcessableAction extends Action {
+public interface ProcessableAction<I> extends Action<I> {
 
     //TODO: Setters ???
 

@@ -16,13 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.scope;
+package com.hortonworks.iotas.rules.design.processor;
 
-/**
- *
- * @param <T> Type of the scope, for example Schema.
- */
-public interface Definition<T> {
-    /** Returns the schema that defines the scope of the rule */
-    T getDefinition();
+public interface Sink {
 }

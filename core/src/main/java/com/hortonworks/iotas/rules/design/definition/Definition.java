@@ -16,12 +16,15 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition.scrip;
+package com.hortonworks.iotas.rules.design.definition;
 
-import com.hortonworks.iotas.rules.condition.Condition;
+import com.hortonworks.iotas.common.Schema;
 
-import javax.script.ScriptException;
-
-public interface ScriptExecutor {
-    boolean evaluate(Condition condition) throws ScriptException;
+/**
+ *
+ * @param <T> Type of the design time input to this rule, for example {@link Schema}.
+ */
+public interface Definition<T> {
+    /** Returns the Object that defines design time input of this rule */
+    T getDefinition();
 }

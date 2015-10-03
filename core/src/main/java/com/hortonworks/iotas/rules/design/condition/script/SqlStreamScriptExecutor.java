@@ -16,33 +16,39 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition.scrip;
+package com.hortonworks.iotas.rules.design.condition.script;
 
-import com.hortonworks.iotas.rules.condition.Condition;
+import com.hortonworks.iotas.rules.design.condition.Condition;
 
-import javax.script.Bindings;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-public class GroovyScriptExecutor implements ScriptExecutor {
+public class SqlStreamScriptExecutor implements ScriptExecutor {
 
-    private final Bindings bindings;
-    private final ScriptEngine engine;
+    private ScriptEngine engine;
 
-    public GroovyScriptExecutor() {
-        String s = "int x = 5; int y = 3; x > 2 && y > 1";
+    public SqlStreamScriptExecutor() {
+        Interface:
 
-        final ScriptEngineManager factory = new ScriptEngineManager();
-        engine = factory.getEngineByName( "Groovy" );
-        bindings = engine.createBindings();
-        bindings.put("engine", engine);
+        /*public interface Evaluation {
+            bool	filter(Tuple record);
+        }
+
+        Webserver side code:
+
+        Compiler comp = new Compiler(); // From Haohui's class
+        Evaluation obj = comp.compile("let x = 1:Integer,...; x + y > 0 and 1 < 2");
+        for (Tuple r : record) {
+            if (obj.filter(r)) {
+                action();
+            }
+        }
+
+*/
     }
-
-
 
     @Override
     public boolean evaluate(Condition condition) throws ScriptException {
-        return (boolean) engine.eval(condition.getConditionString());
+        return (boolean) engine.eval(condition.asString());
     }
 }

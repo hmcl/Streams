@@ -16,21 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition;
+package com.hortonworks.iotas.rules.design.processor;
 
-import com.hortonworks.iotas.common.Schema;
-
-/** {@code T} is the type of the value */
-public interface ConditionElement<T> {
-    enum Operation {EQUALS, NOT_EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_EQUALS_TO, LESS_THAN_EQUALS_TO}   //TODO: Support BETWEEN
-
-    enum LogicalOperator {AND, OR}
-
-    Schema.Field getField();
-
-    T getValue();
-
-    LogicalOperator getLogicalOperator();
-
-    Operation getOperation();
+public interface ProcessorElement {
 }

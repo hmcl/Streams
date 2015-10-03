@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.processor;
+package com.hortonworks.iotas.rules.design.condition.script;
 
-public interface ProcessorElement {
+import javax.script.ScriptException;
+
+public interface ScriptExecutor<I> {
+    boolean evaluate(I input) throws ScriptException;
 }

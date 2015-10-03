@@ -16,24 +16,23 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.bolt;
+package com.hortonworks.iotas.rules.runtime.bolt;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
-import com.hortonworks.iotas.rules.Rule;
+import com.hortonworks.iotas.rules.design.Rule;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class RulesBolt extends BaseRichBolt {
-    private List<Rule> rules;
+    private List<Rule<Tuple>> rules;
     private OutputCollector collector;
 
-    public RulesBolt(List<Rule> rules) {
+    public RulesBolt(List<Rule<Tuple>> rules) {
         this.rules = rules;
     }
 
@@ -44,17 +43,12 @@ public class RulesBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple input) {
-        for (Rule rule : rules) {
-            Map<String, Object> stringObjectMap = buildMap(input);
-            if (rule.evaluate(stringObjectMap)) {
-                rule.execute(stringObjectMap);
+        for (Rule<Tuple> rule : rules) {
+            if (rule.evaluate(input)) {
+                rule.execute(input);
             }
         }
         collector.ack(input);   //TODO ack all or nothing?
-    }
-
-    private Map<String, Object> buildMap(Tuple input) {
-        return new HashMap<>();
     }
 
     @Override

@@ -16,20 +16,19 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules;
+package com.hortonworks.iotas.rules.design;
 
-import com.hortonworks.iotas.rules.action.Action;
-import com.hortonworks.iotas.rules.condition.Condition;
-import com.hortonworks.iotas.rules.scope.Definition;
+import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.rules.design.action.Action;
+import com.hortonworks.iotas.rules.design.condition.Condition;
+import com.hortonworks.iotas.rules.design.definition.Definition;
 
-import java.util.Map;
-
-public class RuleImpl implements Rule {
+public class RuleStorm implements Rule<Tuple> {
     private Definition definition;
     private Condition condition;
     private Action action;
 
-    public RuleImpl(Definition definition, Condition condition, Action action) {
+    public RuleStorm(Definition definition, Condition condition, Action action) {
         this.definition = definition;
         this.condition = condition;
         this.action = action;
@@ -62,13 +61,15 @@ public class RuleImpl implements Rule {
         this.action = action;
     }
 
+
     @Override
-    public boolean evaluate(Map<String, Object> input) {
+    public boolean evaluate(Tuple input) {
         return condition.evaluate(input);
     }
 
     @Override
-    public void execute(Map<String, Object> input) {
+    public void execute(Tuple input) {
         action.execute(input);
     }
 }
+

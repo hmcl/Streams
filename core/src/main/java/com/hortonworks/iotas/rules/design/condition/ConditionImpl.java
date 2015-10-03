@@ -16,28 +16,33 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition;
+package com.hortonworks.iotas.rules.design.condition;
 
-import com.hortonworks.iotas.rules.condition.expression.Expression;
-import com.hortonworks.iotas.rules.condition.scrip.ScriptExecutor;
+import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.rules.design.condition.expression.Expression;
+import com.hortonworks.iotas.rules.design.condition.script.ScriptExecutor;
 
+import javax.script.ScriptException;
 import java.util.Collection;
 
-public class ConditionImpl implements Condition {
-    private ScriptExecutor scriptExecutor;
+public class ConditionImpl implements Condition<Tuple> {
+    private ScriptExecutor<Tuple> scriptExecutor;
     private Expression expression;
     private Collection<ConditionElement> conditionElements;
     private String condString;
 
-    public ConditionImpl(ScriptExecutor scriptExecutor, Expression expression) {
+    public ConditionImpl(ScriptExecutor<Tuple> scriptExecutor, Expression expression) {
         this.scriptExecutor = scriptExecutor;
         this.expression = expression;
     }
 
     @Override
-    public boolean evaluate() {
-        return true;    //TODO
-//        return scriptExecutor.evaluate(this);
+    public boolean evaluate(Tuple input) {
+        try {
+            return scriptExecutor.evaluate(input);
+        } catch (ScriptException e) {
+            throw new RuntimeException("Exception occurred while evaluating condition.", e);
+        }
     }
 
     @Override
@@ -51,7 +56,7 @@ public class ConditionImpl implements Condition {
     }
 
     @Override
-    public String getConditionString() {
+    public String asString() {
         if (condString != null) {
             for (ConditionElement conditionElement : conditionElements) {
                 condString += expression.getOperation(conditionElement.getOperation());

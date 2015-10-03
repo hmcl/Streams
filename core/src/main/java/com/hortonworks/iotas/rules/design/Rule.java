@@ -16,20 +16,24 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules;
+package com.hortonworks.iotas.rules.design;
 
-import com.hortonworks.iotas.rules.action.Action;
-import com.hortonworks.iotas.rules.condition.Condition;
-import com.hortonworks.iotas.rules.scope.Definition;
+import com.hortonworks.iotas.rules.design.action.Action;
+import com.hortonworks.iotas.rules.design.condition.Condition;
+import com.hortonworks.iotas.rules.design.definition.Definition;
 
-import java.util.Map;
-
-public interface Rule {
+/**
+ * @param <I> The type of input to this rule
+ */
+public interface Rule<I> {
     // ===== Design Time =====
+    /** @return the rule definition */
     Definition getDefinition();
 
+    /** @return the condition which when evaluating to true causes this rule's action to execute */
     Condition getCondition();
 
+    /** @return the action that gets executed when this rule's condition evaluates to true */
     Action getAction();
 
     // ===== Runtime =====
@@ -37,10 +41,10 @@ public interface Rule {
     /** Evaluates Condition
      *  @param input The output of a parser. Key is the field name, value is the field value
      **/
-    boolean evaluate(Map<String, Object> input);
+    boolean evaluate(I input);
 
     /** Executes Action
      *  @param input The output of a parser. Key is the field name, value is the field value
      **/
-    void execute(Map<String, Object> input);
+    void execute(I input);
 }
