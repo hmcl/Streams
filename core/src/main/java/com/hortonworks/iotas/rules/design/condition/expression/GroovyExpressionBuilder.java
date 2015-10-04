@@ -22,7 +22,7 @@ import com.hortonworks.iotas.rules.design.condition.ConditionElement;
 
 import java.util.Arrays;
 
-public class GroovyExpression implements Expression {
+public class GroovyExpressionBuilder implements ExpressionBuilder {
     @Override
     public String getLogicalOperator(ConditionElement.LogicalOperator operator) {
         switch(operator) {

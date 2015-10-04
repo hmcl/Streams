@@ -25,16 +25,16 @@ import com.hortonworks.iotas.rules.design.definition.Definition;
 /**
  * @param <I> The type of input to this rule
  */
-public interface Rule<I> {
+public interface Rule<D, I> {
     // ===== Design Time =====
     /** @return the rule definition */
-    Definition getDefinition();
+    Definition<D> getDefinition();
 
     /** @return the condition which when evaluating to true causes this rule's action to execute */
-    Condition getCondition();
+    Condition<I> getCondition();
 
     /** @return the action that gets executed when this rule's condition evaluates to true */
-    Action getAction();
+    Action<I> getAction();
 
     // ===== Runtime =====
 

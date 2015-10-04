@@ -22,7 +22,7 @@ import com.hortonworks.iotas.rules.design.condition.ConditionElement;
 
 import java.util.Arrays;
 
-public class SqlStreamExpression implements Expression {
+public class SqlStreamExpressionBuilder implements ExpressionBuilder {
     @Override
     public String getLogicalOperator(ConditionElement.LogicalOperator operator) {
         switch(operator) {

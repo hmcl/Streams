@@ -18,13 +18,14 @@
 
 package com.hortonworks.iotas.rules.design.condition;
 
-import com.hortonworks.iotas.common.Schema.Field;
+import com.hortonworks.iotas.common.Schema.Type;
+import com.hortonworks.iotas.rules.design.condition.expression.ExpressionBuilder;
 
 /**
- * @param <F> type of the first operand, e.g. {@link Field}
- * @param <S> type of the second operand, which should be constant, e.g. {@link String}, {@link Integer}
+ * @param <T> type of the first operand, e.g. {@link Type}
+ * @param <V> type of the second operand, which should be constant, e.g. {@link String}, {@link Integer}
  */
-public interface ConditionElement<F, S> {
+public interface ConditionElement<T, V> {
     enum Operation {EQUALS, NOT_EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_EQUALS_TO, LESS_THAN_EQUALS_TO}   //TODO: Support BETWEEN
 
     enum LogicalOperator {AND, OR}
@@ -32,12 +33,12 @@ public interface ConditionElement<F, S> {
     /**
      * @return The first operand of this condition
      */
-    F getFirstOperand();
+    FirstOperand<T> getFirstOperand();
 
     /**
      * @return The second operand of this condition
      */
-    S getSecondOperand();
+    SecondOperand<V> getSecondOperand();
 
     Operation getOperation();
 
@@ -47,5 +48,17 @@ public interface ConditionElement<F, S> {
      */
     LogicalOperator getLogicalOperator();
 
+    ExpressionBuilder getExpressionBuilder();
+
     String asString();
+
+    interface FirstOperand<T> {
+        String getName();
+        T getType();
+    }
+
+    interface SecondOperand<T> {
+        T getValue();
+    }
+
 }

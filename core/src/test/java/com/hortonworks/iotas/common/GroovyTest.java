@@ -42,4 +42,29 @@ public class GroovyTest {
         String s = "int x = 5; int y = 3; evaluate(x > 2 && y > 1)";
         System.out.printf("evaluating [%s] => %s", s, record);
     }
+
+    interface Val<T> {
+        T getValue();
+    }
+
+    class ValImpl<T> implements Val<T> {
+        T value;
+
+        public ValImpl(T value) {
+            this.value = value;
+        }
+
+        @Override
+        public T getValue() {
+            return value;
+        }
+    }
+
+    @Test
+    public void testName1() throws Exception {
+        Val<Integer> val = new ValImpl<>(4);
+
+
+
+    }
 }

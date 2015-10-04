@@ -18,26 +18,25 @@
 
 package com.hortonworks.iotas.rules.design.condition;
 
-import backtype.storm.tuple.Tuple;
-import com.hortonworks.iotas.rules.design.condition.expression.Expression;
+import com.hortonworks.iotas.rules.design.condition.expression.ExpressionBuilder;
 import com.hortonworks.iotas.rules.design.condition.script.ScriptExecutor;
 
 import javax.script.ScriptException;
 import java.util.Collection;
 
-public class ConditionImpl implements Condition<Tuple> {
-    private ScriptExecutor<Tuple> scriptExecutor;
-    private Expression expression;
-    private Collection<ConditionElement> conditionElements;
-    private String condString;
+public class ConditionImpl<I, F, S> implements Condition<I, F, S> {
+    private ScriptExecutor<I> scriptExecutor;
+    private ExpressionBuilder expressionBuilder;
+    private Collection<ConditionElement<F, S>> conditionElements;
+    private String conditionString;
 
-    public ConditionImpl(ScriptExecutor<Tuple> scriptExecutor, Expression expression) {
+    public ConditionImpl(ScriptExecutor<I> scriptExecutor, ExpressionBuilder expressionBuilder) {
         this.scriptExecutor = scriptExecutor;
-        this.expression = expression;
+        this.expressionBuilder = expressionBuilder;
     }
 
     @Override
-    public boolean evaluate(Tuple input) {
+    public boolean evaluate(I input) {
         try {
             return scriptExecutor.evaluate(input);
         } catch (ScriptException e) {
@@ -46,23 +45,22 @@ public class ConditionImpl implements Condition<Tuple> {
     }
 
     @Override
-    public void setConditionElements(Collection<ConditionElement> conditionElements) {
+    public void setConditionElements(Collection<ConditionElement<F, S>> conditionElements) {
         this.conditionElements = conditionElements;
     }
 
     @Override
-    public Collection<ConditionElement> getConditionElements() {
+    public Collection<ConditionElement<F, S>> getConditionElements() {
         return conditionElements;
     }
 
     @Override
     public String asString() {
-        if (condString != null) {
+        if (conditionString != null) {
             for (ConditionElement conditionElement : conditionElements) {
-                condString += expression.getOperation(conditionElement.getOperation());
-                condString += expression.getLogicalOperator(conditionElement.getLogicalOperator());
+                conditionString += conditionElement.asString();
             }
         }
-        return condString;
+        return conditionString;
     }
 }

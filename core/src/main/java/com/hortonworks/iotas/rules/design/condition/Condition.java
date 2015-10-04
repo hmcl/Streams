@@ -22,12 +22,14 @@ import java.util.Collection;
 
 /**
  * @param <I> The type of input on which this condition is evaluated
+ * @param <F> The type of the first operand in a ConditionElement
+ * @param <S> The type of second operand in a ConditionElement
  */
-public interface Condition<I> {
-    void setConditionElements(Collection<ConditionElement> conditionElements);
+public interface Condition<I, F, S> {
+    void setConditionElements(Collection<ConditionElement<F, S>> conditionElements);
 
     /** @return The collection of condition elements that define this condition */
-    Collection<ConditionElement> getConditionElements();
+    Collection<ConditionElement<F, S>> getConditionElements();
 
     /** @return The string representation of this condition as it is evaluated by the script language */
     String asString();
@@ -36,7 +38,7 @@ public interface Condition<I> {
 
      /* TODO: DELETE
         String s = "int x = 5; int y = 3; x > 2 && y > 1"
-        Binding binding = new Binding();
+        Binding binding = new Bindineg();
         GroovyShell shell = new GroovyShell(binding);
         shell.evaluate(s)
         true

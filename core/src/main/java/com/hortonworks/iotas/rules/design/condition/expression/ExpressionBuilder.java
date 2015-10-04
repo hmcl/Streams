@@ -20,7 +20,7 @@ package com.hortonworks.iotas.rules.design.condition.expression;
 
 import com.hortonworks.iotas.rules.design.condition.ConditionElement;
 
-public interface Expression {
+public interface ExpressionBuilder {
     String getLogicalOperator(ConditionElement.LogicalOperator operator);
     String getOperation(ConditionElement.Operation operation);
 }
