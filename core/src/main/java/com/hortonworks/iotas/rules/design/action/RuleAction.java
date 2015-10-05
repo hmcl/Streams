@@ -20,12 +20,12 @@ package com.hortonworks.iotas.rules.design.action;
 
 import com.hortonworks.iotas.rules.design.Rule;
 
-import java.util.Collection;
+import java.util.List;
 
 /** Rule that has part of its execution will invoke another rule or collection of rules  */
 public interface RuleAction<D, I> extends Action<I> {
     /**
      * @return collection of rules that get evaluated during the execution of this action
      */
-    Collection<Rule<D, I>> getChainedRules();
+    List<Rule<D, I>> getChainedRules();
 }

@@ -18,36 +18,71 @@
 
 package com.hortonworks.iotas.rules.design;
 
+import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.rules.design.action.Action;
 import com.hortonworks.iotas.rules.design.condition.Condition;
-import com.hortonworks.iotas.rules.design.definition.Definition;
 
-public class RuleImpl<D, I> implements Rule<D, I> {
-    private Definition<D> definition;
-    private Condition<I> condition;
-    private Action<I> action;
+public class RuleImpl implements Rule<Schema, Tuple, Schema.Field> {
+    private Long id;
+    private String name;
+    private String description;
 
-    public RuleImpl(Definition<D> definition, Condition<I, F , S> condition, Action<I> action) {
-        this.definition = definition;
+    private Schema declaration;
+    private Condition<Tuple, Schema.Field> condition;
+    private Action<Tuple> action;
+
+    public RuleImpl(Condition<Tuple, Schema.Field> condition, Action<Tuple> action) {
         this.condition = condition;
         this.action = action;
     }
 
     @Override
-    public Definition<D> getDefinition() {
-        return definition;
+    public Long getId() {
+        return id;
     }
 
-    public void setDefinition(Definition<D> definition) {
-        this.definition = definition;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
-    public Condition<I> getCondition() {
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public D getDeclaration() {
+        return declaration;
+    }
+
+    @Override
+    public void setDeclaration(D declaration) {
+        this.declaration = declaration;
+    }
+
+    @Override
+    public Condition<I, F> getCondition() {
         return condition;
     }
 
-    public void setCondition(Condition<I> condition) {
+    @Override
+    public void setCondition(Condition<I, F> condition) {
         this.condition = condition;
     }
 
@@ -56,10 +91,10 @@ public class RuleImpl<D, I> implements Rule<D, I> {
         return action;
     }
 
+    @Override
     public void setAction(Action<I> action) {
         this.action = action;
     }
-
 
     @Override
     public boolean evaluate(I input) {

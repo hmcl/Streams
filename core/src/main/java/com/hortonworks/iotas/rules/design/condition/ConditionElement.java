@@ -18,14 +18,13 @@
 
 package com.hortonworks.iotas.rules.design.condition;
 
-import com.hortonworks.iotas.common.Schema.Type;
+import com.hortonworks.iotas.common.Schema.Field;
 import com.hortonworks.iotas.rules.design.condition.expression.ExpressionBuilder;
 
 /**
- * @param <T> type of the first operand, e.g. {@link Type}
- * @param <V> type of the second operand, which should be constant, e.g. {@link String}, {@link Integer}
+ * @param <F> type of the first operand, e.g. {@link Field}
  */
-public interface ConditionElement<T, V> {
+public interface ConditionElement<F> {
     enum Operation {EQUALS, NOT_EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_EQUALS_TO, LESS_THAN_EQUALS_TO}   //TODO: Support BETWEEN
 
     enum LogicalOperator {AND, OR}
@@ -33,12 +32,12 @@ public interface ConditionElement<T, V> {
     /**
      * @return The first operand of this condition
      */
-    FirstOperand<T> getFirstOperand();
+    F getFirstOperand();
 
     /**
-     * @return The second operand of this condition
+     * @return The second operand of this condition. It is a constant
      */
-    SecondOperand<V> getSecondOperand();
+    String getSecondOperand();
 
     Operation getOperation();
 
@@ -48,17 +47,9 @@ public interface ConditionElement<T, V> {
      */
     LogicalOperator getLogicalOperator();
 
+    //TODO: Do I need this
     ExpressionBuilder getExpressionBuilder();
 
-    String asString();
-
-    interface FirstOperand<T> {
-        String getName();
-        T getType();
-    }
-
-    interface SecondOperand<T> {
-        T getValue();
-    }
-
+    /** Every class must implement this method */
+    String toString();
 }

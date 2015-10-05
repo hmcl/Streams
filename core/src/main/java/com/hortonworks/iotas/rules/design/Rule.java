@@ -18,23 +18,47 @@
 
 package com.hortonworks.iotas.rules.design;
 
+import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.rules.design.action.Action;
 import com.hortonworks.iotas.rules.design.condition.Condition;
-import com.hortonworks.iotas.rules.design.definition.Definition;
+import com.hortonworks.iotas.rules.design.condition.ConditionElement;
 
 /**
- * @param <I> The type of input to this rule
+ * @param <D> Type of the Design time input to this rule, for example {@link Schema}.
+ * @param <I> Type of runtime input to this rule, for example {@link Tuple}.
+ * @param <F> The type of the first operand in {@link ConditionElement} of a {@link Condition}, for example {@link Schema.Field}.
  */
-public interface Rule<D, I> {
+public interface Rule<D, I, F> {
+    // Metadata
+    Long getId();
+
+    void setId(Long id);
+
+    String getName();
+
+    void setName(String name);
+
+    String getDescription();
+
+    void setDescription(String description);
+
     // ===== Design Time =====
-    /** @return the rule definition */
-    Definition<D> getDefinition();
+
+    /** @return the rule declaration */
+    D getDeclaration();
+
+    void setDeclaration(D declaration);
 
     /** @return the condition which when evaluating to true causes this rule's action to execute */
-    Condition<I> getCondition();
+    Condition<I, F> getCondition();
+
+    void setCondition(Condition<I, F>  condition);
 
     /** @return the action that gets executed when this rule's condition evaluates to true */
     Action<I> getAction();
+
+    void setAction(Action<I> action);
 
     // ===== Runtime =====
 
