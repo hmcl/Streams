@@ -20,7 +20,7 @@ package com.hortonworks.iotas.rules.condition.expression;
 
 import com.hortonworks.iotas.rules.condition.Condition;
 
-/** Translates the DSL into the implementation language syntax */
+/** Translates the DSL expression into the implementation language syntax */
 public interface ExpressionBuilder {
     /**
      * @param operator the DSL logicalOperator for which to obtain the operator syntax

@@ -18,6 +18,7 @@
 
 package com.hortonworks.iotas.rules.processor;
 
+// Rule is an example of a processor element
 public interface ProcessorElement {
     Long getId();
     String getName();

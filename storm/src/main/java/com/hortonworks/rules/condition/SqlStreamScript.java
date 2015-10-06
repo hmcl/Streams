@@ -23,6 +23,7 @@ import com.hortonworks.iotas.rules.condition.script.Script;
 
 import javax.script.ScriptException;
 
+// TODO
 public class SqlStreamScript implements Script {
     @Override
     public void compile(Condition condition) {

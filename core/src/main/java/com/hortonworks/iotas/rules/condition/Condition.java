@@ -64,7 +64,6 @@ public interface Condition<F> {
          */
         LogicalOperator getLogicalOperator();
 
-        //TODO: Do I need this
         ExpressionBuilder getExpressionBuilder();
 
         void setExpressionBuilder(ExpressionBuilder expressionBuilder);

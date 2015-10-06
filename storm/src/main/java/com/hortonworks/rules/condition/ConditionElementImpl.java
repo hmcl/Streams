@@ -24,7 +24,7 @@ import com.hortonworks.iotas.rules.condition.expression.ExpressionBuilder;
 
 public abstract class ConditionElementImpl<F, V> implements Condition.ConditionElement<Schema.Field> {
     private Schema.Field firstOperand;    // first operand
-    private String secondOperand;   // second operand
+    private String secondOperand;         // second operand
     private LogicalOperator logicalOperator;
     private Operation operation;
     private ExpressionBuilder builder;

@@ -28,6 +28,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+//TODO
 public class GroovyScript implements Script<Tuple, Schema.Field> {
     private Condition<Schema.Field> condition;
 
