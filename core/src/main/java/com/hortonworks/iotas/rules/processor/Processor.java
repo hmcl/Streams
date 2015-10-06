@@ -18,5 +18,11 @@
 
 package com.hortonworks.iotas.rules.processor;
 
+import java.util.List;
+
 public interface Processor {
+    Long getId();
+    String getName();
+    String getDescription();
+    List<ProcessorElement> getProcessorElements();
 }

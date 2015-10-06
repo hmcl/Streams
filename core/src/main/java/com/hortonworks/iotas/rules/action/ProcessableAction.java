@@ -27,7 +27,7 @@ import java.util.List;
  * to be able to do its job.
  *
  * All the sinks and processors associated with this action will be evaluated with the output set by this action. The output set
- * in here becomes the input of the either the Sink or Processor. The output is related to the input received by this emitted by this
+ * in here becomes the input of the next Sink or Processor.
  * */
 public interface ProcessableAction<I> extends Action<I> {
 

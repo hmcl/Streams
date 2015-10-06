@@ -19,4 +19,7 @@
 package com.hortonworks.iotas.rules.processor;
 
 public interface ProcessorElement {
+    Long getId();
+    String getName();
+    String getDescription();
 }

@@ -16,23 +16,28 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition.script;
+package com.hortonworks.rules.condition;
 
+import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.rules.condition.Condition;
+import com.hortonworks.iotas.rules.condition.script.Script;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-public class GroovyScript implements Script<Tuple> {
+public class GroovyScript implements Script<Tuple, Schema.Field> {
+    private Condition<Schema.Field> condition;
+
     @Override
-    public Script compile(Condition condition) {
-        return null;
+    public void compile(Condition<Schema.Field> condition) {
+        this.condition = condition;
     }
 
     @Override
-    public boolean evaluate(Object input) throws ScriptException {
+    public boolean evaluate(Tuple input) throws ScriptException {
         return false;
     }
 
@@ -50,8 +55,8 @@ public class GroovyScript implements Script<Tuple> {
 
 
 
-    @Override
+    /*@Override
     public boolean evaluate(Condition condition) throws ScriptException {
         return (boolean) engine.eval(condition.asString());
-    }
+    }*/
 }

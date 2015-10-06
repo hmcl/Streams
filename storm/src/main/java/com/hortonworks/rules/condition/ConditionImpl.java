@@ -16,39 +16,34 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition.script;
+package com.hortonworks.rules.condition;
 
+import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.rules.condition.Condition;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
+import java.util.List;
 
-public class SqlStreamScript implements Script {
+public class ConditionImpl implements Condition<Schema.Field> {
+    private List<ConditionElement<Schema.Field>> conditionElements;
+    private String conditionString;
 
-    private ScriptEngine engine;
-
-    public SqlStreamScript() {
-        Interface:
-
-        /*public interface Evaluation {
-            bool	filter(Tuple record);
-        }
-
-        Webserver side code:
-
-        Compiler comp = new Compiler(); // From Haohui's class
-        Evaluation obj = comp.compile("let x = 1:Integer,...; x + y > 0 and 1 < 2");
-        for (Tuple r : record) {
-            if (obj.filter(r)) {
-                action();
-            }
-        }
-
-*/
+    @Override
+    public void setConditionElements(List<ConditionElement<Schema.Field>> conditionElements) {
+        this.conditionElements = conditionElements;
     }
 
     @Override
-    public boolean evaluate(Condition condition) throws ScriptException {
-        return (boolean) engine.eval(condition.asString());
+    public List<ConditionElement<Schema.Field>> getConditionElements() {
+        return conditionElements;
+    }
+
+    public String toString() {
+        if (conditionString != null) {
+            conditionString = "";
+            for (ConditionElement conditionElement : conditionElements) {
+                conditionString += conditionElement.toString();
+            }
+        }
+        return conditionString;
     }
 }

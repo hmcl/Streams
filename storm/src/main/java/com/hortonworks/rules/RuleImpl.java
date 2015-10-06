@@ -24,6 +24,9 @@ import com.hortonworks.iotas.rules.Rule;
 import com.hortonworks.iotas.rules.action.Action;
 import com.hortonworks.iotas.rules.condition.Condition;
 import com.hortonworks.iotas.rules.condition.script.Script;
+import com.hortonworks.iotas.rules.exception.ConditionEvaluationException;
+
+import javax.script.ScriptException;
 
 public class RuleImpl implements Rule<Schema, Tuple, Schema.Field> {
     private Long id;
@@ -31,11 +34,11 @@ public class RuleImpl implements Rule<Schema, Tuple, Schema.Field> {
     private String description;
 
     private Schema declaration;
-    private Condition<Tuple, Schema.Field> condition;
+    private Condition<Schema.Field> condition;
     private Action<Tuple> action;
-    private Script<Tuple> script;
+    private Script<Tuple, Schema.Field> script;     // Script used to evaluate the condition
 
-    public RuleImpl(Condition<Tuple, Schema.Field> condition, Action<Tuple> action, Script<Tuple> script) {
+    public RuleImpl(Condition<Schema.Field> condition, Action<Tuple> action, Script<Tuple, Schema.Field> script) {
         this.condition = condition;
         this.action = action;
         this.script = script;
@@ -46,6 +49,7 @@ public class RuleImpl implements Rule<Schema, Tuple, Schema.Field> {
         script.compile(condition);
     }
 
+    // ====== Metadata =======
     @Override
     public Long getId() {
         return id;
@@ -85,14 +89,29 @@ public class RuleImpl implements Rule<Schema, Tuple, Schema.Field> {
         this.declaration = declaration;
     }
 
+    // ====== Design time =======
+
     @Override
-    public Condition<Tuple, Schema.Field> getCondition() {
+    public Condition<Schema.Field> getCondition() {
         return condition;
     }
 
     @Override
-    public void setCondition(Condition<Tuple, Schema.Field> condition) {
+    public void setCondition(Condition<Schema.Field> condition) {
         this.condition = condition;
+    }
+
+    // ====== Runtime =======
+
+    @Override
+    public Script<Tuple, Schema.Field> getScript() {
+        return script;
+    }
+
+    @Override
+    public void setScript(Script<Tuple, Schema.Field> script) {
+        this.script = script;
+        script.compile(condition);
     }
 
     @Override
@@ -107,12 +126,28 @@ public class RuleImpl implements Rule<Schema, Tuple, Schema.Field> {
 
     @Override
     public boolean evaluate(Tuple input) {
-        return script.evaluate(input);
+        try {
+            return script.evaluate(input);
+        } catch (ScriptException e) {
+            throw new ConditionEvaluationException("Exception occurred when evaluating condition: " + this, e);
+        }
     }
 
     @Override
     public void execute(Tuple input) {
         action.execute(input);
+    }
+
+    @Override
+    public String toString() {
+        return "RuleImpl{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", declaration=" + declaration +
+                ", condition=" + condition +
+                ", action=" + action +
+                ", script=" + script +
+                '}';
     }
 }
 

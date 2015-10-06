@@ -16,40 +16,39 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules;
+package com.hortonworks.rules.condition;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.rules.condition.ConditionElement;
+import com.hortonworks.iotas.rules.condition.Condition;
 import com.hortonworks.iotas.rules.condition.expression.ExpressionBuilder;
 
-public abstract class ConditionElementImpl<F, V> implements ConditionElement<T, V> {
-    private T firstOperand;    // first operand
-    private V secondOperand;   // second operand
+public abstract class ConditionElementImpl<F, V> implements Condition.ConditionElement<Schema.Field> {
+    private Schema.Field firstOperand;    // first operand
+    private String secondOperand;   // second operand
     private LogicalOperator logicalOperator;
     private Operation operation;
     private ExpressionBuilder builder;
-
-    private String asString;
 
     public ConditionElementImpl(ExpressionBuilder builder) {
         this.builder = builder;
     }
 
+
     @Override
-    public T getFirstOperand() {
+    public Schema.Field getFirstOperand() {
         return firstOperand;
     }
 
-    public void setFirstOperand(T firstOperand) {
+    public void setFirstOperand(Schema.Field firstOperand) {
         this.firstOperand = firstOperand;
     }
 
     @Override
-    public V getSecondOperand() {
+    public String getSecondOperand() {
         return secondOperand;
     }
 
-    public void setSecondOperand(V secondOperand) {
+    public void setSecondOperand(String secondOperand) {
         this.secondOperand = secondOperand;
     }
 
@@ -86,10 +85,6 @@ public abstract class ConditionElementImpl<F, V> implements ConditionElement<T, 
 
     /** Example of output: temperature > 100 [&&] */
     public String toString() {
-        if (asString != null) {
-            if (firstOperand instanceof Schema.Field)
-            asString += ((Schema.Field)firstOperand).getName() + getOperation() + secondOperand + logicalOperator ;
-        }
-        return asString;
+        return firstOperand.getName() + getOperation() + secondOperand + logicalOperator ;
     }
 }

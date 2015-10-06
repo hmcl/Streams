@@ -22,7 +22,7 @@ package com.hortonworks.iotas.rules.action;
  *  The actions performed by this rule will not interact directly with any other components of the rule system, e.g., other rules,
  *  processors, sinks, ...
  *
- *  @param <I> type of the input */
+ *  @param <I> type of the input, e.g. {@code Tuple} */
 public interface Action<I> {
     void execute(I input);
 }

@@ -18,13 +18,13 @@
 
 package com.hortonworks.iotas.rules.condition.expression;
 
-import com.hortonworks.iotas.rules.condition.ConditionElement;
+import com.hortonworks.iotas.rules.condition.Condition;
 
 import java.util.Arrays;
 
 public class GroovyExpressionBuilder implements ExpressionBuilder {
     @Override
-    public String getLogicalOperator(ConditionElement.LogicalOperator operator) {
+    public String getLogicalOperator(Condition.ConditionElement.LogicalOperator operator) {
         switch(operator) {
             case AND:
                 return " && ";
@@ -32,12 +32,12 @@ public class GroovyExpressionBuilder implements ExpressionBuilder {
                 return " || ";
             default:
                 throw new UnsupportedOperationException(String.format("Operation [%s] not supported. List of supported operations: %s",
-                        operator, Arrays.toString(ConditionElement.LogicalOperator.values())));
+                        operator, Arrays.toString(Condition.ConditionElement.LogicalOperator.values())));
         }
     }
 
     @Override
-    public String getOperation(ConditionElement.Operation operation) {
+    public String getOperation(Condition.ConditionElement.Operation operation) {
         switch(operation) {
             case EQUALS:
                 return " == ";
@@ -53,7 +53,7 @@ public class GroovyExpressionBuilder implements ExpressionBuilder {
                 return " <= ";
             default:
                 throw new UnsupportedOperationException(String.format("Operation [%s] not supported. List of supported operations: %s",
-                        operation, Arrays.toString(ConditionElement.Operation.values())));
+                        operation, Arrays.toString(Condition.ConditionElement.Operation.values())));
         }
     }
 }

@@ -22,8 +22,13 @@ import com.hortonworks.iotas.rules.condition.Condition;
 
 import javax.script.ScriptException;
 
-public interface Script<I> {
-    <I,F> void compile(Condition<I,F> condition);
+/**
+ *
+ * @param <F> The name and type declaration of the fields that constitute the Condition to be evaluated.
+ * @param <I> The type of input on which this script is evaluated, e.g. {@code tuple}
+ */
+public interface Script<I, F> {
+    void compile(Condition<F> condition);
 
     boolean evaluate(I input) throws ScriptException;
 }

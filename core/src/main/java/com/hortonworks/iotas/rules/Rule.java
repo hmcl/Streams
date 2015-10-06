@@ -21,12 +21,13 @@ package com.hortonworks.iotas.rules;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.rules.action.Action;
 import com.hortonworks.iotas.rules.condition.Condition;
-import com.hortonworks.iotas.rules.condition.ConditionElement;
+import com.hortonworks.iotas.rules.condition.script.Script;
+import com.hortonworks.iotas.rules.exception.ConditionEvaluationException;
 
 /**
- * @param <D> Type of the Design time input to this rule, for example {@link Schema}.
+ * @param <D> Type of the Design time type declaration of this rule, for example {@link Schema}.
  * @param <I> Type of runtime input to this rule, for example {@code Tuple}
- * @param <F> The type of the first operand in {@link ConditionElement} of a {@link Condition}, for example {@link Schema.Field}.
+ * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Condition}, for example {@link Schema.Field}.
  */
 public interface Rule<D, I, F> {
     // Metadata
@@ -50,9 +51,9 @@ public interface Rule<D, I, F> {
     void setDeclaration(D declaration);
 
     /** @return the condition which when evaluating to true causes this rule's action to execute */
-    Condition<I, F> getCondition();
+    Condition<F> getCondition();
 
-    void setCondition(Condition<I, F>  condition);
+    void setCondition(Condition<F>  condition);
 
     /** @return the action that gets executed when this rule's condition evaluates to true */
     Action<I> getAction();
@@ -61,8 +62,16 @@ public interface Rule<D, I, F> {
 
     // ===== Runtime =====
 
+    /**
+     * @return The script used to evaluate this condition
+     */
+    Script<I,F> getScript();
+
+    void setScript(Script<I,F> script);
+
     /** Evaluates Condition
      *  @param input The output of a parser. Key is the field name, value is the field value
+     *  @throws ConditionEvaluationException
      **/
     boolean evaluate(I input);
 

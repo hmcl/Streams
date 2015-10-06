@@ -18,26 +18,26 @@
 
 package com.hortonworks.iotas.rules.condition.expression;
 
-import com.hortonworks.iotas.rules.condition.ConditionElement;
+import com.hortonworks.iotas.rules.condition.Condition;
 
 import java.util.Arrays;
 
 public class SqlStreamExpressionBuilder implements ExpressionBuilder {
     @Override
-    public String getLogicalOperator(ConditionElement.LogicalOperator operator) {
+    public String getLogicalOperator(Condition.ConditionElement.LogicalOperator operator) {
         switch(operator) {
             case AND:
                 return " AND ";
             case OR:
                 return " OR ";
             default:
-                throw new UnsupportedOperationException(String.format("Operation [%s] not support. List of supported operations: %s",
-                        operator, Arrays.toString(ConditionElement.LogicalOperator.values())));
+                throw new UnsupportedOperationException(String.format("Operation [%s] not supported. List of supported operations: %s",
+                        operator, Arrays.toString(Condition.ConditionElement.LogicalOperator.values())));
         }
     }
 
     @Override
-    public String getOperation(ConditionElement.Operation operation) {
+    public String getOperation(Condition.ConditionElement.Operation operation) {
         switch(operation) {
             case EQUALS:
                 return " == ";
@@ -52,8 +52,8 @@ public class SqlStreamExpressionBuilder implements ExpressionBuilder {
             case LESS_THAN_EQUALS_TO:
                 return " <= ";
             default:
-                throw new UnsupportedOperationException(String.format("Operation [%s] not support. List of supported operations: %s",
-                        operation, Arrays.toString(ConditionElement.Operation.values())));
+                throw new UnsupportedOperationException(String.format("Operation [%s] not supported. List of supported operations: %s",
+                        operation, Arrays.toString(Condition.ConditionElement.Operation.values())));
         }
     }
 }

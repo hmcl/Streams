@@ -16,9 +16,26 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.processor;
+package com.hortonworks.iotas.rules.exception;
 
-public interface Sink {
-    Long getId();
-    String getName();
+public class RuleExecutionException extends RuntimeException {
+    public RuleExecutionException() {
+        super();
+    }
+
+    public RuleExecutionException(String message) {
+        super(message);
+    }
+
+    public RuleExecutionException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public RuleExecutionException(Throwable cause) {
+        super(cause);
+    }
+
+    protected RuleExecutionException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

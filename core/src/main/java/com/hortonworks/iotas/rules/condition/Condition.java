@@ -18,13 +18,16 @@
 
 package com.hortonworks.iotas.rules.condition;
 
+import com.hortonworks.iotas.common.Schema.Field;
+import com.hortonworks.iotas.rules.condition.expression.ExpressionBuilder;
+
 import java.util.List;
 
 /**
- * @param <I> The type of input on which this condition is evaluated
- * @param <F> The type of the first operand in a ConditionElement
+ * This class represents a Rule Condition.
+ * @param <F> The type of the first operand in a {@link ConditionElement}, e.g. {@link Field}
  */
-public interface Condition<I, F> {
+public interface Condition<F> {
     /** @return The collection of condition elements that define this condition */
     List<ConditionElement<F>> getConditionElements();
 
@@ -35,5 +38,40 @@ public interface Condition<I, F> {
      * @return The string representation of this condition as it is evaluated by the script language */
     String toString();
 
-    boolean evaluate(I input);
+    /**
+     * @param <F> type of the first operand, e.g. {@link Field}
+     */
+    interface ConditionElement<F> {
+        enum Operation {EQUALS, NOT_EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_EQUALS_TO, LESS_THAN_EQUALS_TO}   //TODO: Support BETWEEN ?
+
+        enum LogicalOperator {AND, OR}
+
+        /**
+         * @return The first operand of this condition
+         */
+        F getFirstOperand();
+
+        /**
+         * @return The second operand of this condition. It is a constant
+         */
+        String getSecondOperand();
+
+        Operation getOperation();
+
+        /**
+         * @return The logical operator that precedes the next condition element <br/>
+         * null if this is the last condition element of the condition
+         */
+        LogicalOperator getLogicalOperator();
+
+        //TODO: Do I need this
+        ExpressionBuilder getExpressionBuilder();
+
+        void setExpressionBuilder(ExpressionBuilder expressionBuilder);
+
+        /**
+         * Every class must implement this method
+         */
+        String toString();
+    }
 }

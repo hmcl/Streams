@@ -16,21 +16,40 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition.expression;
+package com.hortonworks.rules.condition;
 
 import com.hortonworks.iotas.rules.condition.Condition;
+import com.hortonworks.iotas.rules.condition.script.Script;
 
-/** Translates the DSL into the implementation language syntax */
-public interface ExpressionBuilder {
-    /**
-     * @param operator the DSL logicalOperator for which to obtain the operator syntax
-     * @return the implementation language operator syntax
-     */
-    String getLogicalOperator(Condition.ConditionElement.LogicalOperator operator);
+import javax.script.ScriptException;
 
-    /**
-     * @param operation the DSL Operation for which to obtain the operation syntax
-     * @return the implementation language operation syntax
-     */
-    String getOperation(Condition.ConditionElement.Operation operation);
+public class SqlStreamScript implements Script {
+    @Override
+    public void compile(Condition condition) {
+
+    }
+
+    @Override
+    public boolean evaluate(Object input) throws ScriptException {
+        return false;
+    }
+    /*public SqlStreamScript() {
+        Interface:
+
+        *//*public interface Evaluation {
+            bool	filter(Tuple record);
+        }
+
+        Webserver side code:
+
+        Compiler comp = new Compiler(); // From Haohui's class
+        Evaluation obj = comp.compile("let x = 1:Integer,...; x + y > 0 and 1 < 2");
+        for (Tuple r : record) {
+            if (obj.filter(r)) {
+                action();
+            }
+        }
+
+        *//*
+    }*/
 }
