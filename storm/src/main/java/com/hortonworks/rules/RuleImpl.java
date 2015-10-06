@@ -16,12 +16,14 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design;
+package com.hortonworks.rules;
 
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.rules.design.action.Action;
-import com.hortonworks.iotas.rules.design.condition.Condition;
+import com.hortonworks.iotas.rules.Rule;
+import com.hortonworks.iotas.rules.action.Action;
+import com.hortonworks.iotas.rules.condition.Condition;
+import com.hortonworks.iotas.rules.condition.script.Script;
 
 public class RuleImpl implements Rule<Schema, Tuple, Schema.Field> {
     private Long id;
@@ -31,10 +33,17 @@ public class RuleImpl implements Rule<Schema, Tuple, Schema.Field> {
     private Schema declaration;
     private Condition<Tuple, Schema.Field> condition;
     private Action<Tuple> action;
+    private Script<Tuple> script;
 
-    public RuleImpl(Condition<Tuple, Schema.Field> condition, Action<Tuple> action) {
+    public RuleImpl(Condition<Tuple, Schema.Field> condition, Action<Tuple> action, Script<Tuple> script) {
         this.condition = condition;
         this.action = action;
+        this.script = script;
+        compileScript();
+    }
+
+    private void compileScript() {
+        script.compile(condition);
     }
 
     @Override
@@ -67,42 +76,42 @@ public class RuleImpl implements Rule<Schema, Tuple, Schema.Field> {
     }
 
     @Override
-    public D getDeclaration() {
+    public Schema getDeclaration() {
         return declaration;
     }
 
     @Override
-    public void setDeclaration(D declaration) {
+    public void setDeclaration(Schema declaration) {
         this.declaration = declaration;
     }
 
     @Override
-    public Condition<I, F> getCondition() {
+    public Condition<Tuple, Schema.Field> getCondition() {
         return condition;
     }
 
     @Override
-    public void setCondition(Condition<I, F> condition) {
+    public void setCondition(Condition<Tuple, Schema.Field> condition) {
         this.condition = condition;
     }
 
     @Override
-    public Action<I> getAction() {
+    public Action<Tuple> getAction() {
         return action;
     }
 
     @Override
-    public void setAction(Action<I> action) {
+    public void setAction(Action<Tuple> action) {
         this.action = action;
     }
 
     @Override
-    public boolean evaluate(I input) {
-        return condition.evaluate(input);
+    public boolean evaluate(Tuple input) {
+        return script.evaluate(input);
     }
 
     @Override
-    public void execute(I input) {
+    public void execute(Tuple input) {
         action.execute(input);
     }
 }

@@ -16,34 +16,37 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.runtime.bolt;
+package com.hortonworks.bolt;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
-import com.hortonworks.iotas.rules.design.Rule;
+import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.rules.Rule;
 
 import java.util.List;
 import java.util.Map;
 
 public class RulesBolt extends BaseRichBolt {
-    private List<Rule<Tuple>> rules;
+    private List<Rule<Schema, Tuple, Schema.Field>> rules;
     private OutputCollector collector;
 
-    public RulesBolt(List<Rule<Tuple>> rules) {
+    public RulesBolt(List<Rule<Schema, Tuple, Schema.Field>> rules) {
         this.rules = rules;
     }
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+        this.collector = collector;
 
+        //TODO
     }
 
     @Override
     public void execute(Tuple input) {
-        for (Rule<Tuple> rule : rules) {
+        for (Rule<Schema, Tuple, Schema.Field> rule : rules) {
             if (rule.evaluate(input)) {
                 rule.execute(input);
             }

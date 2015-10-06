@@ -16,10 +16,39 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design.condition.script;
+package com.hortonworks.iotas.rules.condition.script;
 
+import com.hortonworks.iotas.rules.condition.Condition;
+
+import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-public interface ScriptExecutor<I> {
-    boolean evaluate(I input) throws ScriptException;
+public class SqlStreamScript implements Script {
+
+    private ScriptEngine engine;
+
+    public SqlStreamScript() {
+        Interface:
+
+        /*public interface Evaluation {
+            bool	filter(Tuple record);
+        }
+
+        Webserver side code:
+
+        Compiler comp = new Compiler(); // From Haohui's class
+        Evaluation obj = comp.compile("let x = 1:Integer,...; x + y > 0 and 1 < 2");
+        for (Tuple r : record) {
+            if (obj.filter(r)) {
+                action();
+            }
+        }
+
+*/
+    }
+
+    @Override
+    public boolean evaluate(Condition condition) throws ScriptException {
+        return (boolean) engine.eval(condition.asString());
+    }
 }

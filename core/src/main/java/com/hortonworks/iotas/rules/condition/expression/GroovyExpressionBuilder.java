@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design.condition.expression;
+package com.hortonworks.iotas.rules.condition.expression;
 
-import com.hortonworks.iotas.rules.design.condition.ConditionElement;
+import com.hortonworks.iotas.rules.condition.ConditionElement;
 
 import java.util.Arrays;
 
@@ -31,7 +31,7 @@ public class GroovyExpressionBuilder implements ExpressionBuilder {
             case OR:
                 return " || ";
             default:
-                throw new UnsupportedOperationException(String.format("Operation [%s] not support. List of supported operations: %s",
+                throw new UnsupportedOperationException(String.format("Operation [%s] not supported. List of supported operations: %s",
                         operator, Arrays.toString(ConditionElement.LogicalOperator.values())));
         }
     }
@@ -52,7 +52,7 @@ public class GroovyExpressionBuilder implements ExpressionBuilder {
             case LESS_THAN_EQUALS_TO:
                 return " <= ";
             default:
-                throw new UnsupportedOperationException(String.format("Operation [%s] not support. List of supported operations: %s",
+                throw new UnsupportedOperationException(String.format("Operation [%s] not supported. List of supported operations: %s",
                         operation, Arrays.toString(ConditionElement.Operation.values())));
         }
     }

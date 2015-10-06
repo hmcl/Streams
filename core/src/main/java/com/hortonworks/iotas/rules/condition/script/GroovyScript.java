@@ -16,21 +16,30 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design.condition.script;
+package com.hortonworks.iotas.rules.condition.script;
 
-import com.hortonworks.iotas.rules.design.condition.Condition;
+import com.hortonworks.iotas.rules.condition.Condition;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-public class GroovyScriptExecutor implements ScriptExecutor {
+public class GroovyScript implements Script<Tuple> {
+    @Override
+    public Script compile(Condition condition) {
+        return null;
+    }
+
+    @Override
+    public boolean evaluate(Object input) throws ScriptException {
+        return false;
+    }
 
     private final Bindings bindings;
     private final ScriptEngine engine;
 
-    public GroovyScriptExecutor() {
+    public GroovyScript() {
         String s = "int x = 5; int y = 3; x > 2 && y > 1";
 
         final ScriptEngineManager factory = new ScriptEngineManager();

@@ -16,11 +16,16 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design.condition.expression;
+package com.hortonworks.iotas.rules.action;
 
-import com.hortonworks.iotas.rules.design.condition.ConditionElement;
+import com.hortonworks.iotas.rules.Rule;
 
-public interface ExpressionBuilder {
-    String getLogicalOperator(ConditionElement.LogicalOperator operator);
-    String getOperation(ConditionElement.Operation operation);
+import java.util.List;
+
+/** Rule that has part of its execution will invoke another rule or collection of rules  */
+public interface RuleAction<D, I, F> extends Action<I> {
+    /**
+     * @return collection of rules that get evaluated during the execution of this action
+     */
+    List<Rule<D, I, F>> getChainedRules();
 }

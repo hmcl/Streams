@@ -16,17 +16,16 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design;
+package com.hortonworks.iotas.rules;
 
-import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.rules.design.action.Action;
-import com.hortonworks.iotas.rules.design.condition.Condition;
-import com.hortonworks.iotas.rules.design.condition.ConditionElement;
+import com.hortonworks.iotas.rules.action.Action;
+import com.hortonworks.iotas.rules.condition.Condition;
+import com.hortonworks.iotas.rules.condition.ConditionElement;
 
 /**
  * @param <D> Type of the Design time input to this rule, for example {@link Schema}.
- * @param <I> Type of runtime input to this rule, for example {@link Tuple}.
+ * @param <I> Type of runtime input to this rule, for example {@code Tuple}
  * @param <F> The type of the first operand in {@link ConditionElement} of a {@link Condition}, for example {@link Schema.Field}.
  */
 public interface Rule<D, I, F> {

@@ -16,16 +16,14 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design.action;
+package com.hortonworks.iotas.rules.condition.script;
 
-import com.hortonworks.iotas.rules.design.Rule;
+import com.hortonworks.iotas.rules.condition.Condition;
 
-import java.util.List;
+import javax.script.ScriptException;
 
-/** Rule that has part of its execution will invoke another rule or collection of rules  */
-public interface RuleAction<D, I> extends Action<I> {
-    /**
-     * @return collection of rules that get evaluated during the execution of this action
-     */
-    List<Rule<D, I>> getChainedRules();
+public interface Script<I> {
+    <I,F> void compile(Condition<I,F> condition);
+
+    boolean evaluate(I input) throws ScriptException;
 }

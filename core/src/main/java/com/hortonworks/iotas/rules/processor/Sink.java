@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design.processor;
+package com.hortonworks.iotas.rules.processor;
 
-public interface Processor {
+public interface Sink {
 }

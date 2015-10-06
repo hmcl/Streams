@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design.condition;
+package com.hortonworks.rules;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.rules.design.condition.expression.ExpressionBuilder;
+import com.hortonworks.iotas.rules.condition.ConditionElement;
+import com.hortonworks.iotas.rules.condition.expression.ExpressionBuilder;
 
-public abstract class ConditionElementImpl<T, V> implements ConditionElement<T, V> {
+public abstract class ConditionElementImpl<F, V> implements ConditionElement<T, V> {
     private T firstOperand;    // first operand
     private V secondOperand;   // second operand
     private LogicalOperator logicalOperator;

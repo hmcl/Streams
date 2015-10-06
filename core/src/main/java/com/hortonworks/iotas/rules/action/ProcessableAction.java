@@ -16,12 +16,11 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design.action;
+package com.hortonworks.iotas.rules.action;
 
-import com.hortonworks.iotas.rules.design.processor.Processor;
-import com.hortonworks.iotas.rules.design.processor.Sink;
+import com.hortonworks.iotas.rules.processor.Sink;
 
-import java.util.Collection;
+import java.util.List;
 
 /** Action that has as part of its responsibilities to emit the output (i.e. Schema - tuple for a Storm deployment)
  * that is necessary for the next component, already declared in th the layout, (e.g. HDFS sink, or another processor)
@@ -37,10 +36,6 @@ public interface ProcessableAction<I> extends Action<I> {
     /**
      * @return the sinks that are going to be executed as part of this action
      */
-    Collection<Sink> getSinks();
-
-    /**
-     * @return the processors that are going to be executed as part of this action
-     */
-    Collection<Processor> getProcessors();
+    List<Sink> getSinks();
 }
+

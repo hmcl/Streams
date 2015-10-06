@@ -16,13 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design.action;
+package com.hortonworks.iotas.rules.processor;
 
-/** Action that is at the end of the chain of execution. Once this action is complete, this rule will not be evaluated anymore.
- *  The actions performed by this rule will not interact directly with any other components of the rule system, e.g., other rules,
- *  processors, sinks, ...
- *
- *  @param <I> type of the input */
-public interface Action<I> {
-    void execute(I input);
+public interface ProcessorElement {
 }

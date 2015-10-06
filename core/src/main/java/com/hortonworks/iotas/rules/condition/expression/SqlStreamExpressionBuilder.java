@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design.condition.expression;
+package com.hortonworks.iotas.rules.condition.expression;
 
-import com.hortonworks.iotas.rules.design.condition.ConditionElement;
+import com.hortonworks.iotas.rules.condition.ConditionElement;
 
 import java.util.Arrays;
 

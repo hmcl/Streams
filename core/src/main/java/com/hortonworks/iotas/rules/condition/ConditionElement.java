@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design.condition;
+package com.hortonworks.iotas.rules.condition;
 
 import com.hortonworks.iotas.common.Schema.Field;
-import com.hortonworks.iotas.rules.design.condition.expression.ExpressionBuilder;
+import com.hortonworks.iotas.rules.condition.expression.ExpressionBuilder;
 
 /**
  * @param <F> type of the first operand, e.g. {@link Field}
@@ -50,6 +50,10 @@ public interface ConditionElement<F> {
     //TODO: Do I need this
     ExpressionBuilder getExpressionBuilder();
 
-    /** Every class must implement this method */
+    void setExpressionBuilder(ExpressionBuilder expressionBuilder);
+
+    /**
+     * Every class must implement this method
+     */
     String toString();
 }

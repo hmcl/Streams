@@ -16,7 +16,24 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.design.processor;
+package com.hortonworks.iotas.rules.condition;
 
-public interface ProcessorElement {
+import java.util.List;
+
+/**
+ * @param <I> The type of input on which this condition is evaluated
+ * @param <F> The type of the first operand in a ConditionElement
+ */
+public interface Condition<I, F> {
+    /** @return The collection of condition elements that define this condition */
+    List<ConditionElement<F>> getConditionElements();
+
+    void setConditionElements(List<ConditionElement<F>> conditionElements);
+
+    /**
+     * All implementations must override {@code toString} method
+     * @return The string representation of this condition as it is evaluated by the script language */
+    String toString();
+
+    boolean evaluate(I input);
 }
