@@ -24,5 +24,5 @@ package com.hortonworks.iotas.rules.action;
  *
  *  @param <I> type of the input, e.g. {@code Tuple} */
 public interface Action<I> {
-    void execute(I input);
+    void execute(I input);  // write email log to a file
 }

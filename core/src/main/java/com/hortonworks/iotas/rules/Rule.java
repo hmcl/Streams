@@ -24,6 +24,8 @@ import com.hortonworks.iotas.rules.condition.Condition;
 import com.hortonworks.iotas.rules.condition.script.Script;
 import com.hortonworks.iotas.rules.exception.ConditionEvaluationException;
 
+import java.util.Map;
+
 /**
  * @param <D> Type of the Design time type declaration of this rule, for example {@link Schema}.
  * @param <I> Type of runtime input to this rule, for example {@code Tuple}
@@ -78,5 +80,13 @@ public interface Rule<D, I, F> {
     /** Executes Action
      *  @param input The output of a parser. Key is the field name, value is the field value
      **/
-    void execute(I input);
+    void execute(I input, E executor); /// storm collector.emit / spark ...
+
+    void execute(Map<String, Object> input);
+
+    <O> O execute(I input);
+
+    void execute(I input, Object output);
+
+
 }

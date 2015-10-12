@@ -18,19 +18,15 @@
 
 package com.hortonworks.rules.condition;
 
-import backtype.storm.tuple.Tuple;
-import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.rules.condition.Condition;
-import com.hortonworks.iotas.rules.condition.script.Script;
-
 import javax.script.Bindings;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 //TODO
-public class GroovyScript implements Script<Tuple, Schema.Field> {
-    private Condition<Schema.Field> condition;
+public class GroovyScript /*implements Script<Tuple, Schema.Field>*/ {
+    /*private Condition<Schema.Field> condition;
 
     @Override
     public void compile(Condition<Schema.Field> condition) {
@@ -53,11 +49,27 @@ public class GroovyScript implements Script<Tuple, Schema.Field> {
         bindings = engine.createBindings();
         bindings.put("engine", engine);
     }
-
+*/
 
 
     /*@Override
     public boolean evaluate(Condition condition) throws ScriptException {
         return (boolean) engine.eval(condition.asString());
     }*/
+
+    public static void main(String[] args) throws ScriptException {
+            final ScriptEngineManager factory = new ScriptEngineManager();
+            ScriptEngine engine = factory.getEngineByName("groovy");
+            Bindings bindings = engine.createBindings();
+            bindings.put("engine", engine);
+            bindings.put("x", 5);
+            bindings.put("y", 3);
+            System.out.println(engine.getBindings(ScriptContext.GLOBAL_SCOPE));
+//        Object record = engine.eval("x > 2 && y > 1");
+//        Object record = engine.eval("int x = 5; int y = 3; evaluate(x > 2 && y > 1)");
+            Object record = engine.eval("x > 2 && y > 1");
+
+            String s = "int x = 5; int y = 3; evaluate(x > 2 && y > 1)";
+            System.out.printf("evaluating [%s] => %s", s, record);
+    }
 }

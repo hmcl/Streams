@@ -36,5 +36,5 @@ public interface RuleAction<D, I, F> extends Action<I> {
     /**
      * @return collection of rules that get evaluated during the execution of this action
      */
-    List<Rule<D, I, F>> getChainedRules();
+        List<Rule<D, I, F>> getChainedRules();
 }

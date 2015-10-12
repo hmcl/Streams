@@ -16,8 +16,9 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.common;
+package com.hortonworks.rules;
 
+import groovy.util.Eval;
 import org.junit.Test;
 
 import javax.script.Bindings;
@@ -29,7 +30,7 @@ public class GroovyTest {
     @Test
     public void testName() throws Exception {
         final ScriptEngineManager factory = new ScriptEngineManager();
-        ScriptEngine engine = factory.getEngineByName("Nashorn");
+        ScriptEngine engine = factory.getEngineByName("groovy");
         Bindings bindings = engine.createBindings();
         bindings.put("engine", engine);
         bindings.put("x", 5);
@@ -37,34 +38,18 @@ public class GroovyTest {
         System.out.println(engine.getBindings(ScriptContext.GLOBAL_SCOPE));
 //        Object record = engine.eval("x > 2 && y > 1");
 //        Object record = engine.eval("int x = 5; int y = 3; evaluate(x > 2 && y > 1)");
-        Object record = engine.eval("x > 2 && y > 1");
+//        Object record = engine.eval("x > 2 && y > 1");
 
-        String s = "int x = 5; int y = 3; evaluate(x > 2 && y > 1)";
+//        String s = "int x = 5; int y = 3; evaluate(x > 2 && y > 1)";
+        String s = "int x = 5; int y = 3; x > 2 && y > 1";
+        Object record = engine.eval(s);
         System.out.printf("evaluating [%s] => %s", s, record);
-    }
-
-    interface Val<T> {
-        T getValue();
-    }
-
-    class ValImpl<T> implements Val<T> {
-        T value;
-
-        public ValImpl(T value) {
-            this.value = value;
-        }
-
-        @Override
-        public T getValue() {
-            return value;
-        }
     }
 
     @Test
     public void testName1() throws Exception {
-        Val<Integer> val = new ValImpl<>(4);
-
-
-
+        int result = (int) Eval.me("33*3");
+        System.out.println(result);
+        assert result == 99;
     }
 }
