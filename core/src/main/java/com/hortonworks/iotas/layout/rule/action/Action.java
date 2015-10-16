@@ -16,26 +16,33 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.action;
+package com.hortonworks.iotas.layout.rule.action;
 
-import com.hortonworks.iotas.rules.processor.Sink;
+/** Action that is at the end of the chain of execution. Once this action is complete, this rule will not be evaluated anymore.
+ *  The actions performed by this rule will not interact directly with any other components of the rule system, e.g., other rules,
+ *  processors, sinks, ...
+ *
+ *  @param <I> type of the input, e.g. {@code Tuple} */
+
+import com.hortonworks.iotas.layout.processor.Processor;
 
 import java.util.List;
 
-/** Action that has as part of its responsibilities to emit the output (i.e. Schema - tuple for a Storm deployment)
+/**
+ * // TODO - OUTDATED JAVADOC
+ * Action that has as part of its responsibilities to emit the output (i.e. Schema - tuple for a Storm deployment)
  * that is necessary for the next component, already declared in th the layout, (e.g. HDFS sink, or another processor)
  * to be able to do its job.
  *
  * All the sinks and processors associated with this action will be evaluated with the output set by this action. The output set
  * in here becomes the input of the next Sink or Processor.
- * */
-public interface ProcessableAction<I> extends Action<I> {
+ **/
 
-    //TODO: Setters ???
-
+public interface Action<F> {
     /**
-     * @return the sinks that are going to be executed as part of this action
+     * @return List of downstream processors called as part this action execution
      */
-    List<Sink> getSinks();
-}
+    List<Processor> getProcessors();
 
+    List<F> getDeclaredOutput();
+}

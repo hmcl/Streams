@@ -18,8 +18,8 @@
 
 package com.hortonworks.rules.condition;
 
-import com.hortonworks.iotas.rules.condition.Condition;
-import com.hortonworks.iotas.rules.condition.script.Script;
+import com.hortonworks.iotas.layout.rule.condition.Condition;
+import com.hortonworks.iotas.layout.rule.condition.script.Script;
 
 import javax.script.ScriptException;
 

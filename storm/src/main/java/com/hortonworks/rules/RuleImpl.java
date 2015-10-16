@@ -20,11 +20,11 @@ package com.hortonworks.rules;
 
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.rules.Rule;
-import com.hortonworks.iotas.rules.action.Action;
-import com.hortonworks.iotas.rules.condition.Condition;
-import com.hortonworks.iotas.rules.condition.script.Script;
-import com.hortonworks.iotas.rules.exception.ConditionEvaluationException;
+import com.hortonworks.iotas.layout.rule.Rule;
+import com.hortonworks.iotas.layout.rule.action.Action;
+import com.hortonworks.iotas.layout.rule.condition.Condition;
+import com.hortonworks.iotas.layout.rule.condition.script.Script;
+import com.hortonworks.iotas.layout.rule.exception.ConditionEvaluationException;
 
 import javax.script.ScriptException;
 
@@ -148,6 +148,17 @@ public class RuleImpl implements Rule<Schema, Tuple, Schema.Field> {
                 ", action=" + action +
                 ", script=" + script +
                 '}';
+    }
+
+    class C {
+        Long l1;
+        Long l2;
+
+    void method() {
+        if (l1 < l2) {
+            System.out.println("xico");
+        }
+    }
     }
 }
 

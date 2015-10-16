@@ -19,7 +19,7 @@
 package com.hortonworks.rules.condition;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.rules.condition.Condition;
+import com.hortonworks.iotas.layout.rule.condition.Condition;
 
 import java.util.List;
 
@@ -38,11 +38,13 @@ public class ConditionImpl implements Condition<Schema.Field> {
     }
 
     public String toString() {
-        if (conditionString != null) {
+        if (conditionString != null) {      // TODO: Check if I need to cache this
+            StringBuilder builder = new StringBuilder("");
             conditionString = "";
             for (ConditionElement conditionElement : conditionElements) {
-                conditionString += conditionElement.toString();
+                builder.append(conditionElement.toString());
             }
+            conditionString = builder.toString();
         }
         return conditionString;
     }

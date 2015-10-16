@@ -16,9 +16,12 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.processor;
+package com.hortonworks.iotas.layout.rule.runtime;
 
-public interface Sink {
-    Long getId();
-    String getName();
+
+/**
+ * @param <O> Type of output declared by the underlying streaming framework, for example {@code Schema}.
+ */
+public interface ProcessorRuntime<O> {
+    O getDeclaredOutput();
 }

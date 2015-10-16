@@ -16,19 +16,17 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition.script;
+package com.hortonworks.iotas.layout.processor;
 
-import com.hortonworks.iotas.rules.condition.Condition;
-
-import javax.script.ScriptException;
+import com.hortonworks.iotas.common.Schema;
 
 /**
- *
- * @param <F> The name and type declaration of the fields that constitute the Condition to be evaluated.
- * @param <I> The type of input on which this script is evaluated, e.g. {@code tuple}
+ * @param <O> Type of the design time output declared by this {@link Processor}, for example {@link Schema}.
  */
-public interface Script<I, F> {
-    void compile(Condition<F> condition);
-
-    boolean evaluate(I input) throws ScriptException;
+public interface Processor<I, O> {
+    Long getId();
+    String getName();
+    String getDescription();
+    I getDeclaredInput();
+    O getDeclaredOutput();
 }

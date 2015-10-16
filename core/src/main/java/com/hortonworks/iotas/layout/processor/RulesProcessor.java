@@ -16,21 +16,13 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition.expression;
+package com.hortonworks.iotas.layout.processor;
 
-import com.hortonworks.iotas.rules.condition.Condition;
+import com.hortonworks.iotas.layout.rule.Rule;
 
-/** Translates the DSL expression into the implementation language syntax */
-public interface ExpressionBuilder {
-    /**
-     * @param operator the DSL logicalOperator for which to obtain the operator syntax
-     * @return the implementation language operator syntax
-     */
-    String getLogicalOperator(Condition.ConditionElement.LogicalOperator operator);
+import java.util.List;
 
-    /**
-     * @param operation the DSL Operation for which to obtain the operation syntax
-     * @return the implementation language operation syntax
-     */
-    String getOperation(Condition.ConditionElement.Operation operation);
+public interface RulesProcessor<O> extends Processor<O> {
+    /** List of rules declared to be evaluated by this processor */
+    List<Rule> getRules();
 }

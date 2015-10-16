@@ -16,25 +16,28 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.action;
+package com.hortonworks.iotas.layout.rule.runtime;
 
-import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.rules.Rule;
-import com.hortonworks.iotas.rules.condition.Condition;
+import com.hortonworks.iotas.layout.rule.exception.ConditionEvaluationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
-/** Rule that has part of its execution will invoke another rule or, list of rules.
- *  Multiple rules are evaluated in sequence.
+/**
  *
-   @param <D> Type of the Design time type declaration of this rule, for example {@link Schema}.
  * @param <I> Type of runtime input to this rule, for example {@code Tuple}
- * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Condition}, for example {@link Schema.Field}.
- *
- *  */
-public interface RuleAction<D, I, F> extends Action<I> {
-    /**
-     * @return collection of rules that get evaluated during the execution of this action
-     */
-        List<Rule<D, I, F>> getChainedRules();
+ * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
+ */
+public interface RuleRuntime<I, E> {
+    Logger logger = LoggerFactory.getLogger(RuleRuntime.class);
+
+    /** Evaluates Condition
+     *  @param input The output of a parser. Key is the field name, value is the field value
+     *  @throws ConditionEvaluationException
+     **/
+    boolean evaluate(I input);
+
+    /** Executes Action
+     *  @param input The output of a parser. Key is the field name, value is the field value
+     **/
+    void execute(I input, E executor); /// storm collector.emit / spark ...
 }

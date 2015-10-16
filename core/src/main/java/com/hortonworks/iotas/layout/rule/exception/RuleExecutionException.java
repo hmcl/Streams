@@ -16,13 +16,26 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.processor;
+package com.hortonworks.iotas.layout.rule.exception;
 
-import java.util.List;
+public class RuleExecutionException extends RuntimeException {
+    public RuleExecutionException() {
+        super();
+    }
 
-public interface Processor {
-    Long getId();
-    String getName();
-    String getDescription();
-    List<ProcessorElement> getProcessorElements();
+    public RuleExecutionException(String message) {
+        super(message);
+    }
+
+    public RuleExecutionException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public RuleExecutionException(Throwable cause) {
+        super(cause);
+    }
+
+    protected RuleExecutionException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

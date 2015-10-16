@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.condition;
+package com.hortonworks.iotas.layout.rule.condition;
 
 import com.hortonworks.iotas.common.Schema.Field;
-import com.hortonworks.iotas.rules.condition.expression.ExpressionBuilder;
 
 import java.util.List;
 
@@ -63,10 +62,6 @@ public interface Condition<F> {
          * null if this is the last condition element of the condition
          */
         LogicalOperator getLogicalOperator();
-
-        ExpressionBuilder getExpressionBuilder();
-
-        void setExpressionBuilder(ExpressionBuilder expressionBuilder);
 
         /**
          * Every class must implement this method

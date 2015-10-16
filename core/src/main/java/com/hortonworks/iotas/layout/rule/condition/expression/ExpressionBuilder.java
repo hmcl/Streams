@@ -16,11 +16,21 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.processor;
+package com.hortonworks.iotas.layout.rule.condition.expression;
 
-// Rule is an example of a processor element
-public interface ProcessorElement {
-    Long getId();
-    String getName();
-    String getDescription();
+import com.hortonworks.iotas.layout.rule.condition.Condition;
+
+/** Translates the DSL expression into the implementation language syntax */
+public interface ExpressionBuilder {
+    /**
+     * @param operator the DSL logicalOperator for which to obtain the operator syntax
+     * @return the implementation language operator syntax
+     */
+    String getLogicalOperator(Condition.ConditionElement.LogicalOperator operator);
+
+    /**
+     * @param operation the DSL Operation for which to obtain the operation syntax
+     * @return the implementation language operation syntax
+     */
+    String getOperation(Condition.ConditionElement.Operation operation);
 }

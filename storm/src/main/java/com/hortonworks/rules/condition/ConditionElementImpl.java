@@ -19,8 +19,8 @@
 package com.hortonworks.rules.condition;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.rules.condition.Condition;
-import com.hortonworks.iotas.rules.condition.expression.ExpressionBuilder;
+import com.hortonworks.iotas.layout.rule.condition.Condition;
+import com.hortonworks.iotas.layout.rule.condition.expression.ExpressionBuilder;
 
 public abstract class ConditionElementImpl<F, V> implements Condition.ConditionElement<Schema.Field> {
     private Schema.Field firstOperand;    // first operand

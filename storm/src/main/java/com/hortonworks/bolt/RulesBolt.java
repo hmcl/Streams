@@ -18,22 +18,22 @@
 
 package com.hortonworks.bolt;
 
+import backtype.storm.task.IOutputCollector;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
-import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.rules.Rule;
+import com.hortonworks.iotas.layout.rule.runtime.RuleRuntime;
 
 import java.util.List;
 import java.util.Map;
 
 public class RulesBolt extends BaseRichBolt {
-    private List<Rule<Schema, Tuple, Schema.Field>> rules;
+    private List<RuleRuntime<Tuple, IOutputCollector>> rules;
     private OutputCollector collector;
 
-    public RulesBolt(List<Rule<Schema, Tuple, Schema.Field>> rules) {
+    public RulesBolt(List<RuleRuntime<Tuple, IOutputCollector>> rules) {
         this.rules = rules;
     }
 
@@ -45,56 +45,16 @@ public class RulesBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple input) {
-        for (Rule<Schema, Tuple, Schema.Field> rule : rules) {
+        for (RuleRuntime<Tuple, IOutputCollector> rule : rules) {
             if (rule.evaluate(input)) {
-                rule.execute(input, collector); // collector can be null
-            }
-            collector.emit("hdfs",tuple);
-            collector.emit("hive",tuple);
-        }
-        collector.ack(input);   //TODO ack all or nothing?
-    }
-
-    Map<Long, String> ruleIdToStreamId;
-
-    public void execute1(Tuple input) {
-        for (Rule<Schema, Tuple, Schema.Field> rule : rules) {
-            if (rule.evaluate(input)) {
-                Tuple out = rule.execute(input);
-                if (out != null) {
-                    String streamId =  ruleIdToStreamId.get(rule.getId());
-                    collector.emit(streamId, out);
-                }
+                rule.execute(input, collector); // collector can be null, when the rule does not forward a stream
             }
         }
         collector.ack(input);   //TODO ack all or nothing?
     }
-
-    public void execute2(Tuple input) {
-        for (Rule<Schema, Tuple, Schema.Field> rule : rules) {
-            if (rule.evaluate(input)) {
-                Map<String, Object> out = rule.execute(input);
-                if (out != null) {
-                    String streamId =  ruleIdToStreamId.get(rule.getId());
-                    collector.emit(streamId, out);
-                }
-            }
-        }
-        collector.ack(input);   //TODO ack all or nothing?
-    }
-
-    void execute(I input);
-
-    void execute(Map<String, Object> input);
-
-    <O> O execute(I input);
-
-    Map<String, Object> execute(I input);
-
-    void execute(I input, Object output);
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-
+        declarer.declareStream(streamId, Fields);
     }
 }

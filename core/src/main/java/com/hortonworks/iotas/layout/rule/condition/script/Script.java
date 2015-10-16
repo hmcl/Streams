@@ -16,13 +16,20 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.rules.action;
+package com.hortonworks.iotas.layout.rule.condition.script;
 
-/** Action that is at the end of the chain of execution. Once this action is complete, this rule will not be evaluated anymore.
- *  The actions performed by this rule will not interact directly with any other components of the rule system, e.g., other rules,
- *  processors, sinks, ...
+
+import com.hortonworks.iotas.layout.rule.condition.Condition;
+
+import javax.script.ScriptException;
+
+/**
  *
- *  @param <I> type of the input, e.g. {@code Tuple} */
-public interface Action<I> {
-    void execute(I input);  // write email log to a file
+ * @param <F> The name and type declaration of the fields that constitute the Condition to be evaluated.
+ * @param <I> The type of input on which this script is evaluated, e.g. {@code tuple}
+ */
+public interface Script<I, F> {
+    void compile(Condition<F> condition);
+
+    boolean evaluate(I input) throws ScriptException;
 }
