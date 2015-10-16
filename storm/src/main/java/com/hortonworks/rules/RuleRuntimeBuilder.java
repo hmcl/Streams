@@ -16,13 +16,12 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.processor;
+package com.hortonworks.rules;
 
 import com.hortonworks.iotas.layout.rule.Rule;
+import com.hortonworks.iotas.layout.rule.runtime.RuleRuntime;
 
-import java.util.List;
+public interface RuleRuntimeBuilder {
 
-public interface RulesProcessor<F> extends Processor {
-    /** List of rules declared to be evaluated by this processor */
-    List<Rule<F>> getRules();
+    RuleRuntime getRuleRuntime(Rule rule);
 }

@@ -18,6 +18,11 @@
 
 package com.hortonworks.rules.condition;
 
+import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.layout.rule.condition.Condition;
+import com.hortonworks.iotas.layout.rule.condition.script.Script;
+
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -25,8 +30,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 //TODO
-public class GroovyScript /*implements Script<Tuple, Schema.Field>*/ {
-    /*private Condition<Schema.Field> condition;
+public class GroovyScript implements Script<Tuple, Schema.Field> {
+    private Condition<Schema.Field> condition;
 
     @Override
     public void compile(Condition<Schema.Field> condition) {
@@ -49,8 +54,6 @@ public class GroovyScript /*implements Script<Tuple, Schema.Field>*/ {
         bindings = engine.createBindings();
         bindings.put("engine", engine);
     }
-*/
-
 
     /*@Override
     public boolean evaluate(Condition condition) throws ScriptException {

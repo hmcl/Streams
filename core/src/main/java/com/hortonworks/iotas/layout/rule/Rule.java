@@ -47,7 +47,7 @@ public interface Rule<F> {
     void setCondition(Condition<F>  condition);
 
     /** @return the action that gets executed when this rule's condition evaluates to true */
-    Action getAction();
+    Action<F> getAction();
 
-    void setAction(Action action);
+    void setAction(Action<F> action);
 }
