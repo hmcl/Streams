@@ -28,8 +28,13 @@ import javax.script.ScriptException;
  * @param <F> The name and type declaration of the fields that constitute the Condition to be evaluated.
  * @param <I> The type of input on which this script is evaluated, e.g. {@code tuple}
  */
-public interface Script<I, F> {
-    void compile(Condition<F> condition);
+public abstract class Script<I, F> {
 
-    boolean evaluate(I input) throws ScriptException;
+    public Script(Condition<F> condition) {
+        compile(condition);
+    }
+
+    protected abstract void compile(Condition<F> condition);
+
+    public abstract boolean evaluate(I input) throws ScriptException;
 }

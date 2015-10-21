@@ -40,9 +40,11 @@ import java.util.List;
 
 public interface Action<F> {
     /**
+     * All downstream processors must receive the same output, as defined by getDeclaredOutput.
+     * Different outputs must be handled by different rules
      * @return List of downstream processors called as part this action execution
      */
     List<Processor> getProcessors();
 
-    List<F> getDeclaredOutput(Processor processor);
+    List<F> getDeclaredOutput();
 }

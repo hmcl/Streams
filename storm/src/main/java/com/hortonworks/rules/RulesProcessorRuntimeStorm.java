@@ -23,10 +23,8 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.processor.Processor;
 import com.hortonworks.iotas.layout.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.rule.Rule;
-import com.hortonworks.iotas.layout.rule.action.Action;
 import com.hortonworks.iotas.layout.rule.runtime.RuleRuntime;
 import com.hortonworks.rules.condition.GroovyScript;
 import org.slf4j.Logger;
@@ -70,10 +68,12 @@ public class RulesProcessorRuntimeStorm {
     }
 
     private Fields getFields(Rule<Schema.Field> rule) {
-        Action<Schema.Field> action = rule.getAction();
-        for (Processor processor : action.getProcessors()) {
-            List<Schema.Field> declaredOutput = action.getDeclaredOutput(processor);
+        List<Schema.Field> designTimeOutput = rule.getAction().getDeclaredOutput();
+        List<String> runtimeFieldNames = new ArrayList<>(designTimeOutput.size());
+        for (Schema.Field designTimeField : designTimeOutput) {
+            runtimeFieldNames.add(designTimeField.getName());
         }
+        return new Fields(runtimeFieldNames);
     }
 
 }

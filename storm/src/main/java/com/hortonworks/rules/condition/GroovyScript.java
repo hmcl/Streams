@@ -30,16 +30,33 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 //TODO
-public class GroovyScript implements Script<Tuple, Schema.Field> {
+public class GroovyScript extends Script<Tuple, Schema.Field> {
     private Condition<Schema.Field> condition;
+    private String conditionStr;
+
+    public GroovyScript(Condition<Schema.Field> condition) {
+        super(condition);
+    }
 
     @Override
     public void compile(Condition<Schema.Field> condition) {
         this.condition = condition;
+        StringBuilder sb = new StringBuilder("");
+        for (Condition.ConditionElement<Schema.Field> element : condition.getConditionElements()) {
+            sb.append(element.getFirstOperand().getType().getJavaType())
+                    .append(" ")
+                    .append(element.getFirstOperand().getName())
+                    .append(" = ")
+                    .append("$").append(element.getFirstOperand().getName())
+                    .append(";")
+                    .append(" ");
+        }
+        conditionStr = sb.toString();
     }
 
     @Override
     public boolean evaluate(Tuple input) throws ScriptException {
+        setValues(input);
         return false;
     }
 
@@ -74,5 +91,16 @@ public class GroovyScript implements Script<Tuple, Schema.Field> {
 
             String s = "int x = 5; int y = 3; evaluate(x > 2 && y > 1)";
             System.out.printf("evaluating [%s] => %s", s, record);
+    }
+
+    public void setValues(Tuple values) {
+        String conditionStr = new String
+
+
+        for (String fieldName : values.getFields()) {
+
+        }
+
+
     }
 }
