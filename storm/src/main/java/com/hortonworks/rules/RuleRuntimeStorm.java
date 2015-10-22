@@ -19,55 +19,53 @@
 package com.hortonworks.rules;
 
 import backtype.storm.task.IOutputCollector;
+import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.rule.Rule;
 import com.hortonworks.iotas.layout.rule.condition.script.Script;
 import com.hortonworks.iotas.layout.rule.exception.ConditionEvaluationException;
+import com.hortonworks.iotas.layout.rule.runtime.ProcessorRuntime;
 import com.hortonworks.iotas.layout.rule.runtime.RuleRuntime;
 
 import javax.script.ScriptException;
 import java.util.Arrays;
 
-public class StormRuntime implements RuleRuntime<Tuple, IOutputCollector> {
-    private Rule<Schema.Field> rule;
-    private Script<Tuple, Schema.Field> script;     // Script used to evaluate the condition
+public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
+    private final ProcessorRuntime<OutputFieldsDeclarer> processorRuntime;
+    private final Rule<Schema.Field> rule;
+    private final Script<Tuple, Schema.Field> script;     // Script used to evaluate the condition
 
-    public StormRuntime(Rule<Schema.Field> rule, Script<Tuple, Schema.Field> script) {
+    public RuleRuntimeStorm(ProcessorRuntime<OutputFieldsDeclarer> processorRuntime,
+                            Rule<Schema.Field> rule, Script<Tuple, Schema.Field> script) {
+        this.processorRuntime = processorRuntime;
         this.rule = rule;
         this.script = script;
-        compileScript();            //TODO - this can probably be static
-    }
 
-    private void compileScript() {
-        script.compile(rule.getCondition());
     }
 
     @Override
     public boolean evaluate(Tuple input) {
-        logger.debug("Evaluating condition for rule: [{}] \n\t input tuple: [{}]", rule, input);
+        logger.debug("Evaluating condition for rule: [{}] \n\tinput tuple: [{}]", rule, input);
         try {
             return script.evaluate(input);
         } catch (ScriptException e) {
-            throw new ConditionEvaluationException("Exception occurred when evaluating condition: " + this, e);
+            throw new ConditionEvaluationException("Exception occurred when evaluating condition. " + this, e);
         }
     }
 
     @Override
     public void execute(Tuple input, IOutputCollector collector) {
         logger.debug("Executing rule: [{}] \n\t input tuple: [{}] \n\t collector: [{}]", rule, input, collector);
-        collector.emit(getStreamId(), Arrays.asList(input), input.getValues());
+        collector.emit(((RulesProcessorRuntimeStorm)processorRuntime).getStreamId(rule), Arrays.asList(input), input.getValues());
     }
 
     @Override
     public String toString() {
-        return "StormRuleRuntime{" +
-                "rule=" + rule +
+        return "RuleRuntimeStorm{" +
+                "processorRuntime=" + processorRuntime +
+                ", rule=" + rule +
                 ", script=" + script +
                 '}';
-    }
-
-    public String getStreamId() {
-        return rule.get;
     }
 }

@@ -16,21 +16,12 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.processor;
+package com.hortonworks.rules;
 
-import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.rule.Rule;
-import com.hortonworks.iotas.layout.rule.condition.Condition;
+import com.hortonworks.iotas.layout.rule.runtime.RuleRuntime;
 
 import java.util.List;
 
-/**
- * Object representing a design time rules processor.
- * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Rule} {@link Condition}, for example {@link Schema.Field}
- */
-public interface RulesProcessor<I, O, F> extends Processor<I, O> {
-    /** List of rules declared to be evaluated by this processor */
-    List<Rule<F>> getRules();
-
-    void setRules(List<Rule<F>> rules);
+public interface RulesProcessorRuntimeBuilder {
+    List<RuleRuntime> getRulesRuntime();
 }

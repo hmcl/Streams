@@ -25,6 +25,7 @@ import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.rule.Rule;
+import com.hortonworks.iotas.layout.rule.runtime.ProcessorRuntime;
 import com.hortonworks.iotas.layout.rule.runtime.RuleRuntime;
 import com.hortonworks.rules.condition.GroovyScript;
 import org.slf4j.Logger;
@@ -33,22 +34,26 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RulesProcessorRuntimeStorm {
-    public static final Logger logger = LoggerFactory.getLogger(RulesProcessorRuntimeStorm.class);
+public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFieldsDeclarer> {
+    public static final Logger logger = LoggerFactory.getLogger(RulesProcessorRuntimeStorm.class);  //TODO
 
-    private RulesProcessor<Schema.Field> processor;
+    private RulesProcessor<Schema.Field> rulesProcessor;
     private List<RuleRuntime<Tuple, IOutputCollector>> rulesRuntime;
 
-    public RulesProcessorRuntimeStorm(RulesProcessor<Schema.Field> processor) {
-        this.processor = processor;
-        buildRuleRuntime();
+    public RulesProcessorRuntimeStorm(RulesProcessorRuntimeBuilder rulesRuntimeBuilder) {
+        //TODO
     }
 
-    private void buildRuleRuntime() {
-        final List<Rule<Schema.Field>> rules = processor.getRules();
+    public RulesProcessorRuntimeStorm(RulesProcessor<Schema.Field> processor) {
+        this.rulesProcessor = processor;
+        buildAndSetRulesRuntime();             //TODO: Inject this instead
+    }
+
+    private void buildAndSetRulesRuntime() {
+        final List<Rule<Schema.Field>> rules = rulesProcessor.getRules();
         this.rulesRuntime = new ArrayList<>(rules.size());
         for (Rule<Schema.Field> rule : rules) {
-            rulesRuntime.add(new StormRuleRuntime(rule, new GroovyScript()));
+            rulesRuntime.add(new RuleRuntimeStorm(this, rule, new GroovyScript()));
         }
     }
 
@@ -57,21 +62,21 @@ public class RulesProcessorRuntimeStorm {
     }
 
 
-    public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        for (Rule<Schema.Field> rule : processor.getRules()) {
+    public void declareOutput(OutputFieldsDeclarer declarer) {
+        for (Rule<Schema.Field> rule : rulesProcessor.getRules()) {
             declarer.declareStream(getStreamId(rule), getFields(rule));
         }
     }
 
-    private String getStreamId(Rule<Schema.Field> rule) {
-        return processor.getName() + "." + rule.getName();
+    String getStreamId(Rule<Schema.Field> rule) {
+        return rulesProcessor.getName() + "." + rule.getName();
     }
 
-    private Fields getFields(Rule<Schema.Field> rule) {
-        List<Schema.Field> designTimeOutput = rule.getAction().getDeclaredOutput();
+    Fields getFields(Rule<Schema.Field> rule) {
+        final List<Schema.Field> designTimeOutput = rule.getAction().getDeclaredOutput();
         List<String> runtimeFieldNames = new ArrayList<>(designTimeOutput.size());
-        for (Schema.Field designTimeField : designTimeOutput) {
-            runtimeFieldNames.add(designTimeField.getName());
+        for (Schema.Field outputField : designTimeOutput) {
+            runtimeFieldNames.add(outputField.getName());
         }
         return new Fields(runtimeFieldNames);
     }

@@ -23,5 +23,5 @@ package com.hortonworks.iotas.layout.rule.runtime;
  * @param <O> Type of output declared by the underlying streaming framework, for example {@code Schema}.
  */
 public interface ProcessorRuntime<O> {
-    O getDeclaredOutput();
+    void declareOutput(O output);
 }

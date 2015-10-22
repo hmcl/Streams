@@ -22,6 +22,5 @@ import com.hortonworks.iotas.layout.rule.Rule;
 import com.hortonworks.iotas.layout.rule.runtime.RuleRuntime;
 
 public interface RuleRuntimeBuilder {
-
     RuleRuntime getRuleRuntime(Rule rule);
 }

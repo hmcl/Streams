@@ -31,14 +31,13 @@ import java.util.List;
 import java.util.Map;
 
 public class RulesBolt extends BaseRichBolt {
-    private List<RuleRuntime<Tuple, IOutputCollector>> rules;
     private OutputCollector collector;
+    private List<RuleRuntime<Tuple, IOutputCollector>> rules;
     private RulesProcessorRuntimeStorm rulesProcessorRuntime;
 
     public RulesBolt(RulesProcessorRuntimeStorm rulesProcessorRuntime) {
         this.rulesProcessorRuntime = rulesProcessorRuntime;
     }
-
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
@@ -50,7 +49,7 @@ public class RulesBolt extends BaseRichBolt {
     public void execute(Tuple input) {
         for (RuleRuntime<Tuple, IOutputCollector> rule : rules) {
             if (rule.evaluate(input)) {
-                rule.execute(input, collector); // collector can be null, when the rule does not forward a stream
+                rule.execute(input, collector); // collector can be null when the rule does not forward a stream
             }
         }
         collector.ack(input);   //TODO ack all or nothing?
@@ -58,6 +57,6 @@ public class RulesBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        rulesProcessorRuntime.declareOutputFields(declarer);
+        rulesProcessorRuntime.declareOutput(declarer);
     }
 }
