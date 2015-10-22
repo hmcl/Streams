@@ -15,6 +15,7 @@
         <module>webservice</module>
         <module>storm</module>
         <module>parsers</module>
+        <module>layout</module>
     </modules>
 
     <properties>
