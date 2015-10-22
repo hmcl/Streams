@@ -30,6 +30,10 @@ public class RuleImpl implements Rule<Schema.Field> {
     private Condition<Schema.Field> condition;
     private Action<Schema.Field> action;
 
+    public RuleImpl() {
+        // For JSON serializer
+    }
+
     public RuleImpl(Condition<Schema.Field> condition, Action<Schema.Field> action) {
         this.condition = condition;
         this.action = action;

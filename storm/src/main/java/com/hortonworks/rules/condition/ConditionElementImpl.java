@@ -22,17 +22,20 @@ import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
 
-public abstract class ConditionElementImpl<F, V> implements Condition.ConditionElement<Schema.Field> {
+public class ConditionElementImpl<F, V> implements Condition.ConditionElement<Schema.Field> {
     private Schema.Field firstOperand;    // first operand
+    private Operation operation;
     private String secondOperand;         // second operand
     private LogicalOperator logicalOperator;
-    private Operation operation;
     private ExpressionBuilder builder;
+
+    private ConditionElementImpl() {
+        // For JSON serializer
+    }
 
     public ConditionElementImpl(ExpressionBuilder builder) {
         this.builder = builder;
     }
-
 
     @Override
     public Schema.Field getFirstOperand() {
@@ -44,16 +47,21 @@ public abstract class ConditionElementImpl<F, V> implements Condition.ConditionE
     }
 
     @Override
+    public Operation getOperation() {
+        return operation;
+    }
+
+    public void setOperation(Operation operation) {
+        this.operation = operation;
+    }
+
+    @Override
     public String getSecondOperand() {
         return secondOperand;
     }
 
     public void setSecondOperand(String secondOperand) {
         this.secondOperand = secondOperand;
-    }
-
-    public ExpressionBuilder getBuilder() {
-        return builder;
     }
 
     @Override
@@ -65,17 +73,17 @@ public abstract class ConditionElementImpl<F, V> implements Condition.ConditionE
         this.logicalOperator = logicalOperator;
     }
 
-    @Override
-    public Operation getOperation() {
-        return operation;
+    public ExpressionBuilder getBuilder() {
+        return builder;
     }
 
-    public void setOperation(Operation operation) {
-        this.operation = operation;
+    public void setBuilder(ExpressionBuilder builder) {
+        this.builder = builder;
     }
 
     /** Example of output: temperature > 100 [&&] */
     public String toString() {
-        return firstOperand.getName() + getOperation() + secondOperand + logicalOperator ;
+        return firstOperand.getName() + " " + operation + " " + secondOperand + " "
+                + (logicalOperator != null ? logicalOperator : "");
     }
 }

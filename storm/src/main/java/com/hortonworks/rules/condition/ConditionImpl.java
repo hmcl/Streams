@@ -27,6 +27,10 @@ public class ConditionImpl implements Condition<Schema.Field> {
     private List<ConditionElement<Schema.Field>> conditionElements;
     private String conditionString;
 
+    public ConditionImpl() {
+        // For JSON serializer
+    }
+
     @Override
     public void setConditionElements(List<ConditionElement<Schema.Field>> conditionElements) {
         this.conditionElements = conditionElements;
@@ -40,7 +44,6 @@ public class ConditionImpl implements Condition<Schema.Field> {
     public String toString() {
         if (conditionString != null) {      // TODO: Check if I need to cache this
             StringBuilder builder = new StringBuilder("");
-            conditionString = "";
             for (ConditionElement conditionElement : conditionElements) {
                 builder.append(conditionElement.toString());
             }

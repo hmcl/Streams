@@ -16,20 +16,19 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.runtime.processor;
+package com.hortonworks.iotas.layout.design.processor;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 
 import java.util.List;
 
-public class RulesProcessorImpl implements RulesProcessor<Schema.Field, Schema.Field, Schema.Field> {
+public class RulesProcessorImpl implements RulesProcessor<Schema, Schema, Schema.Field> {
     private Long id;
     private String name;
     private String description;
-    private Schema.Field declaredInput;
-    private Schema.Field declaredOutput;
+    private Schema declaredInput;
+    private Schema  declaredOutput;
     private List<Rule<Schema.Field>> rules;
 
     @Override
@@ -73,22 +72,22 @@ public class RulesProcessorImpl implements RulesProcessor<Schema.Field, Schema.F
     }
 
     @Override
-    public Schema.Field getDeclaredInput() {
+    public Schema getDeclaredInput() {
         return declaredInput;
     }
 
     @Override
-    public void setDeclaredInput(Schema.Field declaredInput) {
+    public void setDeclaredInput(Schema declaredInput) {
         this.declaredInput = declaredInput;
     }
 
     @Override
-    public Schema.Field getDeclaredOutput() {
+    public Schema getDeclaredOutput() {
         return declaredOutput;
     }
 
     @Override
-    public void setDeclaredOutput(Schema.Field declaredOutput) {
+    public void setDeclaredOutput(Schema declaredOutput) {
         this.declaredOutput = declaredOutput;
     }
 }

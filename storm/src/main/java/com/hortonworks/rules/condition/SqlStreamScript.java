@@ -27,18 +27,21 @@ import javax.script.ScriptException;
 
 // TODO
 public class SqlStreamScript extends Script<Tuple, Schema.Field> {
+    private Object framework;
 
-    public SqlStreamScript(Condition<Schema.Field> condition) {
+    public SqlStreamScript(Condition<Schema.Field> condition, Object framework) {
         super(condition);
+        this.framework = framework;
     }
 
     @Override
     public void compile(Condition condition) {
-
+//        framework.compile(condition);
     }
 
     @Override
     public boolean evaluate(Tuple input) throws ScriptException {
+//        return framework.eval(input);
         return false;
     }
     /*public SqlStreamScript() {

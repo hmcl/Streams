@@ -19,14 +19,15 @@
 package com.hortonworks.iotas.layout.design.rule.condition.script;
 
 
+import com.hortonworks.iotas.common.Schema.Field;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
 import javax.script.ScriptException;
 
 /**
  *
- * @param <F> The name and type declaration of the fields that constitute the Condition to be evaluated.
  * @param <I> The type of input on which this script is evaluated, e.g. {@code tuple}
+ * @param <F> The name and type declaration of the fields that constitute the Condition to be evaluated e.g. {@link Field}
  */
 public abstract class Script<I, F> {
 

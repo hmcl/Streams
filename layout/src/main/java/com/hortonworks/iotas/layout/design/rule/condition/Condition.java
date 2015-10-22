@@ -51,15 +51,18 @@ public interface Condition<F> {
         F getFirstOperand();
 
         /**
-         * @return The second operand of this condition. It is a constant
+         * @return The second operand of this condition. It is a constant.
          */
         String getSecondOperand();
 
+        /**
+         * @return The operation applied
+         */
         Operation getOperation();
 
         /**
          * @return The logical operator that precedes the next condition element <br/>
-         * null if this is the last condition element of the condition
+         * null if it is the last condition element of the condition
          */
         LogicalOperator getLogicalOperator();
 
