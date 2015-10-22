@@ -22,5 +22,5 @@ package com.hortonworks.iotas.layout.runtime.rule;
 import java.util.List;
 
 public interface RulesRuntimeBuilder<I, E> {
-    List<RuleRuntime<I, E>> getRulesRuntime();
+    List<RuleRuntime<I, E>> getRulesRuntime();  //TODO: Do I need this?
 }

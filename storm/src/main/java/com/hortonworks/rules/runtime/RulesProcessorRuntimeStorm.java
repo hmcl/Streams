@@ -62,13 +62,13 @@ public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFields
         return rulesRuntime;
     }
 
-
     public void declareOutput(OutputFieldsDeclarer declarer) {
         for (Rule<Schema.Field> rule : rulesProcessor.getRules()) {
             declarer.declareStream(getStreamId(rule), getFields(rule));
         }
     }
 
+    // Package protected methods
     String getStreamId(Rule<Schema.Field> rule) {
         return rulesProcessor.getName() + "." + rule.getName();
     }

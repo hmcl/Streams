@@ -33,7 +33,7 @@ public interface Processor<I, O> {
     String getDescription();
     void setDescription(String description);
 
-    // TODO Confirm this
+    // TODO Do I need input and output
     I getDeclaredInput();
     void setDeclaredInput(I input);
 
