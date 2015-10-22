@@ -16,13 +16,11 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules;
+package com.hortonworks.iotas.layout.runtime.rule;
 
-
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 
 import java.util.List;
 
-public interface RulesProcessorRuntimeBuilder {
-    List<RuleRuntime> getRulesRuntime();
+public interface RulesRuntimeBuilder<I, E> {
+    List<RuleRuntime<I, E>> getRulesRuntime();
 }

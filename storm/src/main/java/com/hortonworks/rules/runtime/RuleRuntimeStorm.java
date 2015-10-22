@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules;
+package com.hortonworks.rules.runtime;
 
 import backtype.storm.task.IOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -41,7 +41,6 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
         this.processorRuntime = processorRuntime;
         this.rule = rule;
         this.script = script;
-
     }
 
     @Override

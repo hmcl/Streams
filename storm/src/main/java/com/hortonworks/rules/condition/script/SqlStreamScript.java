@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.condition;
+package com.hortonworks.rules.condition.script;
 
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;

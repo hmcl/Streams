@@ -25,14 +25,14 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
-import com.hortonworks.rules.RulesProcessorRuntimeStorm;
+import com.hortonworks.rules.runtime.RulesProcessorRuntimeStorm;
 
 import java.util.List;
 import java.util.Map;
 
 public class RulesBolt extends BaseRichBolt {
     private OutputCollector collector;
-    private List<RuleRuntime<Tuple, IOutputCollector>> rules;
+    private List<RuleRuntime<Tuple, IOutputCollector>> rulesRuntime;
     private RulesProcessorRuntimeStorm rulesProcessorRuntime;
 
     public RulesBolt(RulesProcessorRuntimeStorm rulesProcessorRuntime) {
@@ -42,12 +42,12 @@ public class RulesBolt extends BaseRichBolt {
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
-        this.rules = rulesProcessorRuntime.getRulesRuntime();
+        this.rulesRuntime = rulesProcessorRuntime.getRulesRuntime();
     }
 
     @Override
     public void execute(Tuple input) {
-        for (RuleRuntime<Tuple, IOutputCollector> rule : rules) {
+        for (RuleRuntime<Tuple, IOutputCollector> rule : rulesRuntime) {
             if (rule.evaluate(input)) {
                 rule.execute(input, collector); // collector can be null when the rule does not forward a stream
             }

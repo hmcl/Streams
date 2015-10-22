@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules;
+package com.hortonworks.rules.runtime;
 
 import backtype.storm.task.IOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -27,7 +27,8 @@ import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.runtime.processor.ProcessorRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
-import com.hortonworks.rules.condition.GroovyScript;
+import com.hortonworks.iotas.layout.runtime.rule.RulesRuntimeBuilder;
+import com.hortonworks.rules.condition.script.GroovyScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +41,8 @@ public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFields
     private RulesProcessor<Schema.Field, Schema.Field, Schema.Field> rulesProcessor;
     private List<RuleRuntime<Tuple, IOutputCollector>> rulesRuntime;
 
-    public RulesProcessorRuntimeStorm(RulesProcessorRuntimeBuilder rulesRuntimeBuilder) {
-        //TODO
+    public RulesProcessorRuntimeStorm(RulesRuntimeBuilder<Tuple, IOutputCollector> rulesRuntimeBuilder) {
+        rulesRuntime = rulesRuntimeBuilder.getRulesRuntime();
     }
 
     public RulesProcessorRuntimeStorm(RulesProcessor<Schema.Field, Schema.Field, Schema.Field> processor) {
@@ -73,10 +74,10 @@ public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFields
     }
 
     Fields getFields(Rule<Schema.Field> rule) {
-        final List<Schema.Field> designTimeOutput = rule.getAction().getDeclaredOutput();
-        List<String> runtimeFieldNames = new ArrayList<>(designTimeOutput.size());
-        for (Schema.Field outputField : designTimeOutput) {
-            runtimeFieldNames.add(outputField.getName());
+        final List<Schema.Field> designOutputFields = rule.getAction().getDeclaredOutput();
+        List<String> runtimeFieldNames = new ArrayList<>(designOutputFields.size());
+        for (Schema.Field designOutputField : designOutputFields) {
+            runtimeFieldNames.add(designOutputField.getName());
         }
         return new Fields(runtimeFieldNames);
     }

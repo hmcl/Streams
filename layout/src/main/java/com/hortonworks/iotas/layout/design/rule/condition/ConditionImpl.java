@@ -19,6 +19,7 @@
 package com.hortonworks.iotas.layout.design.rule.condition;
 
 import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
 
 import java.util.List;
 
@@ -49,5 +50,71 @@ public class ConditionImpl implements Condition<Schema.Field> {
             conditionString = builder.toString();
         }
         return conditionString;
+    }
+
+    public static class ConditionElementImpl implements ConditionElement<Schema.Field> {
+        private Schema.Field firstOperand;    // first operand
+        private Operation operation;
+        private String secondOperand;         // second operand
+        private LogicalOperator logicalOperator;
+        private ExpressionBuilder builder;
+
+        private ConditionElementImpl() {
+            // For JSON serializer
+        }
+
+        public ConditionElementImpl(ExpressionBuilder builder) {
+            this.builder = builder;
+        }
+
+        @Override
+        public Schema.Field getFirstOperand() {
+            return firstOperand;
+        }
+
+        public void setFirstOperand(Schema.Field firstOperand) {
+            this.firstOperand = firstOperand;
+        }
+
+        @Override
+        public Operation getOperation() {
+            return operation;
+        }
+
+        public void setOperation(Operation operation) {
+            this.operation = operation;
+        }
+
+        @Override
+        public String getSecondOperand() {
+            return secondOperand;
+        }
+
+        public void setSecondOperand(String secondOperand) {
+            this.secondOperand = secondOperand;
+        }
+
+        @Override
+        public LogicalOperator getLogicalOperator() {
+            return logicalOperator;
+        }
+
+        public void setLogicalOperator(LogicalOperator logicalOperator) {
+            this.logicalOperator = logicalOperator;
+        }
+
+        public ExpressionBuilder getBuilder() {
+            return builder;
+        }
+
+        public void setBuilder(ExpressionBuilder builder) {
+            this.builder = builder;
+        }
+
+        /** Example of output: temperature > 100 [&&] */
+        public String toString() {
+            return firstOperand.getName() + " " + operation + " " + secondOperand + " "
+                    + (logicalOperator != null ? logicalOperator : "");
+        }
     }
 }
