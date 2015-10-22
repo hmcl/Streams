@@ -23,10 +23,10 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.processor.RulesProcessor;
-import com.hortonworks.iotas.layout.rule.Rule;
-import com.hortonworks.iotas.layout.rule.runtime.ProcessorRuntime;
-import com.hortonworks.iotas.layout.rule.runtime.RuleRuntime;
+import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
+import com.hortonworks.iotas.layout.design.rule.Rule;
+import com.hortonworks.iotas.layout.runtime.processor.ProcessorRuntime;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.rules.condition.GroovyScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,14 +37,14 @@ import java.util.List;
 public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFieldsDeclarer> {
     public static final Logger logger = LoggerFactory.getLogger(RulesProcessorRuntimeStorm.class);  //TODO
 
-    private RulesProcessor<Schema.Field> rulesProcessor;
+    private RulesProcessor<Schema.Field, Schema.Field, Schema.Field> rulesProcessor;
     private List<RuleRuntime<Tuple, IOutputCollector>> rulesRuntime;
 
     public RulesProcessorRuntimeStorm(RulesProcessorRuntimeBuilder rulesRuntimeBuilder) {
         //TODO
     }
 
-    public RulesProcessorRuntimeStorm(RulesProcessor<Schema.Field> processor) {
+    public RulesProcessorRuntimeStorm(RulesProcessor<Schema.Field, Schema.Field, Schema.Field> processor) {
         this.rulesProcessor = processor;
         buildAndSetRulesRuntime();             //TODO: Inject this instead
     }
@@ -53,7 +53,7 @@ public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFields
         final List<Rule<Schema.Field>> rules = rulesProcessor.getRules();
         this.rulesRuntime = new ArrayList<>(rules.size());
         for (Rule<Schema.Field> rule : rules) {
-            rulesRuntime.add(new RuleRuntimeStorm(this, rule, new GroovyScript()));
+            rulesRuntime.add(new RuleRuntimeStorm(this, rule, new GroovyScript(rule.getCondition())));
         }
     }
 

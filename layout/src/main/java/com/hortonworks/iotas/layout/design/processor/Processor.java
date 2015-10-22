@@ -16,26 +16,27 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.rule.exception;
+package com.hortonworks.iotas.layout.design.processor;
 
-public class RuleExecutionException extends RuntimeException {
-    public RuleExecutionException() {
-        super();
-    }
+import com.hortonworks.iotas.common.Schema;
 
-    public RuleExecutionException(String message) {
-        super(message);
-    }
+/**
+ * @param <O> Type of the design time output declared by this {@link Processor}, for example {@link Schema}.
+ */
+public interface Processor<I, O> {
+    Long getId();
+    void setId(Long id);
 
-    public RuleExecutionException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    String getName();
+    void setName(String name);
 
-    public RuleExecutionException(Throwable cause) {
-        super(cause);
-    }
+    String getDescription();
+    void setDescription(String description);
 
-    protected RuleExecutionException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
+    I getDeclaredInput();
+    void setDeclaredInput(I input);
+
+    O getDeclaredOutput();
+    void setDeclaredOutput(O output);
+    
 }

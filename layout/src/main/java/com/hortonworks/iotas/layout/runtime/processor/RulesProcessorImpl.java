@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.processor;
+package com.hortonworks.iotas.layout.runtime.processor;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.rule.Rule;
+import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
+import com.hortonworks.iotas.layout.design.rule.Rule;
 
 import java.util.List;
 

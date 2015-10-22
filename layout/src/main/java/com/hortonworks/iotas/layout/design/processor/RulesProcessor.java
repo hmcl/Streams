@@ -16,21 +16,21 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.rule.condition.expression;
+package com.hortonworks.iotas.layout.design.processor;
 
-import com.hortonworks.iotas.layout.rule.condition.Condition;
+import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.layout.design.rule.Rule;
+import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
-/** Translates the DSL expression into the implementation language syntax */
-public interface ExpressionBuilder {
-    /**
-     * @param operator the DSL logicalOperator for which to obtain the operator syntax
-     * @return the implementation language operator syntax
-     */
-    String getLogicalOperator(Condition.ConditionElement.LogicalOperator operator);
+import java.util.List;
 
-    /**
-     * @param operation the DSL Operation for which to obtain the operation syntax
-     * @return the implementation language operation syntax
-     */
-    String getOperation(Condition.ConditionElement.Operation operation);
+/**
+ * Object representing a design time rules processor.
+ * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Rule} {@link Condition}, for example {@link Schema.Field}
+ */
+public interface RulesProcessor<I, O, F> extends Processor<I, O> {
+    /** List of rules declared to be evaluated by this processor */
+    List<Rule<F>> getRules();
+
+    void setRules(List<Rule<F>> rules);
 }

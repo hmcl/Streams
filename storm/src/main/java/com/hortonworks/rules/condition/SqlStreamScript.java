@@ -18,20 +18,27 @@
 
 package com.hortonworks.rules.condition;
 
-import com.hortonworks.iotas.layout.rule.condition.Condition;
-import com.hortonworks.iotas.layout.rule.condition.script.Script;
+import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.layout.design.rule.condition.Condition;
+import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
 
 import javax.script.ScriptException;
 
 // TODO
-public class SqlStreamScript implements Script {
+public class SqlStreamScript extends Script<Tuple, Schema.Field> {
+
+    public SqlStreamScript(Condition<Schema.Field> condition) {
+        super(condition);
+    }
+
     @Override
     public void compile(Condition condition) {
 
     }
 
     @Override
-    public boolean evaluate(Object input) throws ScriptException {
+    public boolean evaluate(Tuple input) throws ScriptException {
         return false;
     }
     /*public SqlStreamScript() {

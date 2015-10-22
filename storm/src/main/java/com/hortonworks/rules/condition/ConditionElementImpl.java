@@ -19,8 +19,8 @@
 package com.hortonworks.rules.condition;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.rule.condition.Condition;
-import com.hortonworks.iotas.layout.rule.condition.expression.ExpressionBuilder;
+import com.hortonworks.iotas.layout.design.rule.condition.Condition;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
 
 public abstract class ConditionElementImpl<F, V> implements Condition.ConditionElement<Schema.Field> {
     private Schema.Field firstOperand;    // first operand
@@ -72,15 +72,6 @@ public abstract class ConditionElementImpl<F, V> implements Condition.ConditionE
 
     public void setOperation(Operation operation) {
         this.operation = operation;
-    }
-
-    @Override
-    public ExpressionBuilder getExpressionBuilder() {
-        return builder;
-    }
-
-    public void setBuilder(ExpressionBuilder builder) {
-        this.builder = builder;
     }
 
     /** Example of output: temperature > 100 [&&] */

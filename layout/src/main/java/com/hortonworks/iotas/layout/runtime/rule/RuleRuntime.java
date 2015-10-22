@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.rule.runtime;
+package com.hortonworks.iotas.layout.runtime.rule;
 
-import com.hortonworks.iotas.layout.rule.exception.ConditionEvaluationException;
+import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

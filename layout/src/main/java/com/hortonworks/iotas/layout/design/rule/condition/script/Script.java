@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.rule.condition.script;
+package com.hortonworks.iotas.layout.design.rule.condition.script;
 
 
-import com.hortonworks.iotas.layout.rule.condition.Condition;
+import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
 import javax.script.ScriptException;
 

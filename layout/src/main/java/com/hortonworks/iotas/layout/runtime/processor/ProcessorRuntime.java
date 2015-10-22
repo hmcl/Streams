@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules;
+package com.hortonworks.iotas.layout.runtime.processor;
 
-import com.hortonworks.iotas.layout.design.rule.Rule;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 
-public interface RuleRuntimeBuilder {
-    RuleRuntime getRuleRuntime(Rule rule);
+/**
+ * @param <O> Type of output declared by the underlying streaming framework, for example {@code Schema}.
+ */
+public interface ProcessorRuntime<O> {
+    void declareOutput(O output);
 }

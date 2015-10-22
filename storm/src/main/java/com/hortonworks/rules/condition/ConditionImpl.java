@@ -19,7 +19,7 @@
 package com.hortonworks.rules.condition;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.rule.condition.Condition;
+import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
 import java.util.List;
 

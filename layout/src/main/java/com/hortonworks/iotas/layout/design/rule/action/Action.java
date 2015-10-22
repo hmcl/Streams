@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.rule.action;
+package com.hortonworks.iotas.layout.design.rule.action;
 
 
-import com.hortonworks.iotas.layout.processor.Processor;
+import com.hortonworks.iotas.layout.design.processor.Processor;
 
 import java.util.List;
 

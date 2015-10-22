@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.rule;
+package com.hortonworks.iotas.layout.design.rule;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.rule.action.Action;
-import com.hortonworks.iotas.layout.rule.condition.Condition;
+import com.hortonworks.iotas.layout.design.rule.action.Action;
+import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
 public class RuleImpl implements Rule<Schema.Field> {
     private Long id;

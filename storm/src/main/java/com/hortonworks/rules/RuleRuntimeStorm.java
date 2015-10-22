@@ -22,11 +22,11 @@ import backtype.storm.task.IOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.rule.Rule;
-import com.hortonworks.iotas.layout.rule.condition.script.Script;
-import com.hortonworks.iotas.layout.rule.exception.ConditionEvaluationException;
-import com.hortonworks.iotas.layout.rule.runtime.ProcessorRuntime;
-import com.hortonworks.iotas.layout.rule.runtime.RuleRuntime;
+import com.hortonworks.iotas.layout.design.rule.Rule;
+import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
+import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationException;
+import com.hortonworks.iotas.layout.runtime.processor.ProcessorRuntime;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 
 import javax.script.ScriptException;
 import java.util.Arrays;

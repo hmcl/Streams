@@ -20,8 +20,8 @@ package com.hortonworks.rules.condition;
 
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.rule.condition.Condition;
-import com.hortonworks.iotas.layout.rule.condition.script.Script;
+import com.hortonworks.iotas.layout.design.rule.condition.Condition;
+import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
@@ -60,17 +60,17 @@ public class GroovyScript extends Script<Tuple, Schema.Field> {
         return false;
     }
 
-    private final Bindings bindings;
-    private final ScriptEngine engine;
+    private Bindings bindings;
+    private ScriptEngine engine;
 
-    public GroovyScript() {
+    /*public GroovyScript() {
         String s = "int x = 5; int y = 3; x > 2 && y > 1";
 
         final ScriptEngineManager factory = new ScriptEngineManager();
         engine = factory.getEngineByName( "Groovy" );
         bindings = engine.createBindings();
         bindings.put("engine", engine);
-    }
+    }*/
 
     /*@Override
     public boolean evaluate(Condition condition) throws ScriptException {
@@ -94,7 +94,7 @@ public class GroovyScript extends Script<Tuple, Schema.Field> {
     }
 
     public void setValues(Tuple values) {
-        String conditionStr = new String
+//        String conditionStr = new String
 
 
         for (String fieldName : values.getFields()) {

@@ -16,12 +16,26 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.rule.runtime;
+package com.hortonworks.iotas.layout.design.rule.exception;
 
+public class RuleExecutionException extends RuntimeException {
+    public RuleExecutionException() {
+        super();
+    }
 
-/**
- * @param <O> Type of output declared by the underlying streaming framework, for example {@code Schema}.
- */
-public interface ProcessorRuntime<O> {
-    void declareOutput(O output);
+    public RuleExecutionException(String message) {
+        super(message);
+    }
+
+    public RuleExecutionException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public RuleExecutionException(Throwable cause) {
+        super(cause);
+    }
+
+    protected RuleExecutionException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

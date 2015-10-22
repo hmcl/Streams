@@ -18,7 +18,8 @@
 
 package com.hortonworks.rules;
 
-import com.hortonworks.iotas.layout.rule.runtime.RuleRuntime;
+
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 
 import java.util.List;
 

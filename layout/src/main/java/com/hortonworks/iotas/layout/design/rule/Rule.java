@@ -16,27 +16,38 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.processor;
+package com.hortonworks.iotas.layout.design.rule;
 
 import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.layout.design.rule.action.Action;
+import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
 /**
- * @param <O> Type of the design time output declared by this {@link Processor}, for example {@link Schema}.
+ * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Condition}, for example {@link Schema.Field}
  */
-public interface Processor<I, O> {
+public interface Rule<F> {
+    // Metadata
     Long getId();
+
     void setId(Long id);
 
     String getName();
+
     void setName(String name);
 
     String getDescription();
+
     void setDescription(String description);
 
-    I getDeclaredInput();
-    void setDeclaredInput(I input);
+    // ===== Design Time =====
 
-    O getDeclaredOutput();
-    void setDeclaredOutput(O output);
-    
+    /** @return the condition which when evaluating to true causes this rule's action to execute */
+    Condition<F> getCondition();
+
+    void setCondition(Condition<F>  condition);
+
+    /** @return the action that gets executed when this rule's condition evaluates to true */
+    Action<F> getAction();
+
+    void setAction(Action<F> action);
 }

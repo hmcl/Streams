@@ -16,20 +16,20 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.rule.condition.expression;
+package com.hortonworks.iotas.layout.design.rule.condition.expression;
 
-import com.hortonworks.iotas.layout.rule.condition.Condition;
+import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
 import java.util.Arrays;
 
-public class SqlStreamExpressionBuilder implements ExpressionBuilder {
+public class GroovyExpressionBuilder implements ExpressionBuilder {
     @Override
     public String getLogicalOperator(Condition.ConditionElement.LogicalOperator operator) {
         switch(operator) {
             case AND:
-                return " AND ";
+                return " && ";
             case OR:
-                return " OR ";
+                return " || ";
             default:
                 throw new UnsupportedOperationException(String.format("Operation [%s] not supported. List of supported operations: %s",
                         operator, Arrays.toString(Condition.ConditionElement.LogicalOperator.values())));

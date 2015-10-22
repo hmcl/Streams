@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.rule.exception;
+package com.hortonworks.iotas.layout.design.rule.exception;
 
 /** Exception thrown when evaluating a rule condition.
  *  This exception may be caused by attempting the evaluation of syntactically condition expression*/
