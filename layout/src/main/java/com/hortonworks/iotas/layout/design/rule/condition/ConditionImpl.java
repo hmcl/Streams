@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.condition;
+package com.hortonworks.iotas.layout.design.rule.condition;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
 import java.util.List;
 
