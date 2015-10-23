@@ -20,6 +20,7 @@ package com.hortonworks.rules.runtime;
 
 import backtype.storm.task.IOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.Rule;
@@ -29,7 +30,9 @@ import com.hortonworks.iotas.layout.runtime.processor.ProcessorRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 
 import javax.script.ScriptException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
     private final ProcessorRuntime<OutputFieldsDeclarer> processorRuntime;
@@ -57,6 +60,23 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
     public void execute(Tuple input, IOutputCollector collector) {
         logger.debug("Executing rule: [{}] \n\\t input tuple: [{}] \n\t collector: [{}]", rule, input, collector);
         collector.emit(((RulesProcessorRuntimeStorm)processorRuntime).getStreamId(rule), Arrays.asList(input), input.getValues());
+    }
+
+    public void declareOutput(String parentProcessorName, OutputFieldsDeclarer declarer) {
+        declarer.declareStream(getStreamId(parentProcessorName), getFields());
+    }
+
+    private String getStreamId(String parentProcessorName) {
+        return parentProcessorName + "." + rule.getName();
+    }
+
+    private Fields getFields() {
+        final List<Schema.Field> designOutputFields = rule.getAction().getDeclaredOutput();
+        List<String> runtimeFieldNames = new ArrayList<>(designOutputFields.size());
+        for (Schema.Field designOutputField : designOutputFields) {
+            runtimeFieldNames.add(designOutputField.getName());
+        }
+        return new Fields(runtimeFieldNames);
     }
 
     @Override

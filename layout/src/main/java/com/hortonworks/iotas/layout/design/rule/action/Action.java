@@ -47,5 +47,5 @@ public interface Action<F> {
      */
     List<Processor> getProcessors();
 
-    List<F> getDeclaredOutput();
+    F getDeclaredOutput();
 }

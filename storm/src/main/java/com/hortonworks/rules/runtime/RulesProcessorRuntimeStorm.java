@@ -27,7 +27,6 @@ import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.runtime.processor.ProcessorRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
-import com.hortonworks.iotas.layout.runtime.rule.RulesRuntimeBuilder;
 import com.hortonworks.rules.condition.script.GroovyScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +37,12 @@ import java.util.List;
 public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFieldsDeclarer> {
     public static final Logger logger = LoggerFactory.getLogger(RulesProcessorRuntimeStorm.class);  //TODO
 
-    private RulesProcessor<Schema.Field, Schema.Field, Schema.Field> rulesProcessor;
-    private List<RuleRuntime<Tuple, IOutputCollector>> rulesRuntime;
+    private RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor;
+    private List<RuleRuntimeStorm> rulesRuntime;
 
-    public RulesProcessorRuntimeStorm(RulesRuntimeBuilder<Tuple, IOutputCollector> rulesRuntimeBuilder) {
+    /*public RulesProcessorRuntimeStorm(RulesRuntimeBuilder<Tuple, IOutputCollector> rulesRuntimeBuilder) {
         rulesRuntime = rulesRuntimeBuilder.getRulesRuntime();
-    }
+    }*/
 
     public RulesProcessorRuntimeStorm(RulesProcessor<Schema, Schema, Schema.Field> processor) {
         this.rulesProcessor = processor;
@@ -63,6 +62,10 @@ public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFields
     }
 
     public void declareOutput(OutputFieldsDeclarer declarer) {
+        for (RuleRuntime<Tuple, IOutputCollector> ruleRuntime:rulesRuntime) {
+            ruleRuntime.
+        }
+
         for (Rule<Schema.Field> rule : rulesProcessor.getRules()) {
             declarer.declareStream(getStreamId(rule), getFields(rule));
         }
