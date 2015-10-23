@@ -55,7 +55,7 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
 
     @Override
     public void execute(Tuple input, IOutputCollector collector) {
-        logger.debug("Executing rule: [{}] \n\t input tuple: [{}] \n\t collector: [{}]", rule, input, collector);
+        logger.debug("Executing rule: [{}] \n\\t input tuple: [{}] \n\t collector: [{}]", rule, input, collector);
         collector.emit(((RulesProcessorRuntimeStorm)processorRuntime).getStreamId(rule), Arrays.asList(input), input.getValues());
     }
 

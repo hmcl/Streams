@@ -20,7 +20,8 @@ package com.hortonworks.iotas.layout.runtime.processor;
 
 
 /**
- * @param <O> Type of output declared by the underlying streaming framework, for example {@code Schema}.
+ * @param <O> Type used to declare the output in the the underlying streaming framework,
+ *            for example for Apache Storm would be {@code OutputFieldsDeclarer}.
  */
 public interface ProcessorRuntime<O> {
     void declareOutput(O output);

@@ -45,16 +45,16 @@ public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFields
         rulesRuntime = rulesRuntimeBuilder.getRulesRuntime();
     }
 
-    public RulesProcessorRuntimeStorm(RulesProcessor<Schema.Field, Schema.Field, Schema.Field> processor) {
+    public RulesProcessorRuntimeStorm(RulesProcessor<Schema, Schema, Schema.Field> processor) {
         this.rulesProcessor = processor;
-        buildAndSetRulesRuntime();             //TODO: Inject this instead
+        buildAndSetRulesRuntime();             //TODO: Inject this instead to make it easier to test
     }
 
     private void buildAndSetRulesRuntime() {
         final List<Rule<Schema.Field>> rules = rulesProcessor.getRules();
         this.rulesRuntime = new ArrayList<>(rules.size());
         for (Rule<Schema.Field> rule : rules) {
-            rulesRuntime.add(new RuleRuntimeStorm(this, rule, new GroovyScript(rule.getCondition())));
+            rulesRuntime.add(new RuleRuntimeStorm(this, rule, new GroovyScript(rule.getCondition())));      // TODO: Make scripting language pluggable
         }
     }
 
