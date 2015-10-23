@@ -46,6 +46,9 @@ public interface Action<F> {
      * @return List of downstream processors called as part this action execution
      */
     List<Processor> getProcessors();
+    void setProcessors(List<Processor> processors);
 
-    F getDeclaredOutput();
+    List<F> getDeclaredOutput();
+
+    void setDeclaredOutput(List<F> declaredOutputs);
 }

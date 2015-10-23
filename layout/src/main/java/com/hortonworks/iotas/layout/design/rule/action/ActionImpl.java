@@ -23,9 +23,12 @@ import com.hortonworks.iotas.layout.design.processor.Processor;
 
 import java.util.List;
 
-public class ActionImpl implements Action<List<Schema.Field>> {
+public class ActionImpl implements Action<Schema.Field> {
     private List<Processor> processors;
     private List<Schema.Field> declaredOutput;
+
+    public ActionImpl() {
+    }
 
     public ActionImpl(List<Processor> processors, List<Schema.Field> declaredOutput) {
         this.processors = processors;

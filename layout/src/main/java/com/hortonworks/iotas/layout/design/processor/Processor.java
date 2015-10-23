@@ -24,9 +24,11 @@ import com.hortonworks.iotas.common.Schema;
  * @param <O> Type of the design time output declared by this {@link Processor}, for example {@link Schema}.
  */
 public interface Processor<I, O> {
+    // For internal use
     Long getId();
     void setId(Long id);
 
+    // Defined by the user
     String getName();
     void setName(String name);
 
@@ -39,5 +41,4 @@ public interface Processor<I, O> {
 
     O getDeclaredOutput();
     void setDeclaredOutput(O output);
-    
 }

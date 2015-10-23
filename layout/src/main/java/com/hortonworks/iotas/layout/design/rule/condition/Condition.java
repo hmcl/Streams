@@ -50,21 +50,29 @@ public interface Condition<F> {
          */
         F getFirstOperand();
 
+        void setFirstOperand(F firstOperand);
+
         /**
          * @return The second operand of this condition. It is a constant.
          */
         String getSecondOperand();
+
+        void setSecondOperand(String secondOperand);
 
         /**
          * @return The operation applied
          */
         Operation getOperation();
 
+        void setOperation(Operation operation);
+
         /**
          * @return The logical operator that precedes the next condition element <br/>
          * null if it is the last condition element of the condition
          */
         LogicalOperator getLogicalOperator();
+
+        void setLogicalOperator(LogicalOperator logicalOperator);
 
         /**
          * Every class must implement this method

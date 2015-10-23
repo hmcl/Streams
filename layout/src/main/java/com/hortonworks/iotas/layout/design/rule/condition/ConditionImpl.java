@@ -72,6 +72,7 @@ public class ConditionImpl implements Condition<Schema.Field> {
             return firstOperand;
         }
 
+        @Override
         public void setFirstOperand(Schema.Field firstOperand) {
             this.firstOperand = firstOperand;
         }
@@ -81,6 +82,7 @@ public class ConditionImpl implements Condition<Schema.Field> {
             return operation;
         }
 
+        @Override
         public void setOperation(Operation operation) {
             this.operation = operation;
         }
@@ -90,6 +92,7 @@ public class ConditionImpl implements Condition<Schema.Field> {
             return secondOperand;
         }
 
+        @Override
         public void setSecondOperand(String secondOperand) {
             this.secondOperand = secondOperand;
         }
@@ -99,6 +102,7 @@ public class ConditionImpl implements Condition<Schema.Field> {
             return logicalOperator;
         }
 
+        @Override
         public void setLogicalOperator(LogicalOperator logicalOperator) {
             this.logicalOperator = logicalOperator;
         }

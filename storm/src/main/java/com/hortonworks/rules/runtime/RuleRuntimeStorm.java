@@ -26,7 +26,6 @@ import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
 import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationException;
-import com.hortonworks.iotas.layout.runtime.processor.ProcessorRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 
 import javax.script.ScriptException;
@@ -35,13 +34,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
-    private final ProcessorRuntime<OutputFieldsDeclarer> processorRuntime;
     private final Rule<Schema.Field> rule;
     private final Script<Tuple, Schema.Field> script;     // Script used to evaluate the condition
 
-    public RuleRuntimeStorm(ProcessorRuntime<OutputFieldsDeclarer> processorRuntime,
-                            Rule<Schema.Field> rule, Script<Tuple, Schema.Field> script) {
-        this.processorRuntime = processorRuntime;
+    public RuleRuntimeStorm(RulesProcessorRuntimeStorm runtimeStorm, Rule<Schema.Field> rule, Script<Tuple, Schema.Field> script) {
         this.rule = rule;
         this.script = script;
     }
@@ -59,7 +55,7 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
     @Override
     public void execute(Tuple input, IOutputCollector collector) {
         logger.debug("Executing rule: [{}] \n\\t input tuple: [{}] \n\t collector: [{}]", rule, input, collector);
-        collector.emit(((RulesProcessorRuntimeStorm)processorRuntime).getStreamId(rule), Arrays.asList(input), input.getValues());
+        collector.emit(getStreamId("XXXX"), Arrays.asList(input), input.getValues());
     }
 
     public void declareOutput(String parentProcessorName, OutputFieldsDeclarer declarer) {
@@ -82,7 +78,7 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
     @Override
     public String toString() {
         return "RuleRuntimeStorm{" +
-                "processorRuntime=" + processorRuntime +
+                "processorRuntime=" /*+ processorRuntime */+
                 ", rule=" + rule +
                 ", script=" + script +
                 '}';

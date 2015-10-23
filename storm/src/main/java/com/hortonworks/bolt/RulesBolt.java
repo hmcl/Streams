@@ -25,6 +25,7 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
+import com.hortonworks.rules.runtime.RuleRuntimeStorm;
 import com.hortonworks.rules.runtime.RulesProcessorRuntimeStorm;
 
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.Map;
 
 public class RulesBolt extends BaseRichBolt {
     private OutputCollector collector;
-    private List<RuleRuntime<Tuple, IOutputCollector>> rulesRuntime;
+    private List<RuleRuntimeStorm> rulesRuntime;
     private RulesProcessorRuntimeStorm rulesProcessorRuntime;
 
     public RulesBolt(RulesProcessorRuntimeStorm rulesProcessorRuntime) {
