@@ -22,12 +22,9 @@ import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.processor.Processor;
 import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.action.Action;
-import com.hortonworks.iotas.layout.design.rule.action.ActionImpl;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition.ConditionElement;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition.ConditionElement.LogicalOperator;
-import com.hortonworks.iotas.layout.design.rule.condition.ConditionImpl;
-import com.hortonworks.iotas.layout.design.rule.condition.ConditionImpl.ConditionElementImpl;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.GroovyExpressionBuilder;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig.Feature;
@@ -57,11 +54,11 @@ public class RuleTest {
             add(condition.getConditionElements().get(1).getFirstOperand());
         }};
 
-        Action<Schema.Field> action = new ActionImpl();
+        Action<Schema.Field> action = new Action<>();
         action.setDeclaredOutput(declaredOutputs);
         action.setProcessors(processors);
 
-        Rule<Schema.Field> rule = new Rule(condition, action);
+        Rule<Schema.Field> rule = new Rule<>(condition, action);
         rule.setId(2L);
         rule.setName("rule_1");
         rule.setDescription("rule_1_desc");
@@ -78,7 +75,7 @@ public class RuleTest {
     }
 
     private Condition<Schema.Field> createCondition(List<ConditionElement<Schema.Field>> conditionElements) {
-        Condition<Schema.Field> condition = new ConditionImpl();
+        Condition<Schema.Field> condition = new Condition();
         condition.setConditionElements(conditionElements);
         return condition;
     }
@@ -93,7 +90,7 @@ public class RuleTest {
     private ConditionElement<Schema.Field> createConditionElement(
             String firstOperand, String secondOperand, LogicalOperator logicalOperator) {
         ConditionElement<Schema.Field> conditionElement =
-                new ConditionElementImpl(new GroovyExpressionBuilder());
+                new ConditionElement<>(new GroovyExpressionBuilder());
         final Schema.Field temperature = new Schema.Field(firstOperand, Schema.Type.INTEGER);
         conditionElement.setFirstOperand(temperature);
         conditionElement.setOperation(ConditionElement.Operation.GREATER_THAN);
@@ -101,8 +98,6 @@ public class RuleTest {
         conditionElement.setLogicalOperator(logicalOperator);
         return conditionElement;
     }
-
-    void
 
 
 }

@@ -18,65 +18,130 @@
 
 package com.hortonworks.iotas.layout.design.rule.condition;
 
-import com.hortonworks.iotas.common.Schema.Field;
+import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
 
 import java.util.List;
 
 /**
  * This class represents a Rule Condition.
- * @param <F> The type of the first operand in a {@link ConditionElement}, e.g. {@link Field}
+ * @param <F> The type of the first operand in a {@link ConditionElement}, e.g. {@link F}
  */
-public interface Condition<F> {
+public class Condition<F extends Schema.Field> {
+    private List<ConditionElement<F>> conditionElements;
+    private String conditionString;
+
+    public Condition() {
+        // For JSON serializer
+    }
+
     /** @return The collection of condition elements that define this condition */
-    List<ConditionElement<F>> getConditionElements();
+    public List<ConditionElement<F>> getConditionElements() {
+        return conditionElements;
+    }
 
-    void setConditionElements(List<ConditionElement<F>> conditionElements);
+    public void setConditionElements(List<ConditionElement<F>> conditionElements) {
+        this.conditionElements = conditionElements;
+    }
 
-    /**
-     * All implementations must override {@code toString} method
-     * @return The string representation of this condition as it is evaluated by the script language */
-    String toString();
+    public String toString() {
+        if (conditionString != null) {      // TODO: Check if I need to cache this
+            StringBuilder builder = new StringBuilder("");
+            for (ConditionElement conditionElement : conditionElements) {
+                builder.append(conditionElement.toString());
+            }
+            conditionString = builder.toString();
+        }
+        return conditionString;
+    }
 
-    /**
-     * @param <F> type of the first operand, e.g. {@link Field}
-     */
-    interface ConditionElement<F> {
-        enum Operation {EQUALS, NOT_EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_EQUALS_TO, LESS_THAN_EQUALS_TO}   //TODO: Support BETWEEN ?
+    public static class ConditionElement<F extends Schema.Field> {
+        public enum Operation {EQUALS, NOT_EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_EQUALS_TO, LESS_THAN_EQUALS_TO}   //TODO: Support BETWEEN ?
 
-        enum LogicalOperator {AND, OR}
+        public enum LogicalOperator {AND, OR}
+
+        private F firstOperand;
+        private Operation operation;
+        private String secondOperand;
+        private LogicalOperator logicalOperator;
+        private ExpressionBuilder builder;
+
+        public ConditionElement() {
+            // For JSON serializer
+        }
+
+        public ConditionElement(ExpressionBuilder builder) {
+            this.builder = builder;
+        }
 
         /**
          * @return The first operand of this condition
          */
-        F getFirstOperand();
+        public F getFirstOperand() {
+            return firstOperand;
+        }
 
-        void setFirstOperand(F firstOperand);
-
-        /**
-         * @return The second operand of this condition. It is a constant.
-         */
-        String getSecondOperand();
-
-        void setSecondOperand(String secondOperand);
+        
+        public void setFirstOperand(F firstOperand) {
+            this.firstOperand = firstOperand;
+        }
 
         /**
          * @return The operation applied
          */
-        Operation getOperation();
+        public Operation getOperation() {
+            return operation;
+        }
 
-        void setOperation(Operation operation);
+        
+        public void setOperation(Operation operation) {
+            this.operation = operation;
+        }
+
+        /**
+         * @return The second operand of this condition. It is a constant.
+         */
+        public String getSecondOperand() {
+            return secondOperand;
+        }
+
+        
+        public void setSecondOperand(String secondOperand) {
+            this.secondOperand = secondOperand;
+        }
 
         /**
          * @return The logical operator that precedes the next condition element <br/>
          * null if it is the last condition element of the condition
          */
-        LogicalOperator getLogicalOperator();
+        public LogicalOperator getLogicalOperator() {
+            return logicalOperator;
+        }
 
-        void setLogicalOperator(LogicalOperator logicalOperator);
+        public void setLogicalOperator(LogicalOperator logicalOperator) {
+            this.logicalOperator = logicalOperator;
+        }
 
-        /**
-         * Every class must implement this method
-         */
-        String toString();
+        public ExpressionBuilder getBuilder() {
+            return builder;
+        }
+
+        public void setBuilder(ExpressionBuilder builder) {
+            this.builder = builder;
+        }
+
+        /** Example of output: temperature > 100 [&&] */
+        public String toString() {
+            return getFirstOperandName() + " " + operation + " " + secondOperand + " "
+                    + (logicalOperator != null ? logicalOperator : "");
+        }
+
+        //TODO: This is hack. Need to clean this up
+        private String getFirstOperandName() {
+            if (firstOperand instanceof Schema.Field) {
+                return ((Schema.Field) firstOperand).getName();
+            }
+            throw new RuntimeException("Unsupported first operand");
+        }
     }
 }
