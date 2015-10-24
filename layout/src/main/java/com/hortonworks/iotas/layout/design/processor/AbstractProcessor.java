@@ -18,28 +18,11 @@
 
 package com.hortonworks.iotas.layout.design.processor;
 
-import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.rule.Rule;
-
-import java.util.List;
-
-public class RulesProcessorImpl implements RulesProcessor<Schema, Schema, Schema.Field> {
+public class AbstractProcessor<I> implements Processor<I> {
     private Long id;
     private String name;
     private String description;
-    private Schema declaredInput;
-    private Schema  declaredOutput;
-    private List<Rule<Schema.Field>> rules;
-
-    @Override
-    public List<Rule<Schema.Field>> getRules() {
-        return rules;
-    }
-
-    @Override
-    public void setRules(List<Rule<Schema.Field>> rules) {
-        this.rules = rules;
-    }
+    private I declaredInput;
 
     @Override
     public Long getId() {
@@ -72,22 +55,12 @@ public class RulesProcessorImpl implements RulesProcessor<Schema, Schema, Schema
     }
 
     @Override
-    public Schema getDeclaredInput() {
+    public I getDeclaredInput() {
         return declaredInput;
     }
 
     @Override
-    public void setDeclaredInput(Schema declaredInput) {
+    public void setDeclaredInput(I declaredInput) {
         this.declaredInput = declaredInput;
-    }
-
-    @Override
-    public Schema getDeclaredOutput() {
-        return declaredOutput;
-    }
-
-    @Override
-    public void setDeclaredOutput(Schema declaredOutput) {
-        this.declaredOutput = declaredOutput;
     }
 }

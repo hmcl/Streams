@@ -21,9 +21,9 @@ package com.hortonworks.iotas.layout.design.processor;
 import com.hortonworks.iotas.common.Schema;
 
 /**
- * @param <O> Type of the design time output declared by this {@link Processor}, for example {@link Schema}.
+ * @param <I> Type of the design time input declared by this {@link Processor}, for example {@link Schema}.
  */
-public interface Processor<I, O> {
+public interface Processor<I> {
     // For internal use
     Long getId();
     void setId(Long id);
@@ -38,7 +38,4 @@ public interface Processor<I, O> {
     // TODO Do I need input and output
     I getDeclaredInput();
     void setDeclaredInput(I input);
-
-    O getDeclaredOutput();
-    void setDeclaredOutput(O output);
 }

@@ -19,23 +19,13 @@
 package com.hortonworks.iotas.layout.design.processor;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.rule.Rule;
-import com.hortonworks.iotas.layout.design.rule.condition.Condition;
-
-import java.util.List;
 
 /**
- * Object representing a design time rules processor.
- * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Rule} {@link Condition}, for example {@link Schema.Field}
+ * Processor that must declare output, regardless of output being identical to input
+ * @param <I> Type of the design time input declared by this {@link Processor}, for example {@link Schema}.
+ * @param <O> Type of the design time output declared by this {@link Processor}, for example {@link Schema}.
  */
-public class RulesProcessor<I,F> extends AbstractProcessor<I> implements Processor<I> {
-    private List<Rule<F>> rules;
-
-    public List<Rule<F>> getRules() {
-        return rules;
-    }
-
-    public void setRules(List<Rule<F>> rules) {
-        this.rules = rules;
-    }
+public interface TransformationProcessor<I, O> extends Processor<I> {
+    O getDeclaredOutput();
+    void setDeclaredOutput(O output);
 }

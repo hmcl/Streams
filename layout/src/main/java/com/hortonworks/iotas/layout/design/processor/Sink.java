@@ -16,35 +16,22 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.rule;
+package com.hortonworks.iotas.layout.design.processor;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.rule.action.Action;
-import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
-public class RuleImpl implements Rule<Schema.Field> {
+public class Sink implements Processor<Schema> {
     private Long id;
     private String name;
     private String description;
+    private Schema declaredInput;
 
-    private Condition<Schema.Field> condition;
-    private Action<Schema.Field> action;
-
-    public RuleImpl() {
-        // For JSON serializer
-    }
-
-    public RuleImpl(Condition<Schema.Field> condition, Action<Schema.Field> action) {
-        this.condition = condition;
-        this.action = action;
-    }
-
-    // ====== Metadata =======
     @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
@@ -69,26 +56,13 @@ public class RuleImpl implements Rule<Schema.Field> {
         this.description = description;
     }
 
-    // ====== Design time =======
-
     @Override
-    public Condition<Schema.Field> getCondition() {
-        return condition;
+    public Schema getDeclaredInput() {
+        return declaredInput;
     }
 
     @Override
-    public void setCondition(Condition<Schema.Field> condition) {
-        this.condition = condition;
-    }
-
-    @Override
-    public Action<Schema.Field> getAction() {
-        return action;
-    }
-
-    @Override
-    public void setAction(Action<Schema.Field> action) {
-        this.action = action;
+    public void setDeclaredInput(Schema declaredInput) {
+        this.declaredInput = declaredInput;
     }
 }
-

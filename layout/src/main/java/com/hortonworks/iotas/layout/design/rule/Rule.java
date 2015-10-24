@@ -25,29 +25,74 @@ import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 /**
  * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Condition}, for example {@link Schema.Field}
  */
-public interface Rule<F> {
-    // Metadata
-    Long getId();
+public class Rule<F> {
+    private Long id;
+    private String name;
+    private String description;
+    private String ruleProcessorName;
 
-    void setId(Long id);
+    private Condition<F> condition;
+    private Action<F> action;
 
-    String getName();
+    public Rule() {     //TODO Check
+        // For JSON serializer
+    }
 
-    void setName(String name);
+    public Rule(Condition<F> condition, Action<F> action) {
+        this.condition = condition;
+        this.action = action;
+    }
 
-    String getDescription();
+    // ====== Metadata =======
 
-    void setDescription(String description);
+    public Long getId() {
+        return id;
+    }
 
-    // ===== Design Time =====
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    /** @return the condition which when evaluating to true causes this rule's action to execute */
-    Condition<F> getCondition();
+    public String getName() {
+        return name;
+    }
 
-    void setCondition(Condition<F>  condition);
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    /** @return the action that gets executed when this rule's condition evaluates to true */
-    Action<F> getAction();
+    public String getDescription() {
+        return description;
+    }
 
-    void setAction(Action<F> action);
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getRuleProcessorName() {
+        return ruleProcessorName;
+    }
+
+    public void setRuleProcessorName(String ruleProcessorName) {
+        this.ruleProcessorName = ruleProcessorName;
+    }
+
+    // ====== Design time =======
+
+    public Condition<F> getCondition() {
+        return condition;
+    }
+
+    public void setCondition(Condition<F> condition) {
+        this.condition = condition;
+    }
+
+    public Action<F> getAction() {
+        return action;
+    }
+
+    public void setAction(Action<F> action) {
+        this.action = action;
+    }
 }
+
