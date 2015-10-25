@@ -20,11 +20,14 @@ package com.hortonworks.iotas.layout.design.processor;
 
 import com.hortonworks.iotas.common.Schema;
 
-public class Sink implements Processor<Schema> {
+/**
+ * @param <I> Type of the design time input declared by this {@link Processor}, for example {@link Schema}.
+ */
+public class Sink<I> implements Processor<I> {
     private Long id;
     private String name;
     private String description;
-    private Schema declaredInput;
+    private I declaredInput;
 
     @Override
     public Long getId() {
@@ -57,12 +60,12 @@ public class Sink implements Processor<Schema> {
     }
 
     @Override
-    public Schema getDeclaredInput() {
+    public I getDeclaredInput() {
         return declaredInput;
     }
 
     @Override
-    public void setDeclaredInput(Schema declaredInput) {
+    public void setDeclaredInput(I declaredInput) {
         this.declaredInput = declaredInput;
     }
 }

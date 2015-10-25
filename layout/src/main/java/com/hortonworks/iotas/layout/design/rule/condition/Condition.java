@@ -27,7 +27,7 @@ import java.util.List;
  * This class represents a Rule Condition.
  * @param <F> The type of the first operand in a {@link ConditionElement}, e.g. {@link F}
  */
-public class Condition<F extends Schema.Field> {
+public class Condition<F> {
     private List<ConditionElement<F>> conditionElements;
     private String conditionString;
 
@@ -55,7 +55,7 @@ public class Condition<F extends Schema.Field> {
         return conditionString;
     }
 
-    public static class ConditionElement<F extends Schema.Field> {
+    public static abstract class ConditionElement<F> {
         public enum Operation {EQUALS, NOT_EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_EQUALS_TO, LESS_THAN_EQUALS_TO}   //TODO: Support BETWEEN ?
 
         public enum LogicalOperator {AND, OR}
@@ -136,12 +136,13 @@ public class Condition<F extends Schema.Field> {
                     + (logicalOperator != null ? logicalOperator : "");
         }
 
-        //TODO: This is hack. Need to clean this up
-        private String getFirstOperandName() {
-            if (firstOperand instanceof Schema.Field) {
-                return ((Schema.Field) firstOperand).getName();
-            }
-            throw new RuntimeException("Unsupported first operand");
+        protected abstract String getFirstOperandName();
+    }
+
+    public static class FieldConditionElement extends ConditionElement<Schema.Field> {
+        @Override
+        protected String getFirstOperandName() {
+            return getFirstOperand().getName();
         }
     }
 }

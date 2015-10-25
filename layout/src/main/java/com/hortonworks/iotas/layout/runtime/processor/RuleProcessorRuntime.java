@@ -16,27 +16,20 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.processor;
+package com.hortonworks.iotas.layout.runtime.processor;
 
-import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.rule.Rule;
-import com.hortonworks.iotas.layout.design.rule.condition.Condition;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 
 import java.util.List;
 
 /**
- * Object representing a design time rules processor.
- *
- * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Rule} {@link Condition}, for example {@link Schema.Field}
+ * @param <I> Type of runtime input to each rule, for example {@code Tuple}
+ * @param <E> Type of object required to execute each rule in the underlying streaming framework e.g {@code IOutputCollector}
+ * @param <O> Type used to declare the output in the the underlying streaming framework,
+ *            for example for Apache Storm would be {@code OutputFieldsDeclarer}.
  */
-public class RulesProcessor<I, O, F> extends AbstractProcessor<I> implements Processor<I> {
-    private List<Rule<O,F>> rules;
+public interface RuleProcessorRuntime<I, E, O> extends ProcessorRuntime<O> {
+    List<RuleRuntime<I, E>> getRulesRuntime();
 
-    public List<Rule<O,F>> getRules() {
-        return rules;
-    }
-
-    public void setRules(List<Rule<O,F>> rules) {
-        this.rules = rules;
-    }
+    void setRulesRuntime(List<RuleRuntime<I, E>> rulesRuntime);
 }

@@ -37,14 +37,14 @@ import java.util.List;
  *  The actions performed by this rule will not interact directly with any other components of the rule system, e.g., other rules,
  *  processors, sinks, ...
  **/
-public class Action<I, O>  {
-    private List<Processor<I>> processors;
+public class Action<O>  {
+    private List<Processor<O>> processors;
     private O declaredOutput;
 
     public Action() {
     }
 
-    public Action(List<Processor<I>> processors, O declaredOutput) {
+    public Action(List<Processor<O>> processors, O declaredOutput) {
         this.processors = processors;
         this.declaredOutput = declaredOutput;
     }
@@ -52,9 +52,9 @@ public class Action<I, O>  {
     /**
      * All downstream processors must receive the same input, as defined by getDeclaredOutput.
      * Actions that intend to declare different outputs must be associated with a different rule
-     * @return List of downstream processors called as part this action execution
+     * @return List of downstream processors or sinks called as part this action execution
      */
-    public List<Processor<I>> getProcessors() {
+    public List<Processor<O>> getProcessors() {
         return processors;
     }
 
@@ -62,7 +62,7 @@ public class Action<I, O>  {
         this.declaredOutput = declaredOutput;
     }
 
-    public void setProcessors(List<Processor<I>> processors) {
+    public void setProcessors(List<Processor<O>> processors) {
         this.processors = processors;
     }
 

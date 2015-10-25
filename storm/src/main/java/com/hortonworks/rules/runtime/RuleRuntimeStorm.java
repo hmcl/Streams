@@ -34,10 +34,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
-    private final Rule<Schema.Field> rule;
+    private final Rule<Schema, Schema.Field> rule;
     private final Script<Tuple, Schema.Field> script;     // Script used to evaluate the condition
 
-    public RuleRuntimeStorm(RulesProcessorRuntimeStorm runtimeStorm, Rule<Schema.Field> rule, Script<Tuple, Schema.Field> script) {
+    public RuleRuntimeStorm(Rule<Schema, Schema.Field> rule, Script<Tuple, Schema.Field> script) {
         this.rule = rule;
         this.script = script;
     }
@@ -55,21 +55,21 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
     @Override
     public void execute(Tuple input, IOutputCollector collector) {
         logger.debug("Executing rule: [{}] \n\\t input tuple: [{}] \n\t collector: [{}]", rule, input, collector);
-        collector.emit(getStreamId("XXXX"), Arrays.asList(input), input.getValues());
+        collector.emit(getStreamId(), Arrays.asList(input), input.getValues());
     }
 
-    public void declareOutput(String parentProcessorName, OutputFieldsDeclarer declarer) {
-        declarer.declareStream(getStreamId(parentProcessorName), getFields());
+    public void declareOutput(OutputFieldsDeclarer declarer) {
+        declarer.declareStream(getStreamId(), getFields());
     }
 
-    private String getStreamId(String parentProcessorName) {
-        return parentProcessorName + "." + rule.getName();
+    private String getStreamId() {
+        return rule.getRuleProcessorName() + "." + rule.getName();
     }
 
     private Fields getFields() {
-        final List<Schema.Field> designOutputFields = rule.getAction().getDeclaredOutput();
-        List<String> runtimeFieldNames = new ArrayList<>(designOutputFields.size());
-        for (Schema.Field designOutputField : designOutputFields) {
+        final Schema designOutputFields = rule.getAction().getDeclaredOutput();
+        List<String> runtimeFieldNames = new ArrayList<>(designOutputFields.getFields().size());
+        for (Schema.Field designOutputField : designOutputFields.getFields()) {
             runtimeFieldNames.add(designOutputField.getName());
         }
         return new Fields(runtimeFieldNames);

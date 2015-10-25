@@ -46,10 +46,10 @@ public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFields
     }
 
     private void buildAndSetRulesRuntime() {
-        final List<Rule<Schema.Field>> rules = rulesProcessor.getRules();
+        final List<Rule<Schema, Schema.Field>> rules = rulesProcessor.getRules();
         rulesRuntime = new ArrayList<>(rules.size());
-        for (Rule<Schema.Field> rule : rules) {
-            rulesRuntime.add(new RuleRuntimeStorm(this, rule, new GroovyScript(rule.getCondition())));      // TODO: Make scripting language pluggable
+        for (Rule<Schema, Schema.Field> rule : rules) {
+            rulesRuntime.add(new RuleRuntimeStorm(rule, new GroovyScript(rule.getCondition())));      // TODO: Make scripting language pluggable
         }
     }
 
@@ -57,50 +57,18 @@ public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFields
         return rulesRuntime;
     }
 
+    public void setRulesProcessor(RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor) {
+        this.rulesProcessor = rulesProcessor;
+    }
+
+    public void setRulesRuntime(List<RuleRuntimeStorm> rulesRuntime) {
+        this.rulesRuntime = rulesRuntime;
+    }
+
     public void declareOutput(OutputFieldsDeclarer declarer) {
         for (RuleRuntimeStorm ruleRuntime:rulesRuntime) {
-            ruleRuntime.declareOutput(rulesProcessor.getName(), declarer);
+            ruleRuntime.declareOutput(declarer);
         }
     }
-
-    interface StormOutputBuilder {
-        String getStreamId();
-    }
-
-    interface constructor {
-        Building construct(Builder builder);
-    }
-
-    interface Builder {
-        void buildPart();
-        Building getBuilding();
-
-    }
-
-    class HouseBuilder implements Builder {
-
-        @Override
-        public void buildPart() {
-
-        }
-
-        @Override
-        public Building getBuilding() {
-            return null;
-        }
-    }
-
-    interface Building {
-        int getNumRooms();
-    }
-
-    interface Office extends Building {
-
-    }
-
-    interface House extends Building {
-
-    }
-
 }
 

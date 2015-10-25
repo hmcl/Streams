@@ -19,26 +19,30 @@
 package com.hortonworks.iotas.layout.design.rule;
 
 import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.layout.design.processor.Processor;
 import com.hortonworks.iotas.layout.design.rule.action.Action;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
 /**
+ *
+ * @param <O> Type of the design time output declared by this rule's {@link Action}.
+ *            This output will become downstream {@link Processor} input.Example of output is {@link Schema}
  * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Condition}, for example {@link Schema.Field}
  */
-public class Rule<F> {
+public class Rule<O, F> {
     private Long id;
     private String name;
     private String description;
     private String ruleProcessorName;
 
     private Condition<F> condition;
-    private Action<F> action;
+    private Action<O> action;
 
     public Rule() {     //TODO Check
         // For JSON serializer
     }
 
-    public Rule(Condition<F> condition, Action<F> action) {
+    public Rule(Condition<F> condition, Action<O> action) {
         this.condition = condition;
         this.action = action;
     }
@@ -87,11 +91,11 @@ public class Rule<F> {
         this.condition = condition;
     }
 
-    public Action<F> getAction() {
+    public Action<O> getAction() {
         return action;
     }
 
-    public void setAction(Action<F> action) {
+    public void setAction(Action<O> action) {
         this.action = action;
     }
 }
