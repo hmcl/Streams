@@ -24,7 +24,7 @@ import com.hortonworks.iotas.common.Schema;
  * @param <I> Type of the design time input declared by this {@link Processor}, for example {@link Schema}.
  */
 public interface Processor<I> {
-    // For internal use
+    // Internal ids
     Long getId();
     void setId(Long id);
 

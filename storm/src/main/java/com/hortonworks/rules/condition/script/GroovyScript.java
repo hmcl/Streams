@@ -43,7 +43,7 @@ public class GroovyScript extends Script<Tuple, Schema.Field> {
         this.condition = condition;
         StringBuilder sb = new StringBuilder("");
         for (Condition.ConditionElement<Schema.Field> element : condition.getConditionElements()) {
-            sb.append(element.getFirstOperand().getType().getJavaType())
+            sb.append(element.getFirstOperand().getType().getJavaType().getSimpleName())
                     .append(" ")
                     .append(element.getFirstOperand().getName())
                     .append(" = ")
@@ -51,7 +51,7 @@ public class GroovyScript extends Script<Tuple, Schema.Field> {
                     .append(";")
                     .append(" ");
         }
-        conditionStr = sb.toString();
+        conditionStr = sb.toString();   // Integer x = $x;
     }
 
     @Override

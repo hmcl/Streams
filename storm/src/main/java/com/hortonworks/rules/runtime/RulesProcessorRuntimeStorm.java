@@ -18,11 +18,14 @@
 
 package com.hortonworks.rules.runtime;
 
+import backtype.storm.task.IOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.Rule;
-import com.hortonworks.iotas.layout.runtime.processor.ProcessorRuntime;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.rules.condition.script.GroovyScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFieldsDeclarer> {
+public class RulesProcessorRuntimeStorm implements RuleProcessorRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> {
     public static final Logger logger = LoggerFactory.getLogger(RulesProcessorRuntimeStorm.class);  //TODO
 
     private RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor;
@@ -53,16 +56,18 @@ public class RulesProcessorRuntimeStorm implements ProcessorRuntime<OutputFields
         }
     }
 
-    public List<RuleRuntimeStorm> getRulesRuntime() {
+    @Override
+    public List<? extends RuleRuntime<Tuple, IOutputCollector>> getRulesRuntime() {
         return rulesRuntime;
+    }
+
+    @Override
+    public void setRulesRuntime(List<? extends RuleRuntime<Tuple, IOutputCollector>> rulesRuntime) {
+        this.rulesRuntime = (List<RuleRuntimeStorm>) rulesRuntime;
     }
 
     public void setRulesProcessor(RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor) {
         this.rulesProcessor = rulesProcessor;
-    }
-
-    public void setRulesRuntime(List<RuleRuntimeStorm> rulesRuntime) {
-        this.rulesRuntime = rulesRuntime;
     }
 
     public void declareOutput(OutputFieldsDeclarer declarer) {

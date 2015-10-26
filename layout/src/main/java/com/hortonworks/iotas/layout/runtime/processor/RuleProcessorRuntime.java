@@ -29,7 +29,7 @@ import java.util.List;
  *            for example for Apache Storm would be {@code OutputFieldsDeclarer}.
  */
 public interface RuleProcessorRuntime<I, E, O> extends ProcessorRuntime<O> {
-    List<RuleRuntime<I, E>> getRulesRuntime();
+    List<? extends RuleRuntime<I, E>> getRulesRuntime();
 
-    void setRulesRuntime(List<RuleRuntime<I, E>> rulesRuntime);
+    void setRulesRuntime(List<? extends RuleRuntime<I, E>> rulesRuntime);
 }

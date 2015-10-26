@@ -64,14 +64,14 @@ public class Condition<F> {
         private Operation operation;
         private String secondOperand;
         private LogicalOperator logicalOperator;
-        private ExpressionBuilder builder;
+        private ExpressionBuilder expressionBuilder;
 
         public ConditionElement() {
             // For JSON serializer
         }
 
-        public ConditionElement(ExpressionBuilder builder) {
-            this.builder = builder;
+        public ConditionElement(ExpressionBuilder expressionBuilder) {
+            this.expressionBuilder = expressionBuilder;
         }
 
         /**
@@ -122,12 +122,12 @@ public class Condition<F> {
             this.logicalOperator = logicalOperator;
         }
 
-        public ExpressionBuilder getBuilder() {
-            return builder;
+        public ExpressionBuilder getExpressionBuilder() {
+            return expressionBuilder;
         }
 
-        public void setBuilder(ExpressionBuilder builder) {
-            this.builder = builder;
+        public void setExpressionBuilder(ExpressionBuilder expressionBuilder) {
+            this.expressionBuilder = expressionBuilder;
         }
 
         /** Example of output: temperature > 100 [&&] */
@@ -140,6 +140,10 @@ public class Condition<F> {
     }
 
     public static class FieldConditionElement extends ConditionElement<Schema.Field> {
+        public FieldConditionElement(ExpressionBuilder expressionBuilder) {
+            super(expressionBuilder);
+        }
+
         @Override
         protected String getFirstOperandName() {
             return getFirstOperand().getName();

@@ -21,6 +21,7 @@ package com.hortonworks.iotas.layout.design.rule;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.processor.Processor;
 import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
+import com.hortonworks.iotas.layout.design.processor.Sink;
 import com.hortonworks.iotas.layout.design.rule.action.Action;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition.ConditionElement;
@@ -41,27 +42,22 @@ public class RuleTest {
         final Condition<Schema.Field> condition = createCondition();
 
         // Action
-        Processor processor = new RulesProcessor();
-        processor.setId(1L);
-        processor.setName("rule_processor_1");
-        processor.setDescription("rule_processor_1_desc");
+        final Processor<Schema> sink = createSink();
 
-        List<Processor> processors = new LinkedList<>();
-        processors.add(processor);
+        List<Processor<Schema>> processors = new LinkedList<Processor<Schema>>(){{add(sink);}};
 
-        List<Schema.Field> declaredOutputs = new ArrayList<Schema.Field>() {{
-            add(condition.getConditionElements().get(0).getFirstOperand());
-            add(condition.getConditionElements().get(1).getFirstOperand());
-        }};
+        final Schema declaredInputsOutputs = createDeclaredInputsOutputs(condition);
 
-        Action<Schema.Field> action = new Action<>();
-        action.setDeclaredOutput(declaredOutputs);
-        action.setProcessors(processors);
+        Action<Schema> action = createAction(processors, declaredInputsOutputs);
 
-        Rule<Schema.Field> rule = new Rule<>(condition, action);
-        rule.setId(2L);
-        rule.setName("rule_1");
-        rule.setDescription("rule_1_desc");
+        Rule<Schema, Schema.Field> rule = createRule(condition, action);
+
+        RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor = new RulesProcessor<>();
+        rulesProcessor.setDeclaredInput(declaredInputsOutputs);
+        rulesProcessor.setId(3L);
+        rulesProcessor.setName("rule_processsor_1");
+        rulesProcessor.setDescription("rule_processsor_1_desc");
+        rulesProcessor.setRules(rule);
 
 
         ObjectMapper mapper = new ObjectMapper();
@@ -70,12 +66,42 @@ public class RuleTest {
         System.out.println(ruleJson);
     }
 
+    private Rule<Schema, Schema.Field> createRule(Condition<Schema.Field> condition, Action<Schema> action) {
+        Rule<Schema, Schema.Field> rule = new Rule<>(condition, action);
+        rule.setId(2L);
+        rule.setName("rule_1");
+        rule.setDescription("rule_1_desc");
+        return rule;
+    }
+
+    private Action<Schema> createAction(List<Processor<Schema>> processors, Schema declaredInputsOutputs) {
+        Action<Schema> action = new Action<>();
+        action.setDeclaredOutput(declaredInputsOutputs);
+        action.setProcessors(processors);
+        return action;
+    }
+
+    private Schema createDeclaredInputsOutputs(final Condition<Schema.Field> condition) {
+        return new Schema.SchemaBuilder().fields(new ArrayList<Schema.Field>() {{
+                add(condition.getConditionElements().get(0).getFirstOperand());
+                add(condition.getConditionElements().get(1).getFirstOperand());
+            }}).build();
+    }
+
+    private Processor<Schema> createSink(long id) {
+        Processor<Schema> sink = new Sink<>();
+        sink.setId(1L);
+        sink.setName("sink_1");
+        sink.setDescription("sink_1_desc");
+        return sink;
+    }
+
     private Condition<Schema.Field> createCondition() {
         return createCondition(createConditionElements());
     }
 
     private Condition<Schema.Field> createCondition(List<ConditionElement<Schema.Field>> conditionElements) {
-        Condition<Schema.Field> condition = new Condition();
+        Condition<Schema.Field> condition = new Condition<>();
         condition.setConditionElements(conditionElements);
         return condition;
     }
@@ -90,12 +116,14 @@ public class RuleTest {
     private ConditionElement<Schema.Field> createConditionElement(
             String firstOperand, String secondOperand, LogicalOperator logicalOperator) {
         ConditionElement<Schema.Field> conditionElement =
-                new ConditionElement<>(new GroovyExpressionBuilder());
+                new Condition.FieldConditionElement(new GroovyExpressionBuilder());
         final Schema.Field temperature = new Schema.Field(firstOperand, Schema.Type.INTEGER);
         conditionElement.setFirstOperand(temperature);
         conditionElement.setOperation(ConditionElement.Operation.GREATER_THAN);
         conditionElement.setSecondOperand(secondOperand);
-        conditionElement.setLogicalOperator(logicalOperator);
+        if (logicalOperator != null) {
+            conditionElement.setLogicalOperator(logicalOperator);
+        }
         return conditionElement;
     }
 
