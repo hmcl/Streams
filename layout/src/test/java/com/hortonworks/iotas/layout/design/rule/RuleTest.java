@@ -38,6 +38,31 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class RuleTest {
+
+    @Test
+    public void testName() throws Exception {
+        createRuleProcessor();
+
+    }
+
+    private void createRuleProcessor(final long id, int numRules) {
+        RulesProcessor<Schema, Schema, Field> rulesProcessor = new RulesProcessor<>();
+        rulesProcessor.setDeclaredInput(createDeclaredInputsOutputs(id));
+        rulesProcessor.setId(id);
+        rulesProcessor.setName("rule_processsor_" + id);
+        rulesProcessor.setDescription("rule_processsor_" + id + "_desc");
+        rulesProcessor.setRules(createRules(id, numRules));
+
+    }
+
+    private List<Rule<Schema, Field>> createRules(final long id, int numRules) {
+        List<Rule<Schema, Field>> rules = new ArrayList<>();
+        for (int i = 0; i < numRules; i++) {
+            rules.add(createRule(createCondition(), createAction()));
+        }
+    }
+
+
     @Test
     public void testBuildRule() throws Exception {
         // Condition
@@ -83,6 +108,12 @@ public class RuleTest {
         return action;
     }
 
+    private Schema createDeclaredInputsOutputs(final long id) {
+        return new Schema.SchemaBuilder().fields(new ArrayList<Field>() {{
+            add(new Field("temperature_" + id, Schema.Type.INTEGER));
+            add(new Field("humidity_" + id, Schema.Type.INTEGER));
+        }}).build();
+    }
     private Schema createDeclaredInputsOutputs(final Condition<Field> condition) {
         return new Schema.SchemaBuilder().fields(new ArrayList<Field>() {{
                 add(condition.getConditionElements().get(0).getFirstOperand());
