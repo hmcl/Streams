@@ -34,13 +34,12 @@ import org.codehaus.jackson.map.SerializationConfig.Feature;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class RuleTest {
 
     @Test
-    public void testName() throws Exception {
+    public void testBuildRuleProcessor() throws Exception {
         final RulesProcessor<Schema, Schema, Field> rulesProcessor = new RuleProcessorBuilder(1, 2, 2).build();
 
         //JSON
@@ -48,6 +47,12 @@ public class RuleTest {
         mapper.configure(Feature.FAIL_ON_EMPTY_BEANS, false);
         String ruleProcessorJson = mapper.writeValueAsString(rulesProcessor);
         System.out.println(ruleProcessorJson);
+        //TODO
+//        mapper.registerSubtypes(FieldConditionElement.class);
+//        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+//        RulesProcessor<Schema, Schema, Field> rulesProcessor1 = mapper.readValue(ruleProcessorJson, RulesProcessor.class);
+//        System.out.println(rulesProcessor);
+//        System.out.println(rulesProcessor1);
     }
 
     private static class RuleProcessorBuilder {
@@ -77,8 +82,8 @@ public class RuleTest {
 
         private Schema buildDeclaredInputsOutputs() {
             final Schema declaredInputsOutputs = new Schema.SchemaBuilder().fields(new ArrayList<Field>() {{
-                add(new Field(TEMPERATURE + id, Schema.Type.INTEGER));
-                add(new Field(HUMIDITY + id, Schema.Type.INTEGER));
+                add(new Field(TEMPERATURE, Schema.Type.INTEGER));
+                add(new Field(HUMIDITY, Schema.Type.INTEGER));
             }}).build();
             this.declaredInputsOutputs = declaredInputsOutputs;
             return declaredInputsOutputs;
@@ -119,8 +124,8 @@ public class RuleTest {
         private Processor<Schema> buildSink(long sinkId) {
             Processor<Schema> sink = new Sink<>();
             sink.setId(id);
-            sink.setName("sink_" + id);
-            sink.setDescription("sink_" + id + "_desc");
+            sink.setName("sink_" + sinkId);
+            sink.setDescription("sink_" + sinkId + "_desc");
             sink.setDeclaredInput(declaredInputsOutputs);
             return sink;
         }
@@ -137,8 +142,8 @@ public class RuleTest {
 
         private List<ConditionElement<Field>> buildConditionElements() {
             List<ConditionElement<Field>> conditionElements = new ArrayList<>();
-            conditionElements.add(buildConditionElement(TEMPERATURE + id, "100", LogicalOperator.OR));
-            conditionElements.add(buildConditionElement(HUMIDITY + id, "50", null));
+            conditionElements.add(buildConditionElement(TEMPERATURE, "100", LogicalOperator.OR));
+            conditionElements.add(buildConditionElement(HUMIDITY, "50", null));
             return conditionElements;
         }
 
@@ -156,105 +161,4 @@ public class RuleTest {
             return conditionElement;
         }
     }
-
-
-    @Test
-    public void testBuildRule() throws Exception {
-        // Condition
-        final Condition<Field> condition = createCondition();
-
-        // Action
-        final Processor<Schema> sink = createSink(1);
-
-        List<Processor<Schema>> processors = new LinkedList<Processor<Schema>>(){{add(sink);}};
-
-        final Schema declaredInputsOutputs = createDeclaredInputsOutputs(condition);
-
-        Action<Schema> action = createAction(processors, declaredInputsOutputs);
-
-        final Rule<Schema, Field> rule = createRule(condition, action);
-
-        RulesProcessor<Schema, Schema, Field> rulesProcessor = new RulesProcessor<>();
-        rulesProcessor.setDeclaredInput(declaredInputsOutputs);
-        rulesProcessor.setId(3L);
-        rulesProcessor.setName("rule_processsor_1");
-        rulesProcessor.setDescription("rule_processsor_1_desc");
-        rulesProcessor.setRules(new ArrayList<Rule<Schema, Field>>(){{add(rule);}});
-
-        //JSON
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(Feature.FAIL_ON_EMPTY_BEANS, false);
-        String ruleProcessorJson = mapper.writeValueAsString(rulesProcessor);
-        System.out.println(ruleProcessorJson);
-    }
-
-    private Rule<Schema, Field> createRule(Condition<Field> condition, Action<Schema> action) {
-        Rule<Schema, Field> rule = new Rule<>(condition, action);
-        rule.setId(2L);
-        rule.setName("rule_1");
-        rule.setDescription("rule_1_desc");
-        return rule;
-    }
-
-    private Action<Schema> createAction(List<Processor<Schema>> processors, Schema declaredInputsOutputs) {
-        Action<Schema> action = new Action<>();
-        action.setDeclaredOutput(declaredInputsOutputs);
-        action.setProcessors(processors);
-        return action;
-    }
-
-    private Schema createDeclaredInputsOutputs(final long id) {
-        return new Schema.SchemaBuilder().fields(new ArrayList<Field>() {{
-            add(new Field("temperature_" + id, Schema.Type.INTEGER));
-            add(new Field("humidity_" + id, Schema.Type.INTEGER));
-        }}).build();
-    }
-    private Schema createDeclaredInputsOutputs(final Condition<Field> condition) {
-        return new Schema.SchemaBuilder().fields(new ArrayList<Field>() {{
-                add(condition.getConditionElements().get(0).getFirstOperand());
-                add(condition.getConditionElements().get(1).getFirstOperand());
-            }}).build();
-    }
-
-    private Processor<Schema> createSink(long id) {
-        Processor<Schema> sink = new Sink<>();
-        sink.setId(1L);
-        sink.setName("sink_" + id);
-        sink.setDescription("sink_" + id + "_desc");
-        sink.setDeclaredInput(null);    //TODO BUG
-        return sink;
-    }
-
-    private Condition<Field> createCondition() {
-        return createCondition(createConditionElements());
-    }
-
-    private Condition<Field> createCondition(List<ConditionElement<Field>> conditionElements) {
-        Condition<Field> condition = new Condition<>();
-        condition.setConditionElements(conditionElements);
-        return condition;
-    }
-
-    private List<ConditionElement<Field>> createConditionElements() {
-        List<ConditionElement<Field>> conditionElements = new ArrayList<>();
-        conditionElements.add(createConditionElement("temperature", "100", LogicalOperator.OR));
-        conditionElements.add(createConditionElement("humidity", "50", null));
-        return conditionElements;
-    }
-
-    private ConditionElement<Field> createConditionElement(
-            String firstOperand, String secondOperand, LogicalOperator logicalOperator) {
-        ConditionElement<Field> conditionElement =
-                new FieldConditionElement(new GroovyExpressionBuilder());
-        final Field temperature = new Field(firstOperand, Schema.Type.INTEGER);
-        conditionElement.setFirstOperand(temperature);
-        conditionElement.setOperation(ConditionElement.Operation.GREATER_THAN);
-        conditionElement.setSecondOperand(secondOperand);
-        if (logicalOperator != null) {
-            conditionElement.setLogicalOperator(logicalOperator);
-        }
-        return conditionElement;
-    }
-
-
 }

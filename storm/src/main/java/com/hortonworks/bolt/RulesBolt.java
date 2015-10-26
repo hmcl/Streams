@@ -43,17 +43,23 @@ public class RulesBolt extends BaseRichBolt {
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
-        this.rulesRuntime = rulesProcessorRuntime.getRulesRuntime();
+        this.rulesRuntime = (List<RuleRuntimeStorm>) rulesProcessorRuntime.getRulesRuntime();
     }
 
     @Override
     public void execute(Tuple input) {
-        for (RuleRuntime<Tuple, IOutputCollector> rule : rulesRuntime) {
-            if (rule.evaluate(input)) {
-                rule.execute(input, collector); // collector can be null when the rule does not forward a stream
+        try {
+            for (RuleRuntime<Tuple, IOutputCollector> rule : rulesRuntime) {
+                if (rule.evaluate(input)) {
+                    rule.execute(input, collector); // collector can be null when the rule does not forward a stream
+                }
             }
+            collector.ack(input);   //TODO ack all or nothing?
+        } catch (Exception e) {
+            collector.fail(input);
+            collector.reportError(e);
+            e.printStackTrace();        //TODO: logging
         }
-        collector.ack(input);   //TODO ack all or nothing?
     }
 
     @Override
