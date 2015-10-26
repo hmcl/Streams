@@ -41,24 +41,119 @@ public class RuleTest {
 
     @Test
     public void testName() throws Exception {
-        createRuleProcessor();
+        final RulesProcessor<Schema, Schema, Field> rulesProcessor = new RuleProcessorBuilder(1, 2, 2).build();
 
+        //JSON
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(Feature.FAIL_ON_EMPTY_BEANS, false);
+        String ruleProcessorJson = mapper.writeValueAsString(rulesProcessor);
+        System.out.println(ruleProcessorJson);
     }
 
-    private void createRuleProcessor(final long id, int numRules) {
-        RulesProcessor<Schema, Schema, Field> rulesProcessor = new RulesProcessor<>();
-        rulesProcessor.setDeclaredInput(createDeclaredInputsOutputs(id));
-        rulesProcessor.setId(id);
-        rulesProcessor.setName("rule_processsor_" + id);
-        rulesProcessor.setDescription("rule_processsor_" + id + "_desc");
-        rulesProcessor.setRules(createRules(id, numRules));
+    private static class RuleProcessorBuilder {
+        public static final String TEMPERATURE = "temperature";
+        public static final String HUMIDITY = "humidity";
 
-    }
+        private final long id;
+        private final int numRules;
+        private final int numSinks;
+        private Schema declaredInputsOutputs;
 
-    private List<Rule<Schema, Field>> createRules(final long id, int numRules) {
-        List<Rule<Schema, Field>> rules = new ArrayList<>();
-        for (int i = 0; i < numRules; i++) {
-            rules.add(createRule(createCondition(), createAction()));
+        public RuleProcessorBuilder(long id, int numRules, int numSinks) {
+            this.id = id;
+            this.numRules = numRules;
+            this.numSinks = numSinks;
+        }
+
+        public RulesProcessor<Schema, Schema, Field> build() {
+            RulesProcessor<Schema, Schema, Field> rulesProcessor = new RulesProcessor<>();
+            rulesProcessor.setDeclaredInput(buildDeclaredInputsOutputs());
+            rulesProcessor.setId(id);
+            rulesProcessor.setName("rule_processsor_" + id);
+            rulesProcessor.setDescription("rule_processsor_" + id + "_desc");
+            rulesProcessor.setRules(buildRules());
+            return rulesProcessor;
+        }
+
+        private Schema buildDeclaredInputsOutputs() {
+            final Schema declaredInputsOutputs = new Schema.SchemaBuilder().fields(new ArrayList<Field>() {{
+                add(new Field(TEMPERATURE + id, Schema.Type.INTEGER));
+                add(new Field(HUMIDITY + id, Schema.Type.INTEGER));
+            }}).build();
+            this.declaredInputsOutputs = declaredInputsOutputs;
+            return declaredInputsOutputs;
+        }
+
+        private List<Rule<Schema, Field>> buildRules() {
+            List<Rule<Schema, Field>> rules = new ArrayList<>();
+            for (int i = 1; i <= numRules; i++) {
+                rules.add(buildRule(i, buildCondition(), buildAction(buildSinks())));
+            }
+            return rules;
+        }
+
+        private Rule<Schema, Field> buildRule(long ruleId, Condition<Field> condition, Action<Schema> action) {
+            Rule<Schema, Field> rule = new Rule<>(condition, action);
+            rule.setId(ruleId);
+            rule.setName("rule_" + ruleId);
+            rule.setDescription("rule_" + ruleId + "_desc");
+            rule.setRuleProcessorName("rule_processsor_" + id);
+            return rule;
+        }
+
+        private Action<Schema> buildAction(List<Processor<Schema>> sinks) {
+            Action<Schema> action = new Action<>();
+            action.setDeclaredOutput(declaredInputsOutputs);
+            action.setProcessors(sinks);
+            return action;
+        }
+
+        private List<Processor<Schema>> buildSinks() {
+            List<Processor<Schema>> sinks = new ArrayList<>();
+            for (int i = 1; i <= numSinks; i++) {
+                sinks.add(buildSink(i));
+            }
+            return sinks;
+        }
+
+        private Processor<Schema> buildSink(long sinkId) {
+            Processor<Schema> sink = new Sink<>();
+            sink.setId(id);
+            sink.setName("sink_" + id);
+            sink.setDescription("sink_" + id + "_desc");
+            sink.setDeclaredInput(declaredInputsOutputs);
+            return sink;
+        }
+
+        private Condition<Field> buildCondition() {
+            return buildCondition(buildConditionElements());
+        }
+
+        private Condition<Field> buildCondition(List<ConditionElement<Field>> conditionElements) {
+            Condition<Field> condition = new Condition<>();
+            condition.setConditionElements(conditionElements);
+            return condition;
+        }
+
+        private List<ConditionElement<Field>> buildConditionElements() {
+            List<ConditionElement<Field>> conditionElements = new ArrayList<>();
+            conditionElements.add(buildConditionElement(TEMPERATURE + id, "100", LogicalOperator.OR));
+            conditionElements.add(buildConditionElement(HUMIDITY + id, "50", null));
+            return conditionElements;
+        }
+
+        private ConditionElement<Field> buildConditionElement(
+                String firstOperand, String secondOperand, LogicalOperator logicalOperator) {
+            ConditionElement<Field> conditionElement =
+                    new FieldConditionElement(new GroovyExpressionBuilder());
+            final Field temperature = new Field(firstOperand, Schema.Type.INTEGER);
+            conditionElement.setFirstOperand(temperature);
+            conditionElement.setOperation(ConditionElement.Operation.GREATER_THAN);
+            conditionElement.setSecondOperand(secondOperand);
+            if (logicalOperator != null) {
+                conditionElement.setLogicalOperator(logicalOperator);
+            }
+            return conditionElement;
         }
     }
 
@@ -126,7 +221,7 @@ public class RuleTest {
         sink.setId(1L);
         sink.setName("sink_" + id);
         sink.setDescription("sink_" + id + "_desc");
-        sink.setDeclaredInput();
+        sink.setDeclaredInput(null);    //TODO BUG
         return sink;
     }
 
