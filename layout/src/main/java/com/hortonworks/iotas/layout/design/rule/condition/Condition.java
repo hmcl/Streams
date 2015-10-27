@@ -134,8 +134,8 @@ public class Condition<F> {
 
         /** Example of output: temperature > 100 [&&] */
         public String toString() {
-            return getFirstOperandName() + " " + operation + " " + secondOperand + " "
-                    + (logicalOperator != null ? logicalOperator : "");
+            return getFirstOperandName() + " " + expressionBuilder.getOperation(operation) + " " + secondOperand + " "
+                    + (logicalOperator != null ? expressionBuilder.getLogicalOperator(logicalOperator) : "");
         }
 
         protected abstract String getFirstOperandName();

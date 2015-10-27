@@ -54,9 +54,13 @@ public class GroovyScript extends Script<Tuple, Schema.Field> {
 //                    .append(" ")
                     sb.append(element.getFirstOperand().getName())
                     .append(" = ")
-                    .append(element.getSecondOperand())     // it is a constant
-                    .append(";")
-                    .append(" ");
+                    .append(element.getSecondOperand());     // it is a constant
+
+            if (element.getLogicalOperator() != null) {
+                sb.append(" ");
+                sb.append(element.getLogicalOperator());
+                sb.append(" ");
+            }
         }
         conditionStr = sb.toString();                       // Integer x = 5;
     }

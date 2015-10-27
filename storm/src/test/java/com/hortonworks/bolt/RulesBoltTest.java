@@ -26,7 +26,7 @@ import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.rules.runtime.RulesProcessorRuntimeStorm;
 import mockit.Expectations;
-import mockit.Mocked;
+import mockit.Injectable;
 import mockit.Tested;
 import mockit.VerificationsInOrder;
 import mockit.integration.junit4.JMockit;
@@ -41,19 +41,17 @@ public class RulesBoltTest {
     private RulesProcessor<Schema, Schema, Schema.Field> rulesProcessorMock;
     private @Tested RulesBolt rulesBolt;
 
-    private @Mocked OutputCollector mockOutputCollector;
-    private @Mocked Tuple mockTuple;
+    private @Injectable OutputCollector mockOutputCollector;
+    private @Injectable Tuple mockTuple;
+
     private RulesProcessorRuntimeStorm rulesProcessorRuntimeStorm;
 
     @Before
     public void setup() throws Exception {
         rulesProcessorMock = new RuleProcessorMockBuilder(1,2,2).build();
         rulesProcessorRuntimeStorm = new RulesProcessorRuntimeStorm(rulesProcessorMock);
-
         rulesBolt = new RulesBolt(rulesProcessorRuntimeStorm);
-
-        Config config = new Config();
-        rulesBolt.prepare(config, null, mockOutputCollector);
+        rulesBolt.prepare(new Config(), null, mockOutputCollector);
     }
 
     @Test
