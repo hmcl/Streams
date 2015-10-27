@@ -22,22 +22,22 @@ import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
 import java.util.Arrays;
 
-public class SqlStreamExpressionBuilder implements ExpressionBuilder {
-    @Override
-    public String getLogicalOperator(Condition.ConditionElement.LogicalOperator operator) {
-        switch(operator) {
+public class SqlStreamExpression<F> implements Expression<F> {
+
+
+    private String getLogicalOperator(Condition.ConditionElement.LogicalOperator logicalOperator) {
+        switch(logicalOperator) {
             case AND:
                 return " AND ";
             case OR:
                 return " OR ";
             default:
                 throw new UnsupportedOperationException(String.format("Operation [%s] not supported. List of supported operations: %s",
-                        operator, Arrays.toString(Condition.ConditionElement.LogicalOperator.values())));
+                        logicalOperator, Arrays.toString(Condition.ConditionElement.LogicalOperator.values())));
         }
     }
 
-    @Override
-    public String getOperation(Condition.ConditionElement.Operation operation) {
+    private String getOperation(Condition.ConditionElement.Operation operation) {
         switch(operation) {
             case EQUALS:
                 return " == ";

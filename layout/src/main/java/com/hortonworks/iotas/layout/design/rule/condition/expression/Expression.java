@@ -18,19 +18,22 @@
 
 package com.hortonworks.iotas.layout.design.rule.condition.expression;
 
+import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
-/** Translates the DSL expression into the implementation language syntax */
-public interface ExpressionBuilder {
+/**
+ * Represents the expression of this {@link Condition} in implementation language syntax
+ *
+ * @param <F> The type of the first operand in a {@link Condition.ConditionElement}, e.g. {@link Schema.Field}
+ * */
+public interface Expression<F> {
     /**
-     * @param operator the DSL logicalOperator for which to obtain the operator syntax
-     * @return the implementation language operator syntax
+     * @return The {@link Condition} represented by this {@link Expression}
      */
-    String getLogicalOperator(Condition.ConditionElement.LogicalOperator operator);
+    Condition<F> getCondition();
 
     /**
-     * @param operation the DSL Operation for which to obtain the operation syntax
-     * @return the implementation language operation syntax
+     * @return The expression of this {@link Condition} in implementation language syntax, ready to be evaluated
      */
-    String getOperation(Condition.ConditionElement.Operation operation);
+    String getExpression();
 }

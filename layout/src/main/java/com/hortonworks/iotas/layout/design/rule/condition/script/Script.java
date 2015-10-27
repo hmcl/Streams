@@ -20,22 +20,21 @@ package com.hortonworks.iotas.layout.design.rule.condition.script;
 
 
 import com.hortonworks.iotas.common.Schema.Field;
-import com.hortonworks.iotas.layout.design.rule.condition.Condition;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.Expression;
 
 import javax.script.ScriptException;
 
 /**
- *
  * @param <I> The type of input on which this script is evaluated, e.g. {@code tuple}
  * @param <F> The name and type declaration of the fields that constitute the Condition to be evaluated e.g. {@link Field}
  */
 public abstract class Script<I, F> {
 
-    public Script(Condition<F> condition) {
-        compile(condition);
+    public Script(Expression<F> expression) {
+        compile(expression);
     }
 
-    protected abstract void compile(Condition<F> condition);
+    protected abstract void compile(Expression<F> expression);
 
     public abstract boolean evaluate(I input) throws ScriptException;
 }

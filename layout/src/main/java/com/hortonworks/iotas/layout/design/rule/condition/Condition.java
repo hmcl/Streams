@@ -18,19 +18,16 @@
 
 package com.hortonworks.iotas.layout.design.rule.condition;
 
-import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.hortonworks.iotas.common.Schema.Field;
 
 import java.util.List;
 
 /**
  * This class represents a Rule Condition.
- * @param <F> The type of the first operand in a {@link ConditionElement}, e.g. {@link F}
+ * @param <F> The type of the first operand in a {@link ConditionElement}, e.g. {@link Field}
  */
 public class Condition<F> {
     private List<ConditionElement<F>> conditionElements;
-    private String conditionString;
 
     public Condition() {
         // For JSON serializer
@@ -45,18 +42,14 @@ public class Condition<F> {
         this.conditionElements = conditionElements;
     }
 
+    @Override
     public String toString() {
-        if (conditionString != null) {      // TODO: Check if I need to cache this
-            StringBuilder builder = new StringBuilder("");
-            for (ConditionElement conditionElement : conditionElements) {
-                builder.append(conditionElement.toString());
-            }
-            conditionString = builder.toString();
-        }
-        return conditionString;
+        return "Condition{" +
+                "conditionElements=" + conditionElements +
+                '}';
     }
 
-    public static abstract class ConditionElement<F> {
+    public static class ConditionElement<F> {
         public enum Operation {EQUALS, NOT_EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_EQUALS_TO, LESS_THAN_EQUALS_TO}   //TODO: Support BETWEEN ?
 
         public enum LogicalOperator {AND, OR}
@@ -65,14 +58,9 @@ public class Condition<F> {
         private Operation operation;
         private String secondOperand;
         private LogicalOperator logicalOperator;
-        private ExpressionBuilder expressionBuilder;
 
         public ConditionElement() {
             // For JSON serializer
-        }
-
-        public ConditionElement(ExpressionBuilder expressionBuilder) {
-            this.expressionBuilder = expressionBuilder;
         }
 
         /**
@@ -123,32 +111,14 @@ public class Condition<F> {
             this.logicalOperator = logicalOperator;
         }
 
-        public ExpressionBuilder getExpressionBuilder() {
-            return expressionBuilder;
-        }
-
-        @JsonIgnore
-        public void setExpressionBuilder(ExpressionBuilder expressionBuilder) {
-            this.expressionBuilder = expressionBuilder;
-        }
-
-        /** Example of output: temperature > 100 [&&] */
-        public String toString() {
-            return getFirstOperandName() + " " + expressionBuilder.getOperation(operation) + " " + secondOperand + " "
-                    + (logicalOperator != null ? expressionBuilder.getLogicalOperator(logicalOperator) : "");
-        }
-
-        protected abstract String getFirstOperandName();
-    }
-
-    public static class FieldConditionElement extends ConditionElement<Schema.Field> {
-        public FieldConditionElement(ExpressionBuilder expressionBuilder) {
-            super(expressionBuilder);
-        }
-
         @Override
-        protected String getFirstOperandName() {
-            return getFirstOperand().getName();
+        public String toString() {
+            return "ConditionElement{" +
+                    "firstOperand=" + firstOperand +
+                    ", operation=" + operation +
+                    ", secondOperand='" + secondOperand + '\'' +
+                    ", logicalOperator=" + logicalOperator +
+                    '}';
         }
     }
 }

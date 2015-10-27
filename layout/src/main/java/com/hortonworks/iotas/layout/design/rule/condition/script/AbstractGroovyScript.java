@@ -16,38 +16,39 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.condition.script;
+package com.hortonworks.iotas.layout.design.rule.condition.script;
 
-import backtype.storm.tuple.Fields;
-import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.Expression;
-import com.hortonworks.iotas.layout.design.rule.condition.script.AbstractGroovyScript;
 
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-//TODO
-public class GroovyScript extends AbstractGroovyScript<Tuple, Schema.Field> {
-    private Expression<Schema.Field> expression;
-    private String expressionStr;
+/**
+ * @param <I> The type of input on which this script is evaluated, e.g. {@code tuple}
+ * @param <F> The name and type declaration of the fields that constitute the Condition to be evaluated e.g. {@link Schema.Field}
+ */
+public abstract class AbstractGroovyScript<I,F> extends Script<I,F> {
+    protected ScriptEngine engine;
+    protected Bindings bindings;
 
-    public GroovyScript(Expression<Schema.Field> expression) {
+    public AbstractGroovyScript(Expression<F> expression) {
         super(expression);
+        setupScriptEngine();
+    }
+
+    private void setupScriptEngine() {
+        final ScriptEngineManager factory = new ScriptEngineManager();
+        engine = factory.getEngineByName("groovy");
+        Bindings bindings = engine.createBindings();
+        bindings.put("engine", engine);
     }
 
     @Override
-    public void compile(Expression<Schema.Field> expression) {
-        this.expression = expression;
-        expressionStr = expression.getExpression();   // e.g  x == 5;
-    }
+    public abstract void compile(Expression<F> expression);
 
     @Override
-    public boolean evaluate(Tuple input) throws ScriptException {
-        Fields fields = input.getFields();
-        for (String field : fields) {
-            Object val = input.getValueByField(field);
-            engine.put(field, val);
-        }
-        return (boolean) engine.eval(expressionStr);
-    }
+    public abstract boolean evaluate(I input) throws ScriptException;
 }

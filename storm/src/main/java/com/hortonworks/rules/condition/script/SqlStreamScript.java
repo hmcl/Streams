@@ -21,6 +21,7 @@ package com.hortonworks.rules.condition.script;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.Expression;
 import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
 
 import javax.script.ScriptException;
@@ -35,7 +36,7 @@ public class SqlStreamScript extends Script<Tuple, Schema.Field> {
     }
 
     @Override
-    public void compile(Condition condition) {
+    public void compile(Expression<Schema.Field> expression) {
 //        framework.compile(condition);
     }
 
