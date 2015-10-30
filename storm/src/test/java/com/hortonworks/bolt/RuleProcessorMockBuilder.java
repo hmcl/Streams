@@ -25,7 +25,7 @@ import com.hortonworks.iotas.layout.design.processor.Sink;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.design.rule.action.Action;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.GroovyExpression;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.GroovyExpressionBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,7 +125,7 @@ public class RuleProcessorMockBuilder {
     private Condition.ConditionElement<Schema.Field> buildConditionElement(
             String firstOperand, String secondOperand, Condition.ConditionElement.LogicalOperator logicalOperator) {
         Condition.ConditionElement<Schema.Field> conditionElement =
-                new Condition.FieldConditionElement(new GroovyExpression());
+                new Condition.FieldConditionElement(new GroovyExpressionBuilder());
         final Schema.Field temperature = new Schema.Field(firstOperand, Schema.Type.INTEGER);
         conditionElement.setFirstOperand(temperature);
         conditionElement.setOperation(Condition.ConditionElement.Operation.GREATER_THAN);

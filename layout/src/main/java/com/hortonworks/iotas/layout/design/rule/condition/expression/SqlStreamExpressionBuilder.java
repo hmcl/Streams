@@ -18,11 +18,36 @@
 
 package com.hortonworks.iotas.layout.design.rule.condition.expression;
 
+import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
 import java.util.Arrays;
 
-public class SqlStreamExpression<F> implements Expression<F> {
+public class SqlStreamExpressionBuilder<F> extends ExpressionBuilder<F> {
+
+    public SqlStreamExpressionBuilder(Condition<F> condition) {
+        super(condition);
+    }
+
+    @Override
+    public String getExpression() {
+        final StringBuilder builder = new StringBuilder("");
+        for (Condition.ConditionElement<F> element : condition.getConditionElements()) {
+            builder.append(getFirstOperandType(element.getFirstOperand()))           // Integer
+                    .append(getFirstOperandName(element.getFirstOperand()))          // x
+                    .append(getOperation(element.getOperation()))                    // ==, !=, >, ...
+                    .append(element.getSecondOperand());                             // 5 - it is a constant
+
+            if (element.getLogicalOperator() != null) {
+                builder.append(" ");
+                builder.append(getLogicalOperator(element.getLogicalOperator()));   // && or ||
+                builder.append(" ");
+            }
+        }
+        final String expression = builder.toString();                              // x == 5 [&& or ||];
+        log.debug("Built expression [{}] for condition [{}]", expression, condition);
+        return expression;
+    }
 
 
     private String getLogicalOperator(Condition.ConditionElement.LogicalOperator logicalOperator) {
@@ -54,6 +79,36 @@ public class SqlStreamExpression<F> implements Expression<F> {
             default:
                 throw new UnsupportedOperationException(String.format("Operation [%s] not supported. List of supported operations: %s",
                         operation, Arrays.toString(Condition.ConditionElement.Operation.values())));
+        }
+    }
+
+    public abstract class FieldTypeHelper<F> {
+        F field;
+
+        public FieldTypeHelper(F field) {
+            this.field = field;
+        }
+
+        public abstract String getName();
+
+        public abstract String getType();
+
+    }
+
+    public class FieldTypeHelperImpl extends FieldTypeHelper<Schema.Field> {
+        public FieldTypeHelperImpl(Schema.Field field) {
+            super(field);
+            super(field);
+        }
+
+        @Override
+        public String getName() {
+            return field.getName();
+        }
+
+        @Override
+        public String getType() {
+            return field.getType().getJavaType().getSimpleName();
         }
     }
 }

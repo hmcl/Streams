@@ -19,46 +19,36 @@
 package com.hortonworks.iotas.layout.design.rule.condition.expression;
 
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
-import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationException;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
-public class GroovyExpression<F> implements Expression<F> {
-    private Condition<F> condition;
-    private String expression;
+public class GroovyExpressionBuilder<F> extends ExpressionBuilder<F> {
 
-    public GroovyExpression(Condition<F> condition) {
-        this.condition = condition;
-    }
-
-    @Override
-    public Condition<F> getCondition() {
-        return condition;
+    public GroovyExpressionBuilder(Condition<F> condition) {
+        super(condition);
     }
 
     @Override
     public String getExpression() {
-        if (expression != null) {
-            final StringBuilder builder = new StringBuilder("");
-            for (Condition.ConditionElement<F> element : condition.getConditionElements()) {
-                builder.append(getFirstOperandName(element.getFirstOperand()))          // x
-                    .append(getOperation(element.getOperation()))                       // ==, !=, >, ...
-                    .append(element.getSecondOperand());                                // 5 - it is a constant
+        final StringBuilder builder = new StringBuilder("");
+        for (Condition.ConditionElement<F> element : condition.getConditionElements()) {
+            builder.append(getFirstOperandName(element.getFirstOperand()))          // x
+                    .append(getOperation(element.getOperation()))                   // ==, !=, >, ...
+                    .append(element.getSecondOperand());                            // 5 - it is a constant
 
-                if (element.getLogicalOperator() != null) {
-                    builder.append(" ");
-                    builder.append(getLogicalOperator(element.getLogicalOperator()));   // && or ||
-                    builder.append(" ");
-                }
+            if (element.getLogicalOperator() != null) {
+                builder.append(" ");
+                builder.append(getLogicalOperator(element.getLogicalOperator()));   // && or ||
+                builder.append(" ");
             }
-            expression = builder.toString();                       // x == 5 [&& or ||];
         }
+        final String expression = builder.toString();                              // x == 5 [&& or ||];
+        log.debug("Built expression [{}] for condition [{}]", expression, condition);
         return expression;
     }
 
     private String getLogicalOperator(Condition.ConditionElement.LogicalOperator logicalOperator) {
-        switch(logicalOperator) {
+        switch (logicalOperator) {
             case AND:
                 return " && ";
             case OR:
@@ -70,7 +60,7 @@ public class GroovyExpression<F> implements Expression<F> {
     }
 
     private String getOperation(Condition.ConditionElement.Operation operation) {
-        switch(operation) {
+        switch (operation) {
             case EQUALS:
                 return " == ";
             case NOT_EQUAL:
@@ -86,14 +76,6 @@ public class GroovyExpression<F> implements Expression<F> {
             default:
                 throw new UnsupportedOperationException(String.format("Operation [%s] not supported. List of supported operations: %s",
                         operation, Arrays.toString(Condition.ConditionElement.Operation.values())));
-        }
-    }
-
-    private String getFirstOperandName(F firstOperand) {
-        try {
-            return (String) firstOperand.getClass().getMethod("getName").invoke(firstOperand);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new ConditionEvaluationException("Could not retrieve first operand name ", e);
         }
     }
 }

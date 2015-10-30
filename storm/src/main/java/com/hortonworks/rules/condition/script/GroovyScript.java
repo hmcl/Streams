@@ -21,22 +21,22 @@ package com.hortonworks.rules.condition.script;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.Expression;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
 import com.hortonworks.iotas.layout.design.rule.condition.script.AbstractGroovyScript;
 
 import javax.script.ScriptException;
 
 //TODO
 public class GroovyScript extends AbstractGroovyScript<Tuple, Schema.Field> {
-    private Expression<Schema.Field> expression;
+    private ExpressionBuilder<Schema.Field> expression;
     private String expressionStr;
 
-    public GroovyScript(Expression<Schema.Field> expression) {
+    public GroovyScript(ExpressionBuilder<Schema.Field> expression) {
         super(expression);
     }
 
     @Override
-    public void compile(Expression<Schema.Field> expression) {
+    public void compile(ExpressionBuilder<Schema.Field> expression) {
         this.expression = expression;
         expressionStr = expression.getExpression();   // e.g  x == 5;
     }

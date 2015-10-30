@@ -19,7 +19,7 @@
 package com.hortonworks.iotas.layout.design.rule.condition.script;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.Expression;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
@@ -34,7 +34,7 @@ public abstract class AbstractGroovyScript<I,F> extends Script<I,F> {
     protected ScriptEngine engine;
     protected Bindings bindings;
 
-    public AbstractGroovyScript(Expression<F> expression) {
+    public AbstractGroovyScript(ExpressionBuilder<F> expression) {
         super(expression);
         setupScriptEngine();
     }
@@ -47,7 +47,7 @@ public abstract class AbstractGroovyScript<I,F> extends Script<I,F> {
     }
 
     @Override
-    public abstract void compile(Expression<F> expression);
+    public abstract void compile(ExpressionBuilder<F> expression);
 
     @Override
     public abstract boolean evaluate(I input) throws ScriptException;

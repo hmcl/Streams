@@ -20,7 +20,7 @@ package com.hortonworks.iotas.layout.design.rule.condition.script;
 
 
 import com.hortonworks.iotas.common.Schema.Field;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.Expression;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
 
 import javax.script.ScriptException;
 
@@ -30,11 +30,11 @@ import javax.script.ScriptException;
  */
 public abstract class Script<I, F> {
 
-    public Script(Expression<F> expression) {
+    public Script(ExpressionBuilder<F> expression) {
         compile(expression);
     }
 
-    protected abstract void compile(Expression<F> expression);
+    protected abstract void compile(ExpressionBuilder<F> expression);
 
     public abstract boolean evaluate(I input) throws ScriptException;
 }

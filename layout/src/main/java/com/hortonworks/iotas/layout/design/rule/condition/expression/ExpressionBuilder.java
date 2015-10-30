@@ -20,20 +20,44 @@ package com.hortonworks.iotas.layout.design.rule.condition.expression;
 
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
+import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Represents the expression of this {@link Condition} in implementation language syntax
  *
  * @param <F> The type of the first operand in a {@link Condition.ConditionElement}, e.g. {@link Schema.Field}
  * */
-public interface Expression<F> {
-    /**
-     * @return The {@link Condition} represented by this {@link Expression}
-     */
-    Condition<F> getCondition();
+public abstract class ExpressionBuilder<F> {
+    protected static final Logger log = LoggerFactory.getLogger(ExpressionBuilder.class);
+
+    protected Condition<F> condition;
+
+    public ExpressionBuilder(Condition<F> condition) {
+        this.condition = condition;
+    }
 
     /**
      * @return The expression of this {@link Condition} in implementation language syntax, ready to be evaluated
      */
-    String getExpression();
+    public abstract String getExpression();
+
+    protected String getFirstOperandName(F firstOperand) {
+        try {
+            return (String) firstOperand.getClass().getMethod("getName").invoke(firstOperand);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new ConditionEvaluationException("Could not retrieve first operand name ", e);
+        }
+    }
+
+    protected String getFirstOperandType(F firstOperand) {
+        try {
+            return (String) firstOperand.getClass().getMethod("getType").invoke(firstOperand);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new ConditionEvaluationException("Could not retrieve first operand name ", e);
+        }
+    }
 }
