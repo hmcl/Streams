@@ -24,17 +24,17 @@ import java.util.Arrays;
 
 public class GroovyExpressionBuilder<F> extends ExpressionBuilder<F> {
 
-    public GroovyExpressionBuilder(Condition<F> condition) {
-        super(condition);
+    public GroovyExpressionBuilder(Condition<F> condition, FieldNameTypeExtractor<F> fieldNameTypeExtractor) {
+        super(condition, fieldNameTypeExtractor);
     }
 
     @Override
     public String getExpression() {
         final StringBuilder builder = new StringBuilder("");
         for (Condition.ConditionElement<F> element : condition.getConditionElements()) {
-            builder.append(getFirstOperandName(element.getFirstOperand()))          // x
-                    .append(getOperation(element.getOperation()))                   // ==, !=, >, ...
-                    .append(element.getSecondOperand());                            // 5 - it is a constant
+            builder.append(getName(element.getFirstOperand()))               // x
+                    .append(getOperation(element.getOperation()))            // ==, !=, >, <, ...
+                    .append(element.getSecondOperand());                     // 5 - it is a constant
 
             if (element.getLogicalOperator() != null) {
                 builder.append(" ");
@@ -42,7 +42,7 @@ public class GroovyExpressionBuilder<F> extends ExpressionBuilder<F> {
                 builder.append(" ");
             }
         }
-        final String expression = builder.toString();                              // x == 5 [&& or ||];
+        final String expression = builder.toString();                              // x == 5 [&& or ||]
         log.debug("Built expression [{}] for condition [{}]", expression, condition);
         return expression;
     }

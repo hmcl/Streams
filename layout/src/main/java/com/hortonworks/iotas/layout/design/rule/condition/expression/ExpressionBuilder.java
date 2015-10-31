@@ -20,11 +20,8 @@ package com.hortonworks.iotas.layout.design.rule.condition.expression;
 
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
-import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * Represents the expression of this {@link Condition} in implementation language syntax
@@ -34,10 +31,12 @@ import java.lang.reflect.InvocationTargetException;
 public abstract class ExpressionBuilder<F> {
     protected static final Logger log = LoggerFactory.getLogger(ExpressionBuilder.class);
 
-    protected Condition<F> condition;
+    protected final Condition<F> condition;
+    protected final FieldNameTypeExtractor<F> fieldNameTypeExtractor;
 
-    public ExpressionBuilder(Condition<F> condition) {
+    public ExpressionBuilder(Condition<F> condition, FieldNameTypeExtractor<F> fieldNameTypeExtractor) {
         this.condition = condition;
+        this.fieldNameTypeExtractor = fieldNameTypeExtractor;
     }
 
     /**
@@ -45,19 +44,11 @@ public abstract class ExpressionBuilder<F> {
      */
     public abstract String getExpression();
 
-    protected String getFirstOperandName(F firstOperand) {
-        try {
-            return (String) firstOperand.getClass().getMethod("getName").invoke(firstOperand);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new ConditionEvaluationException("Could not retrieve first operand name ", e);
-        }
+    protected String getName(F field) {
+        return fieldNameTypeExtractor.getName(field) + " ";
     }
 
-    protected String getFirstOperandType(F firstOperand) {
-        try {
-            return (String) firstOperand.getClass().getMethod("getType").invoke(firstOperand);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new ConditionEvaluationException("Could not retrieve first operand name ", e);
-        }
+    protected String getType(F field) {
+        return fieldNameTypeExtractor.getType(field) + " ";
     }
 }
