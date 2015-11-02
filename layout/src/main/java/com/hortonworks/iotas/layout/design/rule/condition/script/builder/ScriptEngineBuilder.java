@@ -16,19 +16,9 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.rule.condition.expression;
+package com.hortonworks.iotas.layout.design.rule.condition.script.builder;
 
-import com.hortonworks.iotas.common.Schema;
 
-public class SchemaFieldNameTypeExtractor implements FieldNameTypeExtractor<Schema.Field> {
-
-    @Override
-    public String getName(Schema.Field field) {
-        return field.getName();
-    }
-
-    @Override
-    public String getType(Schema.Field field) {
-        return field.getType().getJavaType().getSimpleName();
-    }
+public interface ScriptEngineBuilder<T> {
+    T getEngine();
 }

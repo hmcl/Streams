@@ -16,39 +16,19 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.rule.condition.script;
-
-import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
+package com.hortonworks.iotas.layout.design.rule.condition.script.builder;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
-/**
- * @param <I> The type of input on which this script is evaluated, e.g. {@code tuple}
- * @param <F> The name and type declaration of the fields that constitute the Condition to be evaluated e.g. {@link Schema.Field}
- */
-public abstract class AbstractGroovyScript<I,F> extends Script<I,F> {
-    protected ScriptEngine engine;
-    protected Bindings bindings;
-
-    public AbstractGroovyScript(ExpressionBuilder<F> expression) {
-        super(expression);
-        setupScriptEngine();
-    }
-
-    private void setupScriptEngine() {
+public class GroovyScriptEngineBuilder implements ScriptEngineBuilder<ScriptEngine> {
+    @Override
+    public ScriptEngine getEngine() {
         final ScriptEngineManager factory = new ScriptEngineManager();
-        engine = factory.getEngineByName("groovy");
+        ScriptEngine engine = factory.getEngineByName("groovy");
         Bindings bindings = engine.createBindings();
         bindings.put("engine", engine);
+        return engine;
     }
-
-    @Override
-    public abstract void compile(ExpressionBuilder<F> expression);
-
-    @Override
-    public abstract boolean evaluate(I input) throws ScriptException;
 }

@@ -22,32 +22,27 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
-import com.hortonworks.iotas.layout.design.rule.condition.script.AbstractGroovyScript;
+import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
+import com.hortonworks.iotas.layout.design.rule.condition.script.builder.ScriptEngineBuilder;
 
+import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 //TODO
-public class GroovyScript extends AbstractGroovyScript<Tuple, Schema.Field> {
-    private ExpressionBuilder<Schema.Field> expression;
-    private String expressionStr;
+public class GroovyScript extends Script<Tuple, Schema.Field, ScriptEngine> {
 
-    public GroovyScript(ExpressionBuilder<Schema.Field> expression) {
-        super(expression);
+    public GroovyScript(ExpressionBuilder<Schema.Field> expressionBuilder,
+                        ScriptEngineBuilder<ScriptEngine> scriptEngineBuilder) {
+        super(expressionBuilder, scriptEngineBuilder);
     }
 
     @Override
-    public void compile(ExpressionBuilder<Schema.Field> expression) {
-        this.expression = expression;
-        expressionStr = expression.getExpression();   // e.g  x == 5;
-    }
-
-    @Override
-    public boolean evaluate(Tuple input) throws ScriptException {
+    public boolean evaluate(Tuple input) throws ScriptException {   //TODO: what to do if missmatch between tuple and expression
         Fields fields = input.getFields();
         for (String field : fields) {
             Object val = input.getValueByField(field);
             engine.put(field, val);
         }
-        return (boolean) engine.eval(expressionStr);
+        return (boolean) engine.eval(expression);
     }
 }

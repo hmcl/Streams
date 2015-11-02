@@ -24,7 +24,7 @@ import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.design.processor.Sink;
 import com.hortonworks.iotas.layout.design.rule.action.Action;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.GroovyExpressionBuilder;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.builder.GroovyExpressionBuilder;
 
 import java.util.ArrayList;
 import java.util.List;

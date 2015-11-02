@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.rule.condition.expression;
+package com.hortonworks.iotas.layout.design.rule.condition.expression.builder;
 
 public interface FieldNameTypeExtractor<F> {
 
