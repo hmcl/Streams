@@ -47,7 +47,7 @@ public class RulesBolt extends BaseRichBolt {
     }
 
     @Override
-    public void execute(Tuple input) {
+    public void execute(Tuple input) {  // tuple input should an IotasEvent
         try {
             for (RuleRuntime<Tuple, IOutputCollector> rule : rulesRuntime) {
                 if (rule.evaluate(input)) {

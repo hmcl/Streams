@@ -16,23 +16,15 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.processor;
+package com.hortonworks.iotas.layout.runtime.rule;
 
-import com.hortonworks.iotas.common.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * A {@link Processor} must declare output, regardless of the output being identical to the input
- * @param <I> Type of the design time input declared by this {@link Processor}, for example {@link Schema}.
- * @param <O> Type of the design time output declared by this {@link Processor}, for example {@link Schema}.
- */
-public class Processor<I, O> extends Component<I> {
-    private O declaredOutput;
+import java.util.List;
 
-    public O getDeclaredOutput() {
-        return declaredOutput;
-    }
+public interface RuleRuntimeBuilder<I, E> {
+    Logger log = LoggerFactory.getLogger(RuleRuntimeBuilder.class);
 
-    public void setDeclaredOutput(O declaredOutput) {
-        this.declaredOutput = declaredOutput;
-    }
+    List<RuleRuntime<I, E>> getRulesRuntime();
 }

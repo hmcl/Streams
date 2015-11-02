@@ -22,6 +22,8 @@ package com.hortonworks.iotas.layout.design.rule.condition.script;
 import com.hortonworks.iotas.common.Schema.Field;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
 import com.hortonworks.iotas.layout.design.rule.condition.script.builder.ScriptEngineBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptException;
 
@@ -31,7 +33,9 @@ import javax.script.ScriptException;
  * @param <E> The Script Engine used to evaluate the scripts
  */
 public abstract class Script<I, F, E> {
-    protected String expression;
+    protected static final Logger log = LoggerFactory.getLogger(Script.class);
+
+    protected final String expression;
     protected final E engine;
 
     public Script(ExpressionBuilder<F> expressionBuilder, ScriptEngineBuilder<E> scriptEngineBuilder) {
@@ -40,4 +44,12 @@ public abstract class Script<I, F, E> {
     }
 
     public abstract boolean evaluate(I input) throws ScriptException;
+
+    @Override
+    public String toString() {
+        return "Script{" +
+                "expression='" + expression + '\'' +
+                ", engine=" + engine +
+                '}';
+    }
 }

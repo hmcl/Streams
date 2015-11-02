@@ -28,6 +28,7 @@ import javax.script.ScriptException;
 
 // TODO: Replace Object parameterized type with SQLStream Framework Object
 public class SqlStreamScript extends Script<Tuple, Schema.Field, Object> {
+
     public SqlStreamScript(ExpressionBuilder<Schema.Field> expressionBuilder,
                            ScriptEngineBuilder<Object> scriptEngineBuilder) {
         super(expressionBuilder, scriptEngineBuilder);

@@ -26,7 +26,8 @@ import java.util.List;
 
 /**
  * Object representing a design time rules processor.
- * TODO
+ * @param <I> Type of the design time input declared by this {@link RulesProcessor}, for example {@link Schema}.
+ * @param <O> Type of the design time output declared by this {@link RulesProcessor}, for example {@link Schema}.
  * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Rule} {@link Condition}, for example {@link Schema.Field}
  */
 public class RulesProcessor<I, O, F> extends Component<I> {

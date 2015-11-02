@@ -42,9 +42,13 @@ public class RulesProcessorRuntimeStorm implements RuleProcessorRuntime<Tuple, I
     private RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor;
     private List<RuleRuntimeStorm> rulesRuntime;
 
-    /*public RulesProcessorRuntimeStorm(RulesRuntimeBuilder<Tuple, IOutputCollector> rulesRuntimeBuilder) {
+    /*public RulesProcessorRuntimeStorm(RulesRuntimeStormBuilder<Tuple, IOutputCollector> rulesRuntimeBuilder) {
         rulesRuntime = rulesRuntimeBuilder.getRulesRuntime();
     }*/
+
+    public RulesProcessorRuntimeStorm(List<RuleRuntimeStorm> rulesRuntime) {
+        this.rulesRuntime = rulesRuntime;
+    }
 
     public RulesProcessorRuntimeStorm(RulesProcessor<Schema, Schema, Schema.Field> processor) {
         this.rulesProcessor = processor;

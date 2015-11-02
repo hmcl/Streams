@@ -22,23 +22,20 @@ import backtype.storm.task.IOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
-import com.hortonworks.iotas.common.Schema;
+import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
 import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationException;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
-    private final Rule<Schema, Schema.Field> rule;
-    private final Script<Tuple, Schema.Field, ScriptEngine> script;     // Script used to evaluate the condition
+    private final Rule rule;
+    private final Script<Tuple, ?, ?> script;     // Script used to evaluate the condition
 
-    public RuleRuntimeStorm(Rule<Schema, Schema.Field> rule, Script<Tuple, Schema.Field, ScriptEngine> script) {
+    public RuleRuntimeStorm(Rule rule, Script<Tuple, ?, ?> script) {
         this.rule = rule;
         this.script = script;
     }
@@ -70,12 +67,7 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
     }
 
     private Fields getFields() {
-        final Schema designOutputFields = rule.getAction().getDeclaredOutput();
-        List<String> runtimeFieldNames = new ArrayList<>(designOutputFields.getFields().size());
-        for (Schema.Field designOutputField : designOutputFields.getFields()) {
-            runtimeFieldNames.add(designOutputField.getName());
-        }
-        return new Fields(runtimeFieldNames);
+        return new Fields(IotasEvent.IOTAS_EVENT);
     }
 
     @Override

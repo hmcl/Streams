@@ -18,8 +18,8 @@
 
 package com.hortonworks.rules.condition.script;
 
-import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
 import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
@@ -27,6 +27,7 @@ import com.hortonworks.iotas.layout.design.rule.condition.script.builder.ScriptE
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+import java.util.Map;
 
 //TODO
 public class GroovyScript extends Script<Tuple, Schema.Field, ScriptEngine> {
@@ -37,11 +38,10 @@ public class GroovyScript extends Script<Tuple, Schema.Field, ScriptEngine> {
     }
 
     @Override
-    public boolean evaluate(Tuple input) throws ScriptException {   //TODO: what to do if missmatch between tuple and expression
-        Fields fields = input.getFields();
-        for (String field : fields) {
-            Object val = input.getValueByField(field);
-            engine.put(field, val);
+    public boolean evaluate(Tuple input) throws ScriptException {
+        final IotasEvent iotasEvent = (IotasEvent) input.getValueByField(IotasEvent.IOTAS_EVENT);
+        for (Map.Entry<String, Object> fieldAndValue : iotasEvent.getFieldsAndValues().entrySet()) {
+            engine.put(fieldAndValue.getKey(), fieldAndValue.getValue());
         }
         return (boolean) engine.eval(expression);
     }

@@ -98,5 +98,17 @@ public class Rule<O, F> {
     public void setAction(Action<O> action) {
         this.action = action;
     }
+
+    @Override
+    public String toString() {
+        return "Rule{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", ruleProcessorName='" + ruleProcessorName + '\'' +
+                ", condition=" + condition +
+                ", action=" + action +
+                '}';
+    }
 }
 
