@@ -21,21 +21,18 @@ package com.hortonworks.iotas.layout.design.processor;
 import com.hortonworks.iotas.common.Schema;
 
 /**
+ * Processor that must declare output, regardless of output being identical to input
  * @param <I> Type of the design time input declared by this {@link Processor}, for example {@link Schema}.
+ * @param <O> Type of the design time output declared by this {@link Processor}, for example {@link Schema}.
  */
-public interface Processor<I> {
-    // Internal ids
-    Long getId();
-    void setId(Long id);
+public class Processor<I, O> extends Component<I> {
+    private O declaredOutput;
 
-    // Defined by the user
-    String getName();
-    void setName(String name);
+    public O getDeclaredOutput() {
+        return declaredOutput;
+    }
 
-    String getDescription();
-    void setDescription(String description);
-
-    // TODO Do I need input and output?
-    I getDeclaredInput();
-    void setDeclaredInput(I input);
+    public void setDeclaredOutput(O declaredOutput) {
+        this.declaredOutput = declaredOutput;
+    }
 }

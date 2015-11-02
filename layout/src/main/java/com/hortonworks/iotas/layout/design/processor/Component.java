@@ -21,50 +21,46 @@ package com.hortonworks.iotas.layout.design.processor;
 import com.hortonworks.iotas.common.Schema;
 
 /**
- * @param <I> Type of the design time input declared by this {@link Processor}, for example {@link Schema}.
+ *  A {@code Sink} is a type of {@link Component}
+ *  @param <I> Type of the design time input declared by this {@link Component}, for example {@link Schema}.
  */
-public class Sink<I> implements Processor<I> {
+public class Component<I> {
     private Long id;
     private String name;
     private String description;
     private I declaredInput;
 
-    @Override
+    // Internal ids
     public Long getId() {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }
 
-    @Override
+    // Defined by the user
     public String getName() {
         return name;
     }
 
-    @Override
     public void setName(String name) {
         this.name = name;
     }
 
-    @Override
     public String getDescription() {
         return description;
     }
 
-    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
-    @Override
+    // Input to this component
     public I getDeclaredInput() {
         return declaredInput;
     }
 
-    @Override
     public void setDeclaredInput(I declaredInput) {
         this.declaredInput = declaredInput;
     }

@@ -19,9 +19,8 @@
 package com.hortonworks.bolt;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.processor.Processor;
+import com.hortonworks.iotas.layout.design.processor.Component;
 import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
-import com.hortonworks.iotas.layout.design.processor.Sink;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.design.rule.action.Action;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
@@ -80,23 +79,23 @@ public class RuleProcessorMockBuilder {
         return rule;
     }
 
-    private Action<Schema> buildAction(List<Processor<Schema>> sinks) {
+    private Action<Schema> buildAction(List<Component<Schema>> sinks) {
         Action<Schema> action = new Action<>();
         action.setDeclaredOutput(declaredInputsOutputs);
-        action.setProcessors(sinks);
+        action.setComponents(sinks);
         return action;
     }
 
-    private List<Processor<Schema>> buildSinks() {
-        List<Processor<Schema>> sinks = new ArrayList<>();
+    private List<Component<Schema>> buildSinks() {
+        List<Component<Schema>> sinks = new ArrayList<>();
         for (int i = 1; i <= numSinks; i++) {
             sinks.add(buildSink(i));
         }
         return sinks;
     }
 
-    private Processor<Schema> buildSink(long sinkId) {
-        Processor<Schema> sink = new Sink<>();
+    private Component<Schema> buildSink(long sinkId) {
+        Component<Schema> sink = new Component<>();
         sink.setId(id);
         sink.setName("sink_" + sinkId);
         sink.setDescription("sink_" + sinkId + "_desc");
