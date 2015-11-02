@@ -16,19 +16,12 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.rule.condition.expression.builder;
+package com.hortonworks.iotas.layout.design.rule.condition.expression;
 
-import com.hortonworks.iotas.common.Schema;
+public interface FieldNameTypeExtractor<F> {
 
-public class SchemaFieldNameTypeExtractor implements FieldNameTypeExtractor<Schema.Field> {
+    String getName(F field);
 
-    @Override
-    public String getName(Schema.Field field) {
-        return field.getName();
-    }
+    String getType(F field);
 
-    @Override
-    public String getType(Schema.Field field) {
-        return field.getType().getJavaType().getSimpleName();
-    }
 }

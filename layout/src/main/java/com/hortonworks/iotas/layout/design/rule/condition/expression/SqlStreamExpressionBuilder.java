@@ -19,7 +19,6 @@
 package com.hortonworks.iotas.layout.design.rule.condition.expression;
 
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.builder.FieldNameTypeExtractor;
 
 import java.util.Arrays;
 

@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.rule.condition.expression.builder;
+package com.hortonworks.iotas.layout.design.rule.condition.expression;
 
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
 
 import java.util.Arrays;
 

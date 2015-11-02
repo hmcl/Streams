@@ -20,7 +20,6 @@ package com.hortonworks.iotas.layout.design.rule.condition.expression;
 
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.builder.FieldNameTypeExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
