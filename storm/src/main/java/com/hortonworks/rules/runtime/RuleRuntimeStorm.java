@@ -28,6 +28,7 @@ import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
 import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationException;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 
+import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,26 +36,28 @@ import java.util.List;
 
 public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
     private final Rule<Schema, Schema.Field> rule;
-    private final Script<Tuple, Schema.Field> script;     // Script used to evaluate the condition
+    private final Script<Tuple, Schema.Field, ScriptEngine> script;     // Script used to evaluate the condition
 
-    public RuleRuntimeStorm(Rule<Schema, Schema.Field> rule, Script<Tuple, Schema.Field> script) {
+    public RuleRuntimeStorm(Rule<Schema, Schema.Field> rule, Script<Tuple, Schema.Field, ScriptEngine> script) {
         this.rule = rule;
         this.script = script;
     }
 
     @Override
     public boolean evaluate(Tuple input) {
-        logger.debug("Evaluating condition for rule: [{}] \n\tinput tuple: [{}]", rule, input);
         try {
-            return script.evaluate(input);
+            final boolean evaluates = script.evaluate(input);
+           log.debug("Rule condition evaluated to: [{}]. Rule: [{}] \n\tInput tuple: [{}]", evaluates, rule, input);
+            return evaluates;
         } catch (ScriptException e) {
-            throw new ConditionEvaluationException("Exception occurred when evaluating condition. " + this, e);
+            throw new ConditionEvaluationException("Exception occurred when evaluating rule condition. " + this, e);
         }
     }
 
     @Override
     public void execute(Tuple input, IOutputCollector collector) {
-        logger.debug("Executing rule: [{}] \n\\t input tuple: [{}] \n\t collector: [{}]", rule, input, collector);
+        log.debug("Executing rule: [{}] \n\tInput tuple: [{}] \n\tCollector: [{}] \n\tStream:[{}]",
+                  rule, input, collector, getStreamId());
         collector.emit(getStreamId(), Arrays.asList(input), input.getValues());
     }
 
@@ -63,7 +66,7 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
     }
 
     private String getStreamId() {
-        return rule.getRuleProcessorName() + "." + rule.getName();
+        return rule.getRuleProcessorName() + "." + rule.getName() + "." + rule.getId();
     }
 
     private Fields getFields() {
@@ -78,8 +81,7 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
     @Override
     public String toString() {
         return "RuleRuntimeStorm{" +
-                "processorRuntime=" /*+ processorRuntime */+
-                ", rule=" + rule +
+                "rule=" + rule +
                 ", script=" + script +
                 '}';
     }

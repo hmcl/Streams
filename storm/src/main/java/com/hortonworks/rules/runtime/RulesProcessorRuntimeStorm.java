@@ -24,6 +24,9 @@ import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.Rule;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.builder.GroovyExpressionBuilder;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.builder.SchemaFieldNameTypeExtractor;
+import com.hortonworks.iotas.layout.design.rule.condition.script.builder.GroovyScriptEngineBuilder;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.rules.condition.script.GroovyScript;
@@ -34,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RulesProcessorRuntimeStorm implements RuleProcessorRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> {
-    public static final Logger logger = LoggerFactory.getLogger(RulesProcessorRuntimeStorm.class);  //TODO
+    public static final Logger log = LoggerFactory.getLogger(RulesProcessorRuntimeStorm.class);  //TODO
 
     private RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor;
     private List<RuleRuntimeStorm> rulesRuntime;
@@ -52,7 +55,8 @@ public class RulesProcessorRuntimeStorm implements RuleProcessorRuntime<Tuple, I
         final List<Rule<Schema, Schema.Field>> rules = rulesProcessor.getRules();
         rulesRuntime = new ArrayList<>(rules.size());
         for (Rule<Schema, Schema.Field> rule : rules) {
-            rulesRuntime.add(new RuleRuntimeStorm(rule, new GroovyScript(rule.getCondition())));      // TODO: Make scripting language pluggable
+            rulesRuntime.add(new RuleRuntimeStorm(rule, new GroovyScript(new GroovyExpressionBuilder<>(rule.getCondition(),
+                    new SchemaFieldNameTypeExtractor()), new GroovyScriptEngineBuilder())));      // TODO: Make scripting language pluggable
         }
     }
 

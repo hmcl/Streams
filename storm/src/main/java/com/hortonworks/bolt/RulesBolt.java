@@ -54,11 +54,10 @@ public class RulesBolt extends BaseRichBolt {
                     rule.execute(input, collector); // collector can be null when the rule does not forward a stream
                 }
             }
-            collector.ack(input);   //TODO ack all or nothing?
+            collector.ack(input);
         } catch (Exception e) {
             collector.fail(input);
             collector.reportError(e);
-            e.printStackTrace();        //TODO: logging
         }
     }
 

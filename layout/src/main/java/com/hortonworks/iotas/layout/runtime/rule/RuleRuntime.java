@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
  */
 public interface RuleRuntime<I, E> {
-    Logger logger = LoggerFactory.getLogger(RuleRuntime.class);
+    Logger log = LoggerFactory.getLogger(RuleRuntime.class);
 
     /** Evaluates Condition
      *  @param input The output of a parser. Key is the field name, value is the field value
