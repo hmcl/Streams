@@ -26,7 +26,7 @@ import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.GroovyExpressionBuilder;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.SchemaFieldNameTypeExtractor;
-import com.hortonworks.iotas.layout.design.rule.condition.script.builder.GroovyScriptEngineBuilder;
+import com.hortonworks.iotas.layout.design.rule.condition.script.engine.GroovyScriptEngineBuilder;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.rules.condition.script.GroovyScript;

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.rule.condition.script.builder;
+package com.hortonworks.iotas.layout.design.rule.condition.script.engine;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;

@@ -16,19 +16,9 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.rule.condition.script.builder;
+package com.hortonworks.iotas.layout.design.rule.condition.script.engine;
 
-//TODO
-public class SqlStreamEngineBuilder implements ScriptEngineBuilder<Object> {
-    @Override
-    public Object getEngine() {
-        throw new UnsupportedOperationException("TODO: SqlStream Compiler Implementation");
-        /*Compiler comp = new Compiler(); // From Haohui's class
-        Evaluation obj = comp.compile("let x = 1:Integer,...; x + y > 0 and 1 < 2");
-        for (Tuple r : record) {
-            if (obj.filter(r)) {
-                action();
-            }
-        }*/
-    }
+
+public interface ScriptEngineBuilder<T> {
+    T getEngine();
 }

@@ -64,5 +64,9 @@ public class RulesBolt extends BaseRichBolt {
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         rulesProcessorRuntime.declareOutput(declarer);
+
+        for (RuleRuntimeStorm ruleRuntime:rulesRuntime) {
+            ruleRuntime.declareOutput(declarer);
+        }
     }
 }

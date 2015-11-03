@@ -20,19 +20,18 @@ package com.hortonworks.rules.condition.script;
 
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.IotasEvent;
-import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
 import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
-import com.hortonworks.iotas.layout.design.rule.condition.script.builder.ScriptEngineBuilder;
+import com.hortonworks.iotas.layout.design.rule.condition.script.engine.ScriptEngineBuilder;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import java.util.Map;
 
 //TODO
-public class GroovyScript extends Script<Tuple, Schema.Field, ScriptEngine> {
+public class GroovyScript<F> extends Script<Tuple, F, ScriptEngine> {
 
-    public GroovyScript(ExpressionBuilder<Schema.Field> expressionBuilder,
+    public GroovyScript(ExpressionBuilder<F> expressionBuilder,
                         ScriptEngineBuilder<ScriptEngine> scriptEngineBuilder) {
         super(expressionBuilder, scriptEngineBuilder);
     }

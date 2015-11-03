@@ -19,18 +19,22 @@
 package com.hortonworks.rules.condition.script;
 
 import backtype.storm.tuple.Tuple;
-import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
 import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
-import com.hortonworks.iotas.layout.design.rule.condition.script.builder.ScriptEngineBuilder;
+import com.hortonworks.iotas.layout.design.rule.condition.script.engine.ScriptEngineBuilder;
 
 import javax.script.ScriptException;
 
 // TODO: Replace Object parameterized type with SQLStream Framework Object
-public class SqlStreamScript extends Script<Tuple, Schema.Field, Object> {
+public class SqlStreamScript<F> extends Script<Tuple, F, SqlStreamScript.Framework> {
 
-    public SqlStreamScript(ExpressionBuilder<Schema.Field> expressionBuilder,
-                           ScriptEngineBuilder<Object> scriptEngineBuilder) {
+    //TODO: Remove and replace with the actual framework object type
+    interface Framework {
+
+    }
+
+    public SqlStreamScript(ExpressionBuilder<F> expressionBuilder,
+                           ScriptEngineBuilder<SqlStreamScript.Framework> scriptEngineBuilder) {
         super(expressionBuilder, scriptEngineBuilder);
     }
 
