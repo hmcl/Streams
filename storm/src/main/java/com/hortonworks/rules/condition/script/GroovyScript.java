@@ -38,10 +38,17 @@ public class GroovyScript<F> extends Script<Tuple, F, ScriptEngine> {
 
     @Override
     public boolean evaluate(Tuple input) throws ScriptException {
+        Object valueByField = input.getValueByField(IotasEvent.IOTAS_EVENT);
+        log.debug("valueByField = " + valueByField);
         final IotasEvent iotasEvent = (IotasEvent) input.getValueByField(IotasEvent.IOTAS_EVENT);
         for (Map.Entry<String, Object> fieldAndValue : iotasEvent.getFieldsAndValues().entrySet()) {
+            log.debug("PUTTING INTO ENGINE key = {}, val = {}", fieldAndValue.getKey(), fieldAndValue.getValue());
+//            engine.put(fieldAndValue.getKey().trim(), fieldAndValue.getValue().toString().trim());
             engine.put(fieldAndValue.getKey(), fieldAndValue.getValue());
         }
-        return (boolean) engine.eval(expression);
+        log.debug("Evaluating expression: {}", expression);
+        final boolean result = (boolean) engine.eval(expression);
+        log.debug("Result = {}",result);
+        return result;
     }
 }

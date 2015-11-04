@@ -43,6 +43,9 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
     @Override
     public boolean evaluate(Tuple input) {
         try {
+            Object valueByField = input.getValueByField(IotasEvent.IOTAS_EVENT);
+            log.debug("valueByField = " + valueByField);
+            log.debug("Evaluating condition for Rule: [{}] \n\tInput tuple: [{}]", rule, input);
             final boolean evaluates = script.evaluate(input);
            log.debug("Rule condition evaluated to: [{}]. Rule: [{}] \n\tInput tuple: [{}]", evaluates, rule, input);
             return evaluates;
@@ -62,7 +65,8 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
         declarer.declareStream(getStreamId(), getFields());
     }
 
-    private String getStreamId() {
+    //TODO
+    public String getStreamId() {
         return rule.getRuleProcessorName() + "." + rule.getName() + "." + rule.getId();
     }
 

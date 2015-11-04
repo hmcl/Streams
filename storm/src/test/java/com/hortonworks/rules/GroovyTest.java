@@ -22,7 +22,6 @@ import groovy.util.Eval;
 import org.junit.Test;
 
 import javax.script.Bindings;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
@@ -36,21 +35,27 @@ public class GroovyTest {
 //        bindings.put("x", 5);
 //        bindings.put("y", 3);
 
-        System.out.println(engine.getBindings(ScriptContext.GLOBAL_SCOPE));
+//        System.out.println(engine.getBindings(ScriptContext.GLOBAL_SCOPE));
 //        Object record = engine.eval("x > 2 && y > 1");
 //        Object record = engine.eval("int x = 5; int y = 3; evaluate(x > 2 && y > 1)");
 //        Object record = engine.eval("x > 2 && y > 1");
 
 //        String s = "int x = 5; int y = 3; evaluate(x > 2 && y > 1)";
 //        String s = "int x = 5; int y = 3; x > 2 && y > 1";
-        engine.put("x", 5);
-        engine.put("y", 3);
-        String s = "x > 2 && y > 1";
+
+        engine.put("x", "5");
+        engine.put("y", "3");
+//        engine.put("x", 5);
+//        engine.put("y", 3);
+//        String s = "x > 2 && y > 1";
+        String s = "x  > '2'  &&  y  > 1";
         Object record = engine.eval(s);
-        System.out.printf("evaluating [%s] => %s\n", s, record);
+        System.out.printf("evaluating [%s] with (x,y)=(%s,%s) => %s\n", s, engine.get("x"), engine.get("y"), record);
+
+//        engine.put("y", "0");
         engine.put("y", 0);
         record = engine.eval(s);
-        System.out.printf("evaluating [%s] => %s\n", s, record);
+        System.out.printf("evaluating [%s] with (x,y)=(%s,%s) => %s\n", s, engine.get("x"), engine.get("y"), record);
     }
 
     @Test

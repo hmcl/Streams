@@ -24,6 +24,7 @@ import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
@@ -31,12 +32,16 @@ import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeConstructor;
 import com.hortonworks.rules.runtime.RuleRuntimeStorm;
 import com.hortonworks.rules.runtime.RulesProcessorRuntimeStorm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class RulesBolt<I, O, F> extends BaseRichBolt {
+    protected static final Logger log = LoggerFactory.getLogger(RulesBolt.class);
+
     private final RulesProcessor<I, O, F> rulesProcessor;
     private final RuleRuntimeBuilder<Tuple, IOutputCollector> ruleRuntimeBuilder;
     private OutputCollector collector;
@@ -69,6 +74,9 @@ public class RulesBolt<I, O, F> extends BaseRichBolt {
     @Override
     public void execute(Tuple input) {  // tuple input should an IotasEvent
         try {
+            Object valueByField = input.getValueByField(IotasEvent.IOTAS_EVENT);
+            log.debug("Executing tuple [{}] with IotasEvent [{}]", input, valueByField);
+
             for (RuleRuntime<Tuple, IOutputCollector> rule : rulesRuntime) {
                 if (rule.evaluate(input)) {
                     rule.execute(input, collector); // collector can be null when the rule does not forward a stream
@@ -78,7 +86,12 @@ public class RulesBolt<I, O, F> extends BaseRichBolt {
         } catch (Exception e) {
             collector.fail(input);
             collector.reportError(e);
+            log.debug("",e);    // useful to debug unit tests
         }
+    }
+
+    public List<RuleRuntime<Tuple, IOutputCollector>> getRulesRuntime() {
+        return rulesRuntime;
     }
 
     @Override
