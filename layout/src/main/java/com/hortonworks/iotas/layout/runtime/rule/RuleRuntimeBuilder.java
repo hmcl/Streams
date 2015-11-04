@@ -21,10 +21,14 @@ package com.hortonworks.iotas.layout.runtime.rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 public interface RuleRuntimeBuilder<I, E> {
     Logger log = LoggerFactory.getLogger(RuleRuntimeBuilder.class);
 
-    List<RuleRuntime<I, E>> getRulesRuntime();
+    void buildExpression();
+
+    void buildScriptEngine();
+
+    void buildScript();
+
+    RuleRuntime<I, E> getRuleRuntime();
 }

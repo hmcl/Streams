@@ -16,11 +16,22 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules;
+package com.hortonworks.iotas.layout.runtime.rule;
 
-import com.hortonworks.iotas.layout.design.rule.Rule;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
+public class RuleRuntimeConstructor {
+    private RuleRuntimeBuilder ruleRuntimeBuilder;
 
-public interface RuleRuntimeBuilder {
-    RuleRuntime getRuleRuntime(Rule rule);
+    public RuleRuntimeConstructor(RuleRuntimeBuilder ruleRuntimeBuilder) {
+        this.ruleRuntimeBuilder = ruleRuntimeBuilder;
+    }
+
+    public void construct() {
+        ruleRuntimeBuilder.buildExpression();
+        ruleRuntimeBuilder.buildScriptEngine();
+        ruleRuntimeBuilder.buildScript();
+    }
+
+    public RuleRuntime getRuleRuntime() {
+        return ruleRuntimeBuilder.getRuleRuntime();
+    }
 }
