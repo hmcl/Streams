@@ -31,8 +31,8 @@ public class RuleRuntimeConstructor<I,E> {
         this.ruleRuntimeBuilder = ruleRuntimeBuilder;
     }
 
-    public void construct() {
-        ruleRuntimeBuilder.buildExpression();
+    public void construct(Rule rule) {
+        ruleRuntimeBuilder.buildExpression(rule);
         ruleRuntimeBuilder.buildScriptEngine();
         ruleRuntimeBuilder.buildScript();
     }

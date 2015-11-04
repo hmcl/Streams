@@ -32,6 +32,7 @@ import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeConstructor;
 import com.hortonworks.rules.runtime.RuleRuntimeStorm;
 import com.hortonworks.rules.runtime.RulesProcessorRuntimeStorm;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,8 @@ public class RulesBolt<I, O, F> extends BaseRichBolt {
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
+//        rulesRuntime = new ArrayList<>(rulesProcessor.getRules().size());
+        rulesRuntime = new ArrayList<>();
         buildRulesRuntime();
     }
 
@@ -58,10 +61,9 @@ public class RulesBolt<I, O, F> extends BaseRichBolt {
         final RuleRuntimeConstructor<Tuple, IOutputCollector> ruleRuntimeConstructor
                 = new RuleRuntimeConstructor<>(ruleRuntimeBuilder);
         for (Rule<O,F> rule : rulesProcessor.getRules()) {
-            ruleRuntimeConstructor.construct();
+            ruleRuntimeConstructor.construct(rule);
             rulesRuntime.add(ruleRuntimeConstructor.getRuleRuntime(rule));
         }
-
     }
 
     @Override

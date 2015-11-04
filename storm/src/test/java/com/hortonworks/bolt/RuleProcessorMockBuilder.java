@@ -37,10 +37,10 @@ public class RuleProcessorMockBuilder {
     private final int numSinks;
     private Schema declaredInputsOutputs;
 
-    public RuleProcessorMockBuilder(long id, int numRules, int numSinks) {
+    public RuleProcessorMockBuilder(long id, int numRules, int numSinksPerRule) {
         this.id = id;
         this.numRules = numRules;
-        this.numSinks = numSinks;
+        this.numSinks = numSinksPerRule;
     }
 
     public RulesProcessor<Schema, Schema, Schema.Field> build() {

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public interface RuleRuntimeBuilder<I, E> {
     Logger log = LoggerFactory.getLogger(RuleRuntimeBuilder.class);
 
-    void buildExpression();
+    void buildExpression(Rule rule);
 
     void buildScriptEngine();
 

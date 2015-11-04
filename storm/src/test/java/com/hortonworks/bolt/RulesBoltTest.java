@@ -22,6 +22,8 @@ import backtype.storm.Config;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
+import com.hortonworks.iotas.common.IotasEvent;
+import com.hortonworks.iotas.common.IotasEventImpl;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.SchemaFieldNameTypeExtractor;
@@ -36,9 +38,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.HashMap;
+
+import static org.junit.Assert.assertTrue;
+
 @RunWith(JMockit.class)
 public class RulesBoltTest {
-    private static final Values VALUES = new Values("temperature","humidity");
+//    private static final Values VALUES = new Values("temperature","humidity");
+    private static final Values VALUES = new Values(new IotasEventImpl(new HashMap<String, Object>(){{put("temperature","99"); put("humidity","51");}},"dataSrcId","23"));
 
     //TODO: Check all of this
 
@@ -49,14 +56,13 @@ public class RulesBoltTest {
     private @Injectable Tuple mockTuple;
 
     private RulesProcessorRuntimeStorm rulesProcessorRuntimeStorm;
-    private RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor;
 
     @Before
     public void setup() throws Exception {
         rulesProcessorMock = new RuleProcessorMockBuilder(1,2,2).build();
         rulesProcessorRuntimeStorm = new RulesProcessorRuntimeStorm(rulesProcessorMock);
 
-        rulesBolt = new RulesBolt<>(rulesProcessor,
+        rulesBolt = new RulesBolt<>(rulesProcessorMock,
                 new GroovyRuleRuntimeBuilder<Schema, Schema.Field>(new SchemaFieldNameTypeExtractor()));
 
         rulesBolt.prepare(new Config(), null, mockOutputCollector);
@@ -65,18 +71,23 @@ public class RulesBoltTest {
     @Test
     public void testRulesTriggers() throws Exception {
         new Expectations() {{
-            mockTuple.getBinaryByField(RuleProcessorMockBuilder.TEMPERATURE); returns(51);
-            rulesProcessorRuntimeStorm.getRulesRuntime().get(0).evaluate(mockTuple); result = true;
+//            mockTuple.getBinaryByField(RuleProcessorMockBuilder.TEMPERATURE); returns(51);
+            mockTuple.getBinaryByField(IotasEvent.IOTAS_EVENT); returns(VALUES);
+
+//            rulesProcessorRuntimeStorm.getRulesRuntime().get(0).evaluate(mockTuple); result = true;
         }};
 
         callExecuteAndVerifyCollectorInteraction(true);
+
+        assertTrue(rulesProcessorRuntimeStorm.getRulesRuntime().get(0).evaluate(mockTuple));
     }
 
-    private void callExecuteAndVerifyCollectorInteraction(boolean isSuccess) {
+    private void callExecuteAndVerifyCollectorInteraction(final boolean isSuccess) {
         rulesBolt.execute(mockTuple);
 
         if(isSuccess) {
             new VerificationsInOrder() {{
+                rulesProcessorRuntimeStorm.getRulesRuntime().get(0).evaluate(mockTuple); times = 1;
                 mockOutputCollector.emit(mockTuple, withAny(VALUES));
                 mockOutputCollector.ack(mockTuple); times = 1;
             }};

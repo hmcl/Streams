@@ -36,7 +36,6 @@ import com.hortonworks.rules.condition.script.GroovyScript;
  * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Condition}, for example {@link Schema.Field}
  */
 public class GroovyRuleRuntimeBuilder<O, F> implements RuleRuntimeBuilder<Tuple, IOutputCollector> {
-    private Rule<O, F> rule;
     private FieldNameTypeExtractor<F> fieldNameTypeExtractor;
     private GroovyExpressionBuilder<F> groovyExpressionBuilder;
     private GroovyScriptEngineBuilder groovyScriptEngineBuilder;
@@ -47,7 +46,7 @@ public class GroovyRuleRuntimeBuilder<O, F> implements RuleRuntimeBuilder<Tuple,
     }
 
     @Override
-    public void buildExpression() {
+    public void buildExpression(Rule rule) {
         groovyExpressionBuilder = new GroovyExpressionBuilder<>(rule.getCondition(), fieldNameTypeExtractor);
     }
 
