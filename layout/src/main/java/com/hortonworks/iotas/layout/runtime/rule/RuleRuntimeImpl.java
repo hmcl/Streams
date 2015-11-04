@@ -1,4 +1,5 @@
 /*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -19,25 +20,38 @@
 package com.hortonworks.iotas.layout.runtime.rule;
 
 import com.hortonworks.iotas.layout.design.rule.Rule;
+import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
+import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.script.ScriptException;
 
 /**
  * @param <I> Type of runtime input to this rule, for example {@code Tuple}
  * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
  */
-public class RuleRuntimeConstructor<I,E> {
-    private RuleRuntimeBuilder<I,E> ruleRuntimeBuilder;
+public class RuleRuntimeImpl<I, E, R extends Rule, S extends Script> {
+    public static final Logger log = LoggerFactory.getLogger(RuleRuntimeImpl.class);
 
-    public RuleRuntimeConstructor(RuleRuntimeBuilder<I,E> ruleRuntimeBuilder) {
-        this.ruleRuntimeBuilder = ruleRuntimeBuilder;
+    private final R rule;
+    private final S script;     // Script used to evaluate the condition
+
+    public RuleRuntimeImpl(R rule, S script) {
+        this.rule = rule;
+        this.script = script;
     }
 
-    public void construct() {
-        ruleRuntimeBuilder.buildExpression();
-        ruleRuntimeBuilder.buildScriptEngine();
-        ruleRuntimeBuilder.buildScript();
-    }
+    /** Evaluates Condition
+     *  @param input The output of a parser. Key is the field name, value is the field value
+     *  @throws ConditionEvaluationException
+     **/
+    boolean evaluate(I input) throws ScriptException {
+        return script.evaluate(input);
+    };
 
-    public RuleRuntime<I,E> getRuleRuntime(Rule rule) {
-        return ruleRuntimeBuilder.getRuleRuntime(rule);
-    }
+    /** Executes Action
+     *  @param input The output of a parser. Key is the field name, value is the field value
+     **/
+    void execute(I input, E executor) {} /// storm collector.emit / spark ...
 }

@@ -18,7 +18,12 @@
 
 package com.hortonworks.rules.runtime;
 
+import backtype.storm.task.IOutputCollector;
+import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.Rule;
+import com.hortonworks.iotas.layout.design.rule.action.Action;
+import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.FieldNameTypeExtractor;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.GroovyExpressionBuilder;
 import com.hortonworks.iotas.layout.design.rule.condition.script.engine.GroovyScriptEngineBuilder;
@@ -26,22 +31,24 @@ import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 import com.hortonworks.rules.condition.script.GroovyScript;
 
-public class GroovyRuleRuntimeBuilder implements RuleRuntimeBuilder {
-    private Rule rule;
-    private FieldNameTypeExtractor fieldNameTypeExtractor;
-    private GroovyExpressionBuilder groovyExpressionBuilder;
+/**
+ * @param <O> Type of the design time output declared by a rule's {@link Action}. Example of output is {@link Schema}
+ * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Condition}, for example {@link Schema.Field}
+ */
+public class GroovyRuleRuntimeBuilder<O, F> implements RuleRuntimeBuilder<Tuple, IOutputCollector> {
+    private Rule<O, F> rule;
+    private FieldNameTypeExtractor<F> fieldNameTypeExtractor;
+    private GroovyExpressionBuilder<F> groovyExpressionBuilder;
     private GroovyScriptEngineBuilder groovyScriptEngineBuilder;
-    private GroovyScript groovyScript;
+    private GroovyScript<F> groovyScript;
 
-    public GroovyRuleRuntimeBuilder(Rule rule, FieldNameTypeExtractor fieldNameTypeExtractor) {
-        this.rule = rule;
+    public GroovyRuleRuntimeBuilder(FieldNameTypeExtractor<F> fieldNameTypeExtractor) {
         this.fieldNameTypeExtractor = fieldNameTypeExtractor;
     }
 
     @Override
     public void buildExpression() {
         groovyExpressionBuilder = new GroovyExpressionBuilder<>(rule.getCondition(), fieldNameTypeExtractor);
-
     }
 
     @Override
@@ -51,11 +58,11 @@ public class GroovyRuleRuntimeBuilder implements RuleRuntimeBuilder {
 
     @Override
     public void buildScript() {
-        groovyScript = new GroovyScript(groovyExpressionBuilder, groovyScriptEngineBuilder);
+        groovyScript = new GroovyScript<>(groovyExpressionBuilder, groovyScriptEngineBuilder);
     }
 
     @Override
-    public RuleRuntime getRuleRuntime() {
+    public RuleRuntime<Tuple, IOutputCollector> getRuleRuntime(Rule rule) {
         return new RuleRuntimeStorm(rule, groovyScript);
     }
 }

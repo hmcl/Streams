@@ -18,9 +18,14 @@
 
 package com.hortonworks.iotas.layout.runtime.rule;
 
+import com.hortonworks.iotas.layout.design.rule.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @param <I> Type of runtime input to this rule, for example {@code Tuple}
+ * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
+ */
 public interface RuleRuntimeBuilder<I, E> {
     Logger log = LoggerFactory.getLogger(RuleRuntimeBuilder.class);
 
@@ -30,5 +35,5 @@ public interface RuleRuntimeBuilder<I, E> {
 
     void buildScript();
 
-    RuleRuntime<I, E> getRuleRuntime();
+    RuleRuntime<I, E> getRuleRuntime(Rule rule);
 }

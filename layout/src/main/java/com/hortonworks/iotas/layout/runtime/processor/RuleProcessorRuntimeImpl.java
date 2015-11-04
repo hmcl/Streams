@@ -18,9 +18,9 @@
 
 package com.hortonworks.iotas.layout.runtime.processor;
 
-import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
+
+import java.util.List;
 
 /**
  * @param <I> Type of runtime input to each rule, for example {@code Tuple}
@@ -28,23 +28,27 @@ import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
  * @param <O> Type used to declare the output in the the underlying streaming framework,
  *            for example for Apache Storm would be {@code OutputFieldsDeclarer}.
  */
-public class RuleProcessorRuntimeBuilder<I, E, O> {
-    private final RulesProcessor<I, E, I> rulesProcessor;
-    private Class<? extends RuleRuntime<I, E>> ruleRuntimeClass;
+public abstract class RuleProcessorRuntimeImpl<I, E, O> implements ProcessorRuntime<O> {
 
-    public RuleProcessorRuntimeBuilder(RulesProcessor<I, E, I> rulesProcessor, RuleRuntimeBuilder builder) {
+    private List<? extends RuleRuntime<I,E>> rulesRuntime;
 
-
-        this.rulesProcessor = rulesProcessor;
+    public RuleProcessorRuntimeImpl(List<? extends RuleRuntime<I, E>> rulesRuntime) {
+        this.rulesRuntime = rulesRuntime;
     }
 
-    public RuleProcessorRuntime<I,E,O> getRuleProcessorRuntime(RulesProcessor<I, E, I> rulesProcessor, Class<? extends RuleRuntime<I,E>> clazz) {
-        /*List<Rule<E, I>> rules = rulesProcessor.getRules();
-        List<Object> rulesRuntime = new ArrayList<>(rules.size());
-        for (Rule<Schema, Schema.Field> rule : rules) {
-            rulesRuntime.add(new RuleRuntimeStorm(rule, new GroovyScript(new GroovyExpressionBuilder<>(rule.getCondition(),
-                    new SchemaFieldNameTypeExtractor()), new GroovyScriptEngineBuilder())));      // TODO: Make scripting language pluggable
-        }*/
-        return null;
+    public List<? extends RuleRuntime<I, E>> getRulesRuntime() {
+        return rulesRuntime;
+    }
+
+    //TODO: Investigate if I need setter in here
+    public void setRulesRuntime(List<? extends RuleRuntime<I, E>> rulesRuntime) {
+        this.rulesRuntime = rulesRuntime;
+    }
+
+    @Override
+    public void declareOutput(O output)  {
+        for (RuleRuntime<I, E> ruleRuntime : rulesRuntime) {
+
+        }
     }
 }

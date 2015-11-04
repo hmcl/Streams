@@ -24,6 +24,8 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
+import com.hortonworks.iotas.layout.design.rule.condition.expression.SchemaFieldNameTypeExtractor;
+import com.hortonworks.rules.runtime.GroovyRuleRuntimeBuilder;
 import com.hortonworks.rules.runtime.RulesProcessorRuntimeStorm;
 import mockit.Expectations;
 import mockit.Injectable;
@@ -38,19 +40,25 @@ import org.junit.runner.RunWith;
 public class RulesBoltTest {
     private static final Values VALUES = new Values("temperature","humidity");
 
+    //TODO: Check all of this
+
     private RulesProcessor<Schema, Schema, Schema.Field> rulesProcessorMock;
-    private @Tested RulesBolt rulesBolt;
+    private @Tested RulesBolt<Schema, Schema, Schema.Field> rulesBolt;
 
     private @Injectable OutputCollector mockOutputCollector;
     private @Injectable Tuple mockTuple;
 
     private RulesProcessorRuntimeStorm rulesProcessorRuntimeStorm;
+    private RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor;
 
     @Before
     public void setup() throws Exception {
         rulesProcessorMock = new RuleProcessorMockBuilder(1,2,2).build();
         rulesProcessorRuntimeStorm = new RulesProcessorRuntimeStorm(rulesProcessorMock);
-        rulesBolt = new RulesBolt(rulesProcessorRuntimeStorm);
+
+        rulesBolt = new RulesBolt<>(rulesProcessor,
+                new GroovyRuleRuntimeBuilder<Schema, Schema.Field>(new SchemaFieldNameTypeExtractor()));
+
         rulesBolt.prepare(new Config(), null, mockOutputCollector);
     }
 
