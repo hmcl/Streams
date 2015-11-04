@@ -44,8 +44,12 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(JMockit.class)
 public class RulesBoltTest {
-//    private static final Values VALUES = new Values("temperature","humidity");
-    private static final Values VALUES = new Values(new IotasEventImpl(new HashMap<String, Object>(){{put("temperature","99"); put("humidity","51");}},"dataSrcId","23"));
+    private static final IotasEventImpl IOTAS_EVENT = new IotasEventImpl(new HashMap<String, Object>() {{
+        put("temperature", "99");
+        put("humidity", "51");
+    }}, "dataSrcId", "23");
+    //    private static final Values VALUES = new Values("temperature","humidity");
+    private static final Values VALUES = new Values(IOTAS_EVENT);
 
     //TODO: Check all of this
 
@@ -72,7 +76,7 @@ public class RulesBoltTest {
     public void testRulesTriggers() throws Exception {
         new Expectations() {{
 //            mockTuple.getBinaryByField(RuleProcessorMockBuilder.TEMPERATURE); returns(51);
-            mockTuple.getBinaryByField(IotasEvent.IOTAS_EVENT); returns(VALUES);
+            mockTuple.getBinaryByField(IotasEvent.IOTAS_EVENT); returns(IOTAS_EVENT);
 
 //            rulesProcessorRuntimeStorm.getRulesRuntime().get(0).evaluate(mockTuple); result = true;
         }};
