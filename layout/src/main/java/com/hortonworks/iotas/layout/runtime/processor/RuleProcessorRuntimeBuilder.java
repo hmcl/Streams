@@ -18,7 +18,7 @@
 
 package com.hortonworks.iotas.layout.runtime.processor;
 
-import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
+import com.hortonworks.iotas.layout.design.component.RulesProcessor;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 

@@ -16,28 +16,23 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.processor;
+package com.hortonworks.iotas.layout.design.component;
 
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.rule.Rule;
-import com.hortonworks.iotas.layout.design.rule.condition.Condition;
-
-import java.util.List;
 
 /**
- * Object representing a design time rules processor.
- * @param <I> Type of the design time input declared by this {@link RulesProcessor}, for example {@link Schema}.
- * @param <O> Type of the design time output declared by this {@link RulesProcessor}, for example {@link Schema}.
- * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Rule} {@link Condition}, for example {@link Schema.Field}
+ * A {@link Processor} must declare output, regardless of the output being identical to the input
+ * @param <I> Type of the design time input declared by this {@link Processor}, for example {@link Schema}.
+ * @param <O> Type of the design time output declared by this {@link Processor}, for example {@link Schema}.
  */
-public class RulesProcessor<I, O, F> extends Component<I> {
-    private List<Rule<O,F>> rules;
+public class Processor<I, O> extends Component<I> {
+    private O declaredOutput;
 
-    public List<Rule<O,F>> getRules() {
-        return rules;
+    public O getDeclaredOutput() {
+        return declaredOutput;
     }
 
-    public void setRules(List<Rule<O,F>> rules) {
-        this.rules = rules;
+    public void setDeclaredOutput(O declaredOutput) {
+        this.declaredOutput = declaredOutput;
     }
 }

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.processor;
+package com.hortonworks.iotas.layout.design.component;
 
 import com.hortonworks.iotas.common.Schema;
 

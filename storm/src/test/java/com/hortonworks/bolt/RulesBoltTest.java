@@ -24,7 +24,7 @@ import backtype.storm.tuple.Values;
 import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.common.IotasEventImpl;
 import com.hortonworks.iotas.common.Schema;
-import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
+import com.hortonworks.iotas.layout.design.component.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.SchemaFieldNameTypeExtractor;
 import com.hortonworks.rules.runtime.GroovyRuleRuntimeBuilder;
 import com.hortonworks.rules.runtime.RuleRuntimeStorm;

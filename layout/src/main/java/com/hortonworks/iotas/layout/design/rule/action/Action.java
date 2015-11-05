@@ -18,7 +18,7 @@
 
 package com.hortonworks.iotas.layout.design.rule.action;
 
-import com.hortonworks.iotas.layout.design.processor.Component;
+import com.hortonworks.iotas.layout.design.component.Component;
 
 import java.io.Serializable;
 import java.util.List;
