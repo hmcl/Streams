@@ -20,11 +20,13 @@ package com.hortonworks.iotas.layout.design.processor;
 
 import com.hortonworks.iotas.common.Schema;
 
+import java.io.Serializable;
+
 /**
  *  A {@code Sink} is a type of {@link Component}
  *  @param <I> Type of the design time input declared by this {@link Component}, for example {@link Schema}.
  */
-public class Component<I> {
+public class Component<I> implements Serializable {
     private Long id;
     private String name;
     private String description;

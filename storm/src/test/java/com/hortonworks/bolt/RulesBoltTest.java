@@ -27,6 +27,7 @@ import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.condition.expression.SchemaFieldNameTypeExtractor;
 import com.hortonworks.rules.runtime.GroovyRuleRuntimeBuilder;
+import com.hortonworks.rules.runtime.RuleRuntimeStorm;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -44,11 +45,11 @@ import java.util.HashMap;
 public class RulesBoltTest {
     protected static final Logger log = LoggerFactory.getLogger(RulesBoltTest.class);
 
-    private static final IotasEventImpl IOTAS_EVENT = new IotasEventImpl(new HashMap<String, Object>() {{
+    public static final IotasEventImpl IOTAS_EVENT = new IotasEventImpl(new HashMap<String, Object>() {{
         put("temperature", 99);
         put("humidity", 51);
     }}, "dataSrcId", "23");
-    //    private static final Values VALUES = new Values("temperature","humidity");
+
     private static final Values VALUES = new Values(IOTAS_EVENT);
 
     //TODO: Check all of this
@@ -59,32 +60,24 @@ public class RulesBoltTest {
     private @Injectable OutputCollector mockOutputCollector;
     private @Injectable Tuple mockTuple;
 
-//    private RulesProcessorRuntimeStorm rulesProcessorRuntimeStorm;
-
     @Before
     public void setup() throws Exception {
         rulesProcessorMock = new RuleProcessorMockBuilder(1,2,2).build();
-//        rulesProcessorRuntimeStorm = new RulesProcessorRuntimeStorm(rulesProcessorMock);
 
         rulesBolt = new RulesBolt<>(rulesProcessorMock,
                 new GroovyRuleRuntimeBuilder<Schema, Schema.Field>(new SchemaFieldNameTypeExtractor()));
 
-//        rulesBolt.prepare(new Config(), null, mockOutputCollector);
         rulesBolt.prepare(null, null, mockOutputCollector);
     }
 
     @Test
     public void testRulesTriggers() throws Exception {
         new Expectations() {{
-//            mockTuple.getBinaryByField(RuleProcessorMockBuilder.TEMPERATURE); returns(51);
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(IOTAS_EVENT);
 //            times = 2;
 
 //            rulesProcessorRuntimeStorm.getRulesRuntime().get(0).evaluate(mockTuple); result = true;
         }};
-
-
-        rulesBolt.execute(mockTuple);
 
         callExecuteAndVerifyCollectorInteraction(true);
 
@@ -93,12 +86,13 @@ public class RulesBoltTest {
 
     private void callExecuteAndVerifyCollectorInteraction(final boolean isSuccess) {
         log.debug("callExecuteAndVerifyCollectorInteraction");
+        rulesBolt.execute(mockTuple);
 
         if(isSuccess) {
             new VerificationsInOrder() {{
-
 //                rulesBolt.getRulesRuntime().get(0).evaluate(mockTuple); times = 1;    //TODO: Check
-                mockOutputCollector.emit(mockTuple, withAny(VALUES));
+                mockOutputCollector.emit(((RuleRuntimeStorm)rulesBolt.getRulesRuntime().get(0)).getStreamId(), mockTuple, withAny(VALUES)); times = 1;
+//                mockOutputCollector.emit(((RuleRuntimeStorm)rulesBolt.getRulesRuntime().get(1)).getStreamId(), mockTuple, withAny(VALUES)); times = 1;
                 mockOutputCollector.ack(mockTuple); times = 1;
             }};
 

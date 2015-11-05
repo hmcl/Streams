@@ -23,13 +23,15 @@ import com.hortonworks.iotas.layout.design.processor.Component;
 import com.hortonworks.iotas.layout.design.rule.action.Action;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
+import java.io.Serializable;
+
 /**
  *
  * @param <O> Type of the design time output declared by this rule's {@link Action}.
  *            This output will become the input of the downstream {@link Component}.Example of output is {@link Schema}
  * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Condition}, for example {@link Schema.Field}
  */
-public class Rule<O, F> {
+public class Rule<O, F> implements Serializable {
     private Long id;
     private String name;
     private String description;

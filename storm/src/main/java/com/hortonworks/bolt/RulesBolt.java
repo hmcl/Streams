@@ -23,6 +23,7 @@ import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
+import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.design.processor.RulesProcessor;
@@ -30,7 +31,6 @@ import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeConstructor;
-import com.hortonworks.rules.runtime.RuleRuntimeStorm;
 import com.hortonworks.rules.runtime.RulesProcessorRuntimeStorm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,19 +52,22 @@ public class RulesBolt<I, O, F> extends BaseRichBolt {
     public RulesBolt(RulesProcessor<I, O, F> rulesProcessor, RuleRuntimeBuilder<Tuple, IOutputCollector> ruleRuntimeBuilder) {
         this.rulesProcessor = rulesProcessor;
         this.ruleRuntimeBuilder = ruleRuntimeBuilder;
+//        buildRulesRuntime();
     }
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+        log.debug("++++++++ PREPARING");
         this.collector = collector;
-//        rulesRuntime = new ArrayList<>(rulesProcessor.getRules().size());
-        rulesRuntime = new ArrayList<>();
         buildRulesRuntime();
+//        rulesRuntime = new ArrayList<>(rulesProcessor.getRules().size());
+//        rulesRuntime = new ArrayList<>();
     }
 
     private void buildRulesRuntime() {
         final RuleRuntimeConstructor<Tuple, IOutputCollector> ruleRuntimeConstructor
                 = new RuleRuntimeConstructor<>(ruleRuntimeBuilder);
+        rulesRuntime = new ArrayList<>();
         for (Rule<O,F> rule : rulesProcessor.getRules()) {
             ruleRuntimeConstructor.construct(rule);
             rulesRuntime.add(ruleRuntimeConstructor.getRuleRuntime(rule));
@@ -75,7 +78,7 @@ public class RulesBolt<I, O, F> extends BaseRichBolt {
     public void execute(Tuple input) {  // tuple input should an IotasEvent
         try {
             Object valueByField = input.getValueByField(IotasEvent.IOTAS_EVENT);
-            log.debug("Executing tuple [{}] with IotasEvent [{}]", input, valueByField);
+            log.debug("++++++++ Executing tuple [{}] with IotasEvent [{}]", input, valueByField);
 
             for (RuleRuntime<Tuple, IOutputCollector> rule : rulesRuntime) {
                 if (rule.evaluate(input)) {
@@ -96,12 +99,29 @@ public class RulesBolt<I, O, F> extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        log.debug("++++++++ DECLARING");
         //TODO: Clean and how to avoid this cast
 //        rulesProcessorRuntime.declareOutput(declarer);
 
-        for (RuleRuntime<Tuple, IOutputCollector> ruleRuntime : rulesRuntime) {
+        /*for (RuleRuntime<Tuple, IOutputCollector> ruleRuntime : rulesRuntime) {
             ((RuleRuntimeStorm)ruleRuntime).declareOutput(declarer);
-        }
+        }*/
 
+        declarer.declareStream(getStream1(), getFields());
+        declarer.declareStream(getStream2(), getFields());
     }
+
+    public static String getStream1() {
+        return "rule_processsor_1.rule_1.1";
+    }
+
+
+    private static String getStream2() {
+        return "rule_processsor_1.rule_2.2";
+    }
+
+    private Fields getFields() {
+        return new Fields(IotasEvent.IOTAS_EVENT);
+    }
+
 }

@@ -20,6 +20,7 @@ package com.hortonworks.iotas.layout.design.rule.action;
 
 import com.hortonworks.iotas.layout.design.processor.Component;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ import java.util.List;
  *  The actions performed by this rule will not interact directly with any other components of the rule system, e.g., other rules,
  *  components, sinks, ...
  **/
-public class Action<O>  {
+public class Action<O> implements Serializable {
     private List<Component<O>> components;  // Can be sinks or processors
     private O declaredOutput;
 

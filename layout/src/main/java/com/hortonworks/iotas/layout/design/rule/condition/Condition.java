@@ -20,13 +20,14 @@ package com.hortonworks.iotas.layout.design.rule.condition;
 
 import com.hortonworks.iotas.common.Schema.Field;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * This class represents a Rule Condition.
  * @param <F> The type of the first operand in a {@link ConditionElement}, e.g. {@link Field}
  */
-public class Condition<F> {
+public class Condition<F> implements Serializable {
     private List<ConditionElement<F>> conditionElements;
 
     public Condition() {
@@ -49,7 +50,7 @@ public class Condition<F> {
                 '}';
     }
 
-    public static class ConditionElement<F> {
+    public static class ConditionElement<F> implements Serializable {
         public enum Operation {EQUALS, NOT_EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_EQUALS_TO, LESS_THAN_EQUALS_TO}   //TODO: Support BETWEEN ?
 
         public enum LogicalOperator {AND, OR}

@@ -18,7 +18,9 @@
 
 package com.hortonworks.iotas.layout.design.rule.condition.expression;
 
-public interface FieldNameTypeExtractor<F> {
+import java.io.Serializable;
+
+public interface FieldNameTypeExtractor<F> extends Serializable {
 
     String getName(F field);
 
