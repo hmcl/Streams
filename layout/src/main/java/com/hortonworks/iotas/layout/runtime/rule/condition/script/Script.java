@@ -36,11 +36,11 @@ public abstract class Script<I, F, E> {
     protected static final Logger log = LoggerFactory.getLogger(Script.class);
 
     protected final String expression;
-    protected final E engine;
+    protected final E scriptEngine;
 
     public Script(Expression<F> expression, ScriptEngine<E> scriptEngine) {
         this.expression = expression.getExpression();
-        engine = scriptEngine.getEngine();
+        this.scriptEngine = scriptEngine.getEngine();
     }
 
     public abstract boolean evaluate(I input) throws ScriptException;
@@ -49,7 +49,7 @@ public abstract class Script<I, F, E> {
     public String toString() {
         return "Script{" +
                 "expression='" + expression + '\'' +
-                ", engine=" + engine +
+                ", scriptEngine=" + scriptEngine +
                 '}';
     }
 }

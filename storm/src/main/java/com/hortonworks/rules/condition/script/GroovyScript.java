@@ -42,11 +42,11 @@ public class GroovyScript<F> extends Script<Tuple, F, javax.script.ScriptEngine>
         final IotasEvent iotasEvent = (IotasEvent) input.getValueByField(IotasEvent.IOTAS_EVENT);
         for (Map.Entry<String, Object> fieldAndValue : iotasEvent.getFieldsAndValues().entrySet()) {
             log.debug("PUTTING INTO ENGINE key = {}, val = {}", fieldAndValue.getKey(), fieldAndValue.getValue());
-//            engine.put(fieldAndValue.getKey().trim(), fieldAndValue.getValue().toString().trim());
-            engine.put(fieldAndValue.getKey(), fieldAndValue.getValue());
+//            scriptEngine.put(fieldAndValue.getKey().trim(), fieldAndValue.getValue().toString().trim());
+            scriptEngine.put(fieldAndValue.getKey(), fieldAndValue.getValue());
         }
         log.debug("Evaluating expression: {}", expression);
-        final boolean result = (boolean) engine.eval(expression);
+        final boolean result = (boolean) scriptEngine.eval(expression);
         log.debug("Result = {}",result);
         return result;
     }
