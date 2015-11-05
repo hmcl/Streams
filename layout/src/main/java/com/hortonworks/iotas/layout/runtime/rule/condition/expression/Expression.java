@@ -28,13 +28,13 @@ import org.slf4j.LoggerFactory;
  *
  * @param <F> The type of the first operand in a {@link Condition.ConditionElement}, e.g. {@link Schema.Field}
  * */
-public abstract class ExpressionBuilder<F> {
-    protected static final Logger log = LoggerFactory.getLogger(ExpressionBuilder.class);
+public abstract class Expression<F> {
+    protected static final Logger log = LoggerFactory.getLogger(Expression.class);
 
     protected final Condition<F> condition;
     protected final FieldNameTypeExtractor<F> fieldNameTypeExtractor;
 
-    public ExpressionBuilder(Condition<F> condition, FieldNameTypeExtractor<F> fieldNameTypeExtractor) {
+    public Expression(Condition<F> condition, FieldNameTypeExtractor<F> fieldNameTypeExtractor) {
         this.condition = condition;
         this.fieldNameTypeExtractor = fieldNameTypeExtractor;
     }

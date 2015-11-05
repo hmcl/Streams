@@ -22,9 +22,9 @@ import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
 import java.util.Arrays;
 
-public class GroovyExpressionBuilder<F> extends ExpressionBuilder<F> {
+public class SqlStreamExpression<F> extends Expression<F> {
 
-    public GroovyExpressionBuilder(Condition<F> condition, FieldNameTypeExtractor<F> fieldNameTypeExtractor) {
+    public SqlStreamExpression(Condition<F> condition, FieldNameTypeExtractor<F> fieldNameTypeExtractor) {
         super(condition, fieldNameTypeExtractor);
     }
 
@@ -32,27 +32,29 @@ public class GroovyExpressionBuilder<F> extends ExpressionBuilder<F> {
     public String getExpression() {
         final StringBuilder builder = new StringBuilder("");
         for (Condition.ConditionElement<F> element : condition.getConditionElements()) {
-            builder.append(getName(element.getFirstOperand()))               // x
-                    .append(getOperation(element.getOperation()))            // ==, !=, >, <, ...
-                    .append(element.getSecondOperand());                     // 5 - it is a constant
+            builder.append(getType(element.getFirstOperand()))              // Integer
+                    .append(getName(element.getFirstOperand()))             // x
+                    .append(getOperation(element.getOperation()))           // =, !=, >, <, ...
+                    .append(element.getSecondOperand());                    // 5 - it is a constant
 
             if (element.getLogicalOperator() != null) {
                 builder.append(" ");
-                builder.append(getLogicalOperator(element.getLogicalOperator()));   // && or ||
+                builder.append(getLogicalOperator(element.getLogicalOperator()));   // AND or OR
                 builder.append(" ");
             }
         }
-        final String expression = builder.toString();                              // x == 5 [&& or ||]
+        final String expression = builder.toString();                              // Integer x = 5 [AND or OR]
         log.debug("Built expression [{}] for condition [{}]", expression, condition);
         return expression;
     }
 
+
     private String getLogicalOperator(Condition.ConditionElement.LogicalOperator logicalOperator) {
-        switch (logicalOperator) {
+        switch(logicalOperator) {
             case AND:
-                return " && ";
+                return " AND ";
             case OR:
-                return " || ";
+                return " OR ";
             default:
                 throw new UnsupportedOperationException(String.format("Operation [%s] not supported. List of supported operations: %s",
                         logicalOperator, Arrays.toString(Condition.ConditionElement.LogicalOperator.values())));
@@ -60,9 +62,9 @@ public class GroovyExpressionBuilder<F> extends ExpressionBuilder<F> {
     }
 
     private String getOperation(Condition.ConditionElement.Operation operation) {
-        switch (operation) {
+        switch(operation) {
             case EQUALS:
-                return " == ";
+                return " = ";
             case NOT_EQUAL:
                 return " != ";
             case GREATER_THAN:

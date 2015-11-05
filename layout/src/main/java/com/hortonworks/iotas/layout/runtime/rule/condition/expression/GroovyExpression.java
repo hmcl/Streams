@@ -22,9 +22,9 @@ import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 
 import java.util.Arrays;
 
-public class SqlStreamExpressionBuilder<F> extends ExpressionBuilder<F> {
+public class GroovyExpression<F> extends Expression<F> {
 
-    public SqlStreamExpressionBuilder(Condition<F> condition, FieldNameTypeExtractor<F> fieldNameTypeExtractor) {
+    public GroovyExpression(Condition<F> condition, FieldNameTypeExtractor<F> fieldNameTypeExtractor) {
         super(condition, fieldNameTypeExtractor);
     }
 
@@ -32,29 +32,27 @@ public class SqlStreamExpressionBuilder<F> extends ExpressionBuilder<F> {
     public String getExpression() {
         final StringBuilder builder = new StringBuilder("");
         for (Condition.ConditionElement<F> element : condition.getConditionElements()) {
-            builder.append(getType(element.getFirstOperand()))              // Integer
-                    .append(getName(element.getFirstOperand()))             // x
-                    .append(getOperation(element.getOperation()))           // =, !=, >, <, ...
-                    .append(element.getSecondOperand());                    // 5 - it is a constant
+            builder.append(getName(element.getFirstOperand()))               // x
+                    .append(getOperation(element.getOperation()))            // ==, !=, >, <, ...
+                    .append(element.getSecondOperand());                     // 5 - it is a constant
 
             if (element.getLogicalOperator() != null) {
                 builder.append(" ");
-                builder.append(getLogicalOperator(element.getLogicalOperator()));   // AND or OR
+                builder.append(getLogicalOperator(element.getLogicalOperator()));   // && or ||
                 builder.append(" ");
             }
         }
-        final String expression = builder.toString();                              // Integer x = 5 [AND or OR]
+        final String expression = builder.toString();                              // x == 5 [&& or ||]
         log.debug("Built expression [{}] for condition [{}]", expression, condition);
         return expression;
     }
 
-
     private String getLogicalOperator(Condition.ConditionElement.LogicalOperator logicalOperator) {
-        switch(logicalOperator) {
+        switch (logicalOperator) {
             case AND:
-                return " AND ";
+                return " && ";
             case OR:
-                return " OR ";
+                return " || ";
             default:
                 throw new UnsupportedOperationException(String.format("Operation [%s] not supported. List of supported operations: %s",
                         logicalOperator, Arrays.toString(Condition.ConditionElement.LogicalOperator.values())));
@@ -62,9 +60,9 @@ public class SqlStreamExpressionBuilder<F> extends ExpressionBuilder<F> {
     }
 
     private String getOperation(Condition.ConditionElement.Operation operation) {
-        switch(operation) {
+        switch (operation) {
             case EQUALS:
-                return " = ";
+                return " == ";
             case NOT_EQUAL:
                 return " != ";
             case GREATER_THAN:

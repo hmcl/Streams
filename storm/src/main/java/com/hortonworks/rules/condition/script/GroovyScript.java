@@ -20,7 +20,7 @@ package com.hortonworks.rules.condition.script;
 
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.IotasEvent;
-import com.hortonworks.iotas.layout.runtime.rule.condition.expression.ExpressionBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.expression.Expression;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngineBuilder;
 
@@ -31,9 +31,9 @@ import java.util.Map;
 //TODO
 public class GroovyScript<F> extends Script<Tuple, F, ScriptEngine> {
 
-    public GroovyScript(ExpressionBuilder<F> expressionBuilder,
+    public GroovyScript(Expression<F> expression,
                         ScriptEngineBuilder<ScriptEngine> scriptEngineBuilder) {
-        super(expressionBuilder, scriptEngineBuilder);
+        super(expression, scriptEngineBuilder);
     }
 
     @Override

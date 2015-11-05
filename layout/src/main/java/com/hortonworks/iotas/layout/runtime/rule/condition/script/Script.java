@@ -20,7 +20,7 @@ package com.hortonworks.iotas.layout.runtime.rule.condition.script;
 
 
 import com.hortonworks.iotas.common.Schema.Field;
-import com.hortonworks.iotas.layout.runtime.rule.condition.expression.ExpressionBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.expression.Expression;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngineBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +38,8 @@ public abstract class Script<I, F, E> {
     protected final String expression;
     protected final E engine;
 
-    public Script(ExpressionBuilder<F> expressionBuilder, ScriptEngineBuilder<E> scriptEngineBuilder) {
-        expression = expressionBuilder.getExpression();
+    public Script(Expression<F> expression, ScriptEngineBuilder<E> scriptEngineBuilder) {
+        this.expression = expression.getExpression();
         engine = scriptEngineBuilder.getEngine();
     }
 

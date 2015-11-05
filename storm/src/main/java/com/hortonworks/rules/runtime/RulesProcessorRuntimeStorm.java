@@ -26,7 +26,7 @@ import com.hortonworks.iotas.layout.design.component.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
-import com.hortonworks.iotas.layout.runtime.rule.condition.expression.GroovyExpressionBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.expression.GroovyExpression;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.SchemaFieldNameTypeExtractor;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.GroovyScriptEngineBuilder;
 import com.hortonworks.rules.condition.script.GroovyScript;
@@ -59,7 +59,7 @@ public class RulesProcessorRuntimeStorm implements RuleProcessorRuntime<Tuple, I
         final List<Rule<Schema, Schema.Field>> rules = rulesProcessor.getRules();
         rulesRuntime = new ArrayList<>(rules.size());
         for (Rule<Schema, Schema.Field> rule : rules) {
-            rulesRuntime.add(new RuleRuntimeStorm(rule, new GroovyScript(new GroovyExpressionBuilder<>(rule.getCondition(),
+            rulesRuntime.add(new RuleRuntimeStorm(rule, new GroovyScript(new GroovyExpression<>(rule.getCondition(),
                     new SchemaFieldNameTypeExtractor()), new GroovyScriptEngineBuilder())));      // TODO: Make scripting language pluggable
         }
     }
