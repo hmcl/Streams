@@ -24,9 +24,9 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.design.rule.Rule;
-import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
 import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationException;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
+import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
 
 import javax.script.ScriptException;
 import java.util.Arrays;

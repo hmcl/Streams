@@ -16,19 +16,9 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.rule.condition.script.engine;
+package com.hortonworks.iotas.layout.runtime.rule.condition.script.engine;
 
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 
-public class GroovyScriptEngineBuilder implements ScriptEngineBuilder<ScriptEngine> {
-    @Override
-    public ScriptEngine getEngine() {
-        final ScriptEngineManager factory = new ScriptEngineManager();
-        ScriptEngine engine = factory.getEngineByName("groovy");
-        Bindings bindings = engine.createBindings();
-        bindings.put("engine", engine);
-        return engine;
-    }
+public interface ScriptEngineBuilder<T> {
+    T getEngine();
 }

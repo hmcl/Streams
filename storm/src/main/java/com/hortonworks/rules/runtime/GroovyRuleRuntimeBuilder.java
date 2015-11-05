@@ -24,11 +24,11 @@ import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.design.rule.action.Action;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.FieldNameTypeExtractor;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.GroovyExpressionBuilder;
-import com.hortonworks.iotas.layout.design.rule.condition.script.engine.GroovyScriptEngineBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.expression.FieldNameTypeExtractor;
+import com.hortonworks.iotas.layout.runtime.rule.condition.expression.GroovyExpressionBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.GroovyScriptEngineBuilder;
 import com.hortonworks.rules.condition.script.GroovyScript;
 
 /**

@@ -20,8 +20,8 @@
 package com.hortonworks.iotas.layout.runtime.rule;
 
 import com.hortonworks.iotas.layout.design.rule.Rule;
-import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
 import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationException;
+import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

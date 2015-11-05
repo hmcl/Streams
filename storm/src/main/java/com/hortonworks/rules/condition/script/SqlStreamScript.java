@@ -19,9 +19,9 @@
 package com.hortonworks.rules.condition.script;
 
 import backtype.storm.tuple.Tuple;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
-import com.hortonworks.iotas.layout.design.rule.condition.script.Script;
-import com.hortonworks.iotas.layout.design.rule.condition.script.engine.ScriptEngineBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.expression.ExpressionBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
+import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngineBuilder;
 
 import javax.script.ScriptException;
 

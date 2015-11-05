@@ -23,7 +23,7 @@ import com.hortonworks.iotas.common.Schema;
 import java.io.Serializable;
 
 /**
- *  A {@code Sink} is a type of {@link Component}
+ *  A {@code Sink} is a {@link Component} as from the implementation standpoint there is no difference between them
  *  @param <I> Type of the design time input declared by this {@link Component}, for example {@link Schema}.
  */
 public class Component<I> implements Serializable {

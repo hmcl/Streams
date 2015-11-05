@@ -28,7 +28,7 @@ import backtype.storm.topology.TopologyBuilder;
 import com.hortonworks.bolt.RulesBolt;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.SchemaFieldNameTypeExtractor;
+import com.hortonworks.iotas.layout.runtime.rule.condition.expression.SchemaFieldNameTypeExtractor;
 import com.hortonworks.rules.runtime.GroovyRuleRuntimeBuilder;
 
 public class RulesTopologyTest {

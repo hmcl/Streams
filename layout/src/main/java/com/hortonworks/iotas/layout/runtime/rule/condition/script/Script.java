@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.design.rule.condition.script;
+package com.hortonworks.iotas.layout.runtime.rule.condition.script;
 
 
 import com.hortonworks.iotas.common.Schema.Field;
-import com.hortonworks.iotas.layout.design.rule.condition.expression.ExpressionBuilder;
-import com.hortonworks.iotas.layout.design.rule.condition.script.engine.ScriptEngineBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.expression.ExpressionBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngineBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
