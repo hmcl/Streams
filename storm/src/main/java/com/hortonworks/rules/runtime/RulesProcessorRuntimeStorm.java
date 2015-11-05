@@ -21,25 +21,17 @@ package com.hortonworks.rules.runtime;
 import backtype.storm.task.IOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
-import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
-import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
-import com.hortonworks.iotas.layout.runtime.rule.condition.expression.GroovyExpression;
-import com.hortonworks.iotas.layout.runtime.rule.condition.expression.SchemaFieldNameTypeExtractor;
-import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.GroovyScriptEngine;
-import com.hortonworks.rules.condition.script.GroovyScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RulesProcessorRuntimeStorm implements RuleProcessorRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> {
     public static final Logger log = LoggerFactory.getLogger(RulesProcessorRuntimeStorm.class);  //TODO
 
-    private RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor;
+    private RulesProcessor rulesProcessor;
     private List<RuleRuntimeStorm> rulesRuntime;
 
     /*public RulesProcessorRuntimeStorm(RulesRuntimeStormBuilder<Tuple, IOutputCollector> rulesRuntimeBuilder) {
@@ -50,32 +42,16 @@ public class RulesProcessorRuntimeStorm implements RuleProcessorRuntime<Tuple, I
         this.rulesRuntime = rulesRuntime;
     }
 
-    public RulesProcessorRuntimeStorm(RulesProcessor<Schema, Schema, Schema.Field> processor) {
-        this.rulesProcessor = processor;
-        buildAndSetRulesRuntime();             //TODO: Inject this to make it easier to test
-    }
-
-    private void buildAndSetRulesRuntime() {
-        final List<Rule<Schema, Schema.Field>> rules = rulesProcessor.getRules();
-        rulesRuntime = new ArrayList<>(rules.size());
-        for (Rule<Schema, Schema.Field> rule : rules) {
-            rulesRuntime.add(new RuleRuntimeStorm(rule, new GroovyScript(new GroovyExpression<>(rule.getCondition(),
-                    new SchemaFieldNameTypeExtractor()), new GroovyScriptEngine())));      // TODO: Make scripting language pluggable
-        }
-    }
-
-    @Override
-    public List<? extends RuleRuntime<Tuple, IOutputCollector>> getRulesRuntime() {
+    public List<RuleRuntimeStorm> getRulesRuntime() {
         return rulesRuntime;
     }
 
-    @Override
-    public void setRulesRuntime(List<? extends RuleRuntime<Tuple, IOutputCollector>> rulesRuntime) {
-        this.rulesRuntime = (List<RuleRuntimeStorm>) rulesRuntime;
+    public void setRulesRuntime(List<RuleRuntimeStorm> rulesRuntime) {
+        this.rulesRuntime = rulesRuntime;
     }
 
-    public void setRulesProcessor(RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor) {
-        this.rulesProcessor = rulesProcessor;
+    public RulesProcessor getRulesProcessor() {
+        return rulesProcessor;
     }
 
     public void declareOutput(OutputFieldsDeclarer declarer) {

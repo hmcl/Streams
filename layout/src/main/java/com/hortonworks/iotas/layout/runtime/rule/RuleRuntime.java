@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * @param <I> Type of runtime input to this rule, for example {@code Tuple}
  * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
  */
-public interface RuleRuntime<I, E> {
+public interface RuleRuntime<I, E, O> {
     Logger log = LoggerFactory.getLogger(RuleRuntime.class);
 
     /** Evaluates Condition
@@ -39,4 +39,6 @@ public interface RuleRuntime<I, E> {
      *  @param input The output of a parser. Key is the field name, value is the field value
      **/
     void execute(I input, E executor); /// storm collector.emit / spark ...
+
+    void declareOutput(O output);
 }

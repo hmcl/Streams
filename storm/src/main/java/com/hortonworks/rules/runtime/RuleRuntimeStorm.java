@@ -31,7 +31,7 @@ import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
 import javax.script.ScriptException;
 import java.util.Arrays;
 
-public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector> {
+public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> {
     private final Rule rule;
     private final Script<Tuple, ?, ?> script;     // Script used to evaluate the condition
 

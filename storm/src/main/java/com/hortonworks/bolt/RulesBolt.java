@@ -23,45 +23,34 @@ import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
-import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.IotasEvent;
-import com.hortonworks.iotas.layout.design.component.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.Rule;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeConstructor;
-import com.hortonworks.rules.runtime.RulesProcessorRuntimeStorm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class RulesBolt<I, O, F> extends BaseRichBolt {
     protected static final Logger log = LoggerFactory.getLogger(RulesBolt.class);
 
-    private final RulesProcessor<I, O, F> rulesProcessor;
-    private final RuleRuntimeBuilder<Tuple, IOutputCollector> ruleRuntimeBuilder;
+    private final RuleProcessorRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> ruleProcessorRuntime;
     private OutputCollector collector;
-    //TODO Clean thse two vars
-    private List<RuleRuntime<Tuple, IOutputCollector>> rulesRuntime;
-    private RulesProcessorRuntimeStorm rulesProcessorRuntime;
 
-    public RulesBolt(RulesProcessor<I, O, F> rulesProcessor, RuleRuntimeBuilder<Tuple, IOutputCollector> ruleRuntimeBuilder) {
-        this.rulesProcessor = rulesProcessor;
-        this.ruleRuntimeBuilder = ruleRuntimeBuilder;
-//        buildRulesRuntime();
+
+    public RulesBolt(RuleProcessorRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> ruleProcessorRuntime) {
+        this.ruleProcessorRuntime = ruleProcessorRuntime;
     }
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         log.debug("++++++++ PREPARING");
         this.collector = collector;
-        buildRulesRuntime();
-//        rulesRuntime = new ArrayList<>(rulesProcessor.getRules().size());
-//        rulesRuntime = new ArrayList<>();
+
     }
 
     private void buildRulesRuntime() {
@@ -80,7 +69,7 @@ public class RulesBolt<I, O, F> extends BaseRichBolt {
             Object valueByField = input.getValueByField(IotasEvent.IOTAS_EVENT);
             log.debug("++++++++ Executing tuple [{}] with IotasEvent [{}]", input, valueByField);
 
-            for (RuleRuntime<Tuple, IOutputCollector> rule : rulesRuntime) {
+            for (RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> rule : ruleProcessorRuntime.getRulesRuntime()) {
                 if (rule.evaluate(input)) {
                     rule.execute(input, collector); // collector can be null when the rule does not forward a stream
                 }
@@ -93,35 +82,13 @@ public class RulesBolt<I, O, F> extends BaseRichBolt {
         }
     }
 
-    public List<RuleRuntime<Tuple, IOutputCollector>> getRulesRuntime() {
-        return rulesRuntime;
-    }
-
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         log.debug("++++++++ DECLARING");
         //TODO: Clean and how to avoid this cast
-//        rulesProcessorRuntime.declareOutput(declarer);
 
-        /*for (RuleRuntime<Tuple, IOutputCollector> ruleRuntime : rulesRuntime) {
-            ((RuleRuntimeStorm)ruleRuntime).declareOutput(declarer);
-        }*/
-
-        declarer.declareStream(getStream1(), getFields());
-        declarer.declareStream(getStream2(), getFields());
+        for (RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> ruleRuntime : ruleProcessorRuntime.getRulesRuntime()) {
+            ruleRuntime.declareOutput(declarer);
+        }
     }
-
-    public static String getStream1() {
-        return "rule_processsor_1.rule_1.1";
-    }
-
-
-    private static String getStream2() {
-        return "rule_processsor_1.rule_2.2";
-    }
-
-    private Fields getFields() {
-        return new Fields(IotasEvent.IOTAS_EVENT);
-    }
-
 }
