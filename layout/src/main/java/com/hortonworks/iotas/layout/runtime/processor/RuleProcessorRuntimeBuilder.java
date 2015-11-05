@@ -43,7 +43,7 @@ public class RuleProcessorRuntimeBuilder<I, E, O> {
         List<Object> rulesRuntime = new ArrayList<>(rules.size());
         for (Rule<Schema, Schema.Field> rule : rules) {
             rulesRuntime.add(new RuleRuntimeStorm(rule, new GroovyScript(new GroovyExpression<>(rule.getCondition(),
-                    new SchemaFieldNameTypeExtractor()), new GroovyScriptEngineBuilder())));      // TODO: Make scripting language pluggable
+                    new SchemaFieldNameTypeExtractor()), new GroovyScriptEngine())));      // TODO: Make scripting language pluggable
         }*/
         return null;
     }

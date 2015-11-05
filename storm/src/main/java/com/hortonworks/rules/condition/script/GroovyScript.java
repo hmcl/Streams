@@ -22,18 +22,17 @@ import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.Expression;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
-import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngineBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngine;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import java.util.Map;
 
 //TODO
-public class GroovyScript<F> extends Script<Tuple, F, ScriptEngine> {
+public class GroovyScript<F> extends Script<Tuple, F, javax.script.ScriptEngine> {
 
     public GroovyScript(Expression<F> expression,
-                        ScriptEngineBuilder<ScriptEngine> scriptEngineBuilder) {
-        super(expression, scriptEngineBuilder);
+                        ScriptEngine<javax.script.ScriptEngine> scriptEngine) {
+        super(expression, scriptEngine);
     }
 
     @Override

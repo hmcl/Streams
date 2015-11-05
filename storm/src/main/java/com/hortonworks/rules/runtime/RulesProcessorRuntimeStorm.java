@@ -28,7 +28,7 @@ import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.GroovyExpression;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.SchemaFieldNameTypeExtractor;
-import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.GroovyScriptEngineBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.GroovyScriptEngine;
 import com.hortonworks.rules.condition.script.GroovyScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +60,7 @@ public class RulesProcessorRuntimeStorm implements RuleProcessorRuntime<Tuple, I
         rulesRuntime = new ArrayList<>(rules.size());
         for (Rule<Schema, Schema.Field> rule : rules) {
             rulesRuntime.add(new RuleRuntimeStorm(rule, new GroovyScript(new GroovyExpression<>(rule.getCondition(),
-                    new SchemaFieldNameTypeExtractor()), new GroovyScriptEngineBuilder())));      // TODO: Make scripting language pluggable
+                    new SchemaFieldNameTypeExtractor()), new GroovyScriptEngine())));      // TODO: Make scripting language pluggable
         }
     }
 

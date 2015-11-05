@@ -28,7 +28,7 @@ import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.FieldNameTypeExtractor;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.GroovyExpression;
-import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.GroovyScriptEngineBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.GroovyScriptEngine;
 import com.hortonworks.rules.condition.script.GroovyScript;
 
 /**
@@ -38,7 +38,7 @@ import com.hortonworks.rules.condition.script.GroovyScript;
 public class GroovyRuleRuntimeBuilder<O, F> implements RuleRuntimeBuilder<Tuple, IOutputCollector> {
     private FieldNameTypeExtractor<F> fieldNameTypeExtractor;
     private GroovyExpression<F> groovyExpression;
-    private GroovyScriptEngineBuilder groovyScriptEngineBuilder;
+    private GroovyScriptEngine groovyScriptEngine;
     private GroovyScript<F> groovyScript;
 
     public GroovyRuleRuntimeBuilder(FieldNameTypeExtractor<F> fieldNameTypeExtractor) {
@@ -52,12 +52,12 @@ public class GroovyRuleRuntimeBuilder<O, F> implements RuleRuntimeBuilder<Tuple,
 
     @Override
     public void buildScriptEngine() {
-        groovyScriptEngineBuilder = new GroovyScriptEngineBuilder();
+        groovyScriptEngine = new GroovyScriptEngine();
     }
 
     @Override
     public void buildScript() {
-        groovyScript = new GroovyScript<>(groovyExpression, groovyScriptEngineBuilder);
+        groovyScript = new GroovyScript<>(groovyExpression, groovyScriptEngine);
     }
 
     @Override

@@ -21,7 +21,7 @@ package com.hortonworks.rules.condition.script;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.Expression;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
-import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngineBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngine;
 
 import javax.script.ScriptException;
 
@@ -34,8 +34,8 @@ public class SqlStreamScript<F> extends Script<Tuple, F, SqlStreamScript.Framewo
     }
 
     public SqlStreamScript(Expression<F> expression,
-                           ScriptEngineBuilder<SqlStreamScript.Framework> scriptEngineBuilder) {
-        super(expression, scriptEngineBuilder);
+                           ScriptEngine<Framework> scriptEngine) {
+        super(expression, scriptEngine);
     }
 
     @Override

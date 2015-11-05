@@ -19,6 +19,6 @@
 package com.hortonworks.iotas.layout.runtime.rule.condition.script.engine;
 
 
-public interface ScriptEngineBuilder<T> {
+public interface ScriptEngine<T> {
     T getEngine();
 }

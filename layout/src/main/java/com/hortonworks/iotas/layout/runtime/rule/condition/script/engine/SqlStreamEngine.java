@@ -18,17 +18,17 @@
 
 package com.hortonworks.iotas.layout.runtime.rule.condition.script.engine;
 
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
-public class GroovyScriptEngineBuilder implements ScriptEngineBuilder<ScriptEngine> {
+//TODO
+public class SqlStreamEngine implements ScriptEngine<Object> {
     @Override
-    public ScriptEngine getEngine() {
-        final ScriptEngineManager factory = new ScriptEngineManager();
-        ScriptEngine engine = factory.getEngineByName("groovy");
-        Bindings bindings = engine.createBindings();
-        bindings.put("engine", engine);
-        return engine;
+    public Object getEngine() {
+        throw new UnsupportedOperationException("TODO: SqlStream Compiler Implementation");
+        /*Compiler comp = new Compiler(); // From Haohui's class
+        Evaluation obj = comp.compile("let x = 1:Integer,...; x + y > 0 and 1 < 2");
+        for (Tuple r : record) {
+            if (obj.filter(r)) {
+                action();
+            }
+        }*/
     }
 }
