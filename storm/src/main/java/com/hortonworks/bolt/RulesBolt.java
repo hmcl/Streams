@@ -87,6 +87,8 @@ public class RulesBolt<I, O, F> extends BaseRichBolt {
         log.debug("++++++++ DECLARING");
         //TODO: Clean and how to avoid this cast
 
+        ruleProcessorRuntime.declareOutput(declarer);
+
         for (RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> ruleRuntime : ruleProcessorRuntime.getRulesRuntime()) {
             ruleRuntime.declareOutput(declarer);
         }

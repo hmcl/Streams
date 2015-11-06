@@ -18,23 +18,28 @@
 
 package com.hortonworks.iotas.layout.runtime.processor;
 
-import com.hortonworks.iotas.layout.design.component.RulesProcessor;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
-
-import java.util.List;
-
 /**
  * @param <I> Type of runtime input to each rule, for example {@code Tuple}
  * @param <E> Type of object required to execute each rule in the underlying streaming framework e.g {@code IOutputCollector}
  * @param <O> Type used to declare the output in the the underlying streaming framework,
  *            for example for Apache Storm would be {@code OutputFieldsDeclarer}.
- */
-public interface RuleProcessorRuntime<I, E, O> extends ProcessorRuntime<O> {
-    List<? extends RuleRuntime<I, E, O>> getRulesRuntime();
+        */
+public class RuleProcessorRuntimeConstructor<I, E, O> {
 
-    void setRulesRuntime(List<? extends RuleRuntime<I, E, O>> rulesRuntime);
+    private RuleProcessorRuntimeBuilder builder;
 
-    RulesProcessor getRuleProcessor();
+    public RuleProcessorRuntimeConstructor(RuleProcessorRuntimeBuilder builder) {
+        this.builder = builder;
+    }
 
-    void setRuleProcessor(RulesProcessor rulesProcessor);
+
+    public void construct() {
+        builder.build();
+    }
+
+    public RuleProcessorRuntime getRuleProcessorRuntime() {
+        return builder.getRuleProcessorRuntime();
+    }
+
+
 }

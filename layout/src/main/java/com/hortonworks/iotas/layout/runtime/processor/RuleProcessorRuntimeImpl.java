@@ -28,7 +28,7 @@ import java.util.List;
  * @param <O> Type used to declare the output in the the underlying streaming framework,
  *            for example for Apache Storm would be {@code OutputFieldsDeclarer}.
  */
-public abstract class RuleProcessorRuntimeImpl<I, E, O> implements ProcessorRuntime<O> {
+public abstract class RuleProcessorRuntimeImpl<I, E, O> implements ProcessorRuntime<O> {    //TODO: Delete this class
 
     private List<? extends RuleRuntime<I,E>> rulesRuntime;
 
@@ -48,7 +48,7 @@ public abstract class RuleProcessorRuntimeImpl<I, E, O> implements ProcessorRunt
     @Override
     public void declareOutput(O output)  {
         for (RuleRuntime<I, E> ruleRuntime : rulesRuntime) {
-
+            ruleRuntime.declareOutput(output);
         }
     }
 }

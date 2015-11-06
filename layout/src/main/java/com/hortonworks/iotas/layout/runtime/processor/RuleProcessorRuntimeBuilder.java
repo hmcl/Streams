@@ -19,32 +19,41 @@
 package com.hortonworks.iotas.layout.runtime.processor;
 
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
+import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 
-/**
- * @param <I> Type of runtime input to each rule, for example {@code Tuple}
- * @param <E> Type of object required to execute each rule in the underlying streaming framework e.g {@code IOutputCollector}
- * @param <O> Type used to declare the output in the the underlying streaming framework,
- *            for example for Apache Storm would be {@code OutputFieldsDeclarer}.
- */
-public class RuleProcessorRuntimeBuilder<I, E, O> {
-    private final RulesProcessor<I, E, I> rulesProcessor;
-    private Class<? extends RuleRuntime<I, E>> ruleRuntimeClass;
+import java.util.ArrayList;
+import java.util.List;
 
-    public RuleProcessorRuntimeBuilder(RulesProcessor<I, E, I> rulesProcessor, RuleRuntimeBuilder builder) {
+public abstract class RuleProcessorRuntimeBuilder {
+    protected final RulesProcessor rulesProcessor;
+    protected final RuleRuntimeBuilder ruleRuntimeBuilder;
+    protected List<RuleRuntime> rulesRuntime;
 
-
+    public RuleProcessorRuntimeBuilder(RulesProcessor rulesProcessor, RuleRuntimeBuilder ruleRuntimeBuilder) {
         this.rulesProcessor = rulesProcessor;
+        this.ruleRuntimeBuilder = ruleRuntimeBuilder;
     }
 
-    public RuleProcessorRuntime<I,E,O> getRuleProcessorRuntime(RulesProcessor<I, E, I> rulesProcessor, Class<? extends RuleRuntime<I,E>> clazz) {
-        /*List<Rule<E, I>> rules = rulesProcessor.getRules();
-        List<Object> rulesRuntime = new ArrayList<>(rules.size());
-        for (Rule<Schema, Schema.Field> rule : rules) {
-            rulesRuntime.add(new RuleRuntimeStorm(rule, new GroovyScript(new GroovyExpression<>(rule.getCondition(),
-                    new SchemaFieldNameTypeExtractor()), new GroovyScriptEngine())));      // TODO: Make scripting language pluggable
-        }*/
-        return null;
+    //TODO: check null pointers, etc
+    public void build() {
+        final List<Rule> rules = rulesProcessor.getRules();
+
+        rulesRuntime = new ArrayList<>();
+
+        if (rules != null) {
+            for (Rule rule : rules) {
+                ruleRuntimeBuilder.buildExpression(rule);
+                ruleRuntimeBuilder.buildScript();
+                ruleRuntimeBuilder.buildScriptEngine();
+                ruleRuntimeBuilder.buildExpression(rule);
+                RuleRuntime ruleRuntime = ruleRuntimeBuilder.getRuleRuntime(rule);
+                //TODO: Log
+                rulesRuntime.add(ruleRuntime);
+            }
+        }
     }
+
+    public abstract RuleProcessorRuntime getRuleProcessorRuntime();
 }

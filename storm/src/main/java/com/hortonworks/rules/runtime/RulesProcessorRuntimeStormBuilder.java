@@ -16,25 +16,20 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.runtime.processor;
+package com.hortonworks.rules.runtime;
 
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 
-import java.util.List;
+public class RulesProcessorRuntimeStormBuilder extends RuleProcessorRuntimeBuilder {
+    public RulesProcessorRuntimeStormBuilder(RulesProcessor rulesProcessor, RuleRuntimeBuilder ruleRuntimeBuilder) {
+        super(rulesProcessor, ruleRuntimeBuilder);
+    }
 
-/**
- * @param <I> Type of runtime input to each rule, for example {@code Tuple}
- * @param <E> Type of object required to execute each rule in the underlying streaming framework e.g {@code IOutputCollector}
- * @param <O> Type used to declare the output in the the underlying streaming framework,
- *            for example for Apache Storm would be {@code OutputFieldsDeclarer}.
- */
-public interface RuleProcessorRuntime<I, E, O> extends ProcessorRuntime<O> {
-    List<? extends RuleRuntime<I, E, O>> getRulesRuntime();
-
-    void setRulesRuntime(List<? extends RuleRuntime<I, E, O>> rulesRuntime);
-
-    RulesProcessor getRuleProcessor();
-
-    void setRuleProcessor(RulesProcessor rulesProcessor);
+    @Override
+    public RuleProcessorRuntime getRuleProcessorRuntime() {
+        return new RuleProcessorRuntimeStorm(rulesProcessor, rulesRuntime) ;
+    }
 }
