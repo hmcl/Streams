@@ -28,13 +28,14 @@ import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationExc
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
 
 import javax.script.ScriptException;
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> {
+public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer>, Serializable{
     private final Rule rule;
-    private final Script<Tuple, ?, ?> script;     // Script used to evaluate the condition
+    private final Script<IotasEvent, ?, ?> script;     // Script used to evaluate the condition
 
-    RuleRuntimeStorm(Rule rule, Script<Tuple, ?, ?> script) {
+    RuleRuntimeStorm(Rule rule, Script<IotasEvent, ?, ?> script) {
         this.rule = rule;
         this.script = script;
     }
@@ -42,10 +43,10 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector, Ou
     @Override
     public boolean evaluate(Tuple input) {
         try {
-            Object valueByField = input.getValueByField(IotasEvent.IOTAS_EVENT);
-            log.debug("valueByField = " + valueByField);
+            IotasEvent iotasEvent = (IotasEvent) input.getValueByField(IotasEvent.IOTAS_EVENT);
+            log.debug("valueByField = " + iotasEvent);
             log.debug("Evaluating condition for Rule: [{}] \n\tInput tuple: [{}]", rule, input);
-            final boolean evaluates = script.evaluate(input);
+            final boolean evaluates = script.evaluate(iotasEvent);
            log.debug("Rule condition evaluated to: [{}]. Rule: [{}] \n\tInput tuple: [{}]", evaluates, rule, input);
             return evaluates;
         } catch (ScriptException e) {

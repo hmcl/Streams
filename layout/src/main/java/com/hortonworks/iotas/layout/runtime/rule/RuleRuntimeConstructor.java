@@ -24,10 +24,10 @@ import com.hortonworks.iotas.layout.design.rule.Rule;
  * @param <I> Type of runtime input to this rule, for example {@code Tuple}
  * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
  */
-public class RuleRuntimeConstructor<I,E> {
-    private RuleRuntimeBuilder<I,E> ruleRuntimeBuilder;
+public class RuleRuntimeConstructor<I, E, O> {
+    private RuleRuntimeBuilder<I, E, O> ruleRuntimeBuilder;
 
-    public RuleRuntimeConstructor(RuleRuntimeBuilder<I,E> ruleRuntimeBuilder) {
+    public RuleRuntimeConstructor(RuleRuntimeBuilder<I, E, O> ruleRuntimeBuilder) {
         this.ruleRuntimeBuilder = ruleRuntimeBuilder;
     }
 
@@ -37,7 +37,7 @@ public class RuleRuntimeConstructor<I,E> {
         ruleRuntimeBuilder.buildScript();
     }
 
-    public RuleRuntime<I,E> getRuleRuntime(Rule rule) {
+    public RuleRuntime<I, E, O> getRuleRuntime(Rule rule) {
         return ruleRuntimeBuilder.getRuleRuntime(rule);
     }
 }

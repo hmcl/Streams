@@ -20,6 +20,8 @@ package com.hortonworks.iotas.layout.runtime.processor;
 
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -30,6 +32,8 @@ import java.util.List;
  *            for example for Apache Storm would be {@code OutputFieldsDeclarer}.
  */
 public interface RuleProcessorRuntime<I, E, O> extends ProcessorRuntime<O> {
+    Logger log = LoggerFactory.getLogger(RuleProcessorRuntime.class);
+
     List<? extends RuleRuntime<I, E, O>> getRulesRuntime();
 
     void setRulesRuntime(List<? extends RuleRuntime<I, E, O>> rulesRuntime);

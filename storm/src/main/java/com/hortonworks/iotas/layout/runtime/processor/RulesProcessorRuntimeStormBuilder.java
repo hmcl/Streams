@@ -18,16 +18,30 @@
 
 package com.hortonworks.iotas.layout.runtime.processor;
 
+import backtype.storm.task.IOutputCollector;
+import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
+import com.hortonworks.iotas.layout.design.rule.Rule;
+import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 
-public class RulesProcessorRuntimeStormBuilder extends RuleProcessorRuntimeBuilder {
-    public RulesProcessorRuntimeStormBuilder(RulesProcessor rulesProcessor, RuleRuntimeBuilder ruleRuntimeBuilder) {
+/**
+ * Object representing a design time rules processor.
+ * @param <I> Type of the design time input declared by this {@link RulesProcessor}, for example {@link Schema}.
+ * @param <O> Type of the design time output declared by this {@link RulesProcessor}, for example {@link Schema}.
+ * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Rule} {@link Condition}, for example {@link Schema.Field}
+ */
+//TODO: Rename to RuleProcessorRuntimeStormBuilder
+public class RulesProcessorRuntimeStormBuilder<I,O,F> extends RuleProcessorRuntimeBuilder<Tuple, IOutputCollector, OutputFieldsDeclarer> {
+    public RulesProcessorRuntimeStormBuilder(RulesProcessor<I,O,F> rulesProcessor,
+                                             RuleRuntimeBuilder<Tuple, IOutputCollector, OutputFieldsDeclarer> ruleRuntimeBuilder) {
         super(rulesProcessor, ruleRuntimeBuilder);
     }
 
     @Override
-    public RuleProcessorRuntime getRuleProcessorRuntime() {
-        return new RuleProcessorRuntimeStorm(rulesProcessor, rulesRuntime) ;
+    public RuleProcessorRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> getRuleProcessorRuntime() {
+        return new RuleProcessorRuntimeStorm<>(rulesRuntime) ;
     }
 }

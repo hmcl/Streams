@@ -76,8 +76,8 @@ public class RulesBolt<I, O, F> extends BaseRichBolt {
 
         ruleProcessorRuntime.declareOutput(declarer);
 
-        for (RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> ruleRuntime : ruleProcessorRuntime.getRulesRuntime()) {
-            ruleRuntime.declareOutput(declarer);
-        }
+//        for (RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> ruleRuntime : ruleProcessorRuntime.getRulesRuntime()) {
+//            ruleRuntime.declareOutput(declarer);
+//        }
     }
 }

@@ -27,8 +27,10 @@ import java.io.Serializable;
 /**
  * @param <I> Type of runtime input to this rule, for example {@code Tuple}
  * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
+ * @param <O> Type used to declare the output in the the underlying streaming framework,
+ *            for example for Apache Storm would be {@code OutputFieldsDeclarer}.
  */
-public interface RuleRuntimeBuilder<I, E> extends Serializable {
+public interface RuleRuntimeBuilder<I, E, O> extends Serializable {
     Logger log = LoggerFactory.getLogger(RuleRuntimeBuilder.class);
 
     void buildExpression(Rule rule);
@@ -37,5 +39,5 @@ public interface RuleRuntimeBuilder<I, E> extends Serializable {
 
     void buildScript();
 
-    RuleRuntime<I, E> getRuleRuntime(Rule rule);
+    RuleRuntime<I, E, O> getRuleRuntime(Rule rule);
 }

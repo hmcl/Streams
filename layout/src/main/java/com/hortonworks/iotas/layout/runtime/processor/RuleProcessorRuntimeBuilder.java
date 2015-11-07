@@ -26,12 +26,18 @@ import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class RuleProcessorRuntimeBuilder {
+/**
+ * @param <I> Type of runtime input to this rule, for example {@code Tuple}
+ * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
+ * @param <O> Type used to declare the output in the the underlying streaming framework,
+ *            for example for Apache Storm would be {@code OutputFieldsDeclarer}.
+ */
+public abstract class RuleProcessorRuntimeBuilder<I, E, O> {
     protected final RulesProcessor rulesProcessor;
-    protected final RuleRuntimeBuilder ruleRuntimeBuilder;
-    protected List<RuleRuntime> rulesRuntime;
+    protected final RuleRuntimeBuilder<I, E, O> ruleRuntimeBuilder;
+    protected List<RuleRuntime<I, E, O>> rulesRuntime;
 
-    public RuleProcessorRuntimeBuilder(RulesProcessor rulesProcessor, RuleRuntimeBuilder ruleRuntimeBuilder) {
+    public RuleProcessorRuntimeBuilder(RulesProcessor rulesProcessor, RuleRuntimeBuilder<I, E, O> ruleRuntimeBuilder) {
         this.rulesProcessor = rulesProcessor;
         this.ruleRuntimeBuilder = ruleRuntimeBuilder;
     }
@@ -45,10 +51,10 @@ public abstract class RuleProcessorRuntimeBuilder {
         if (rules != null) {
             for (Rule rule : rules) {
                 ruleRuntimeBuilder.buildExpression(rule);
-                ruleRuntimeBuilder.buildScript();
                 ruleRuntimeBuilder.buildScriptEngine();
+                ruleRuntimeBuilder.buildScript();
                 ruleRuntimeBuilder.buildExpression(rule);
-                RuleRuntime ruleRuntime = ruleRuntimeBuilder.getRuleRuntime(rule);
+                RuleRuntime<I, E, O> ruleRuntime = ruleRuntimeBuilder.getRuleRuntime(rule);
                 //TODO: Log
                 rulesRuntime.add(ruleRuntime);
             }

@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 /**
  * @param <I> Type of runtime input to this rule, for example {@code Tuple}
  * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
+ * @param <O> Type used to declare the output in the the underlying streaming framework,
+ *            for example for Apache Storm would be {@code OutputFieldsDeclarer}.
  */
 public interface RuleRuntime<I, E, O> {
     Logger log = LoggerFactory.getLogger(RuleRuntime.class);

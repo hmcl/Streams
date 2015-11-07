@@ -21,42 +21,51 @@ package com.hortonworks.iotas.layout.runtime.processor;
 import backtype.storm.task.IOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
+import com.hortonworks.iotas.layout.design.rule.Rule;
+import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class RuleProcessorRuntimeStorm implements RuleProcessorRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> {
-    public static final Logger log = LoggerFactory.getLogger(RuleProcessorRuntimeStorm.class);  //TODO
 
-    protected RulesProcessor rulesProcessor;
-    protected List<RuleRuntimeStorm> rulesRuntime;
+/**
+ * Object representing a design time rules processor.
+ * @param <I> Type of the design time input declared by this {@link RulesProcessor}, for example {@link Schema}.
+ * @param <O> Type of the design time output declared by this {@link RulesProcessor}, for example {@link Schema}.
+ * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Rule} {@link Condition}, for example {@link Schema.Field}
+ */
+public class RuleProcessorRuntimeStorm<I, O, F>  implements RuleProcessorRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer>, Serializable {
+
+    protected RulesProcessor<I, O, F> rulesProcessor;
+    protected List<? extends RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer>> rulesRuntime;
 
 
-    RuleProcessorRuntimeStorm(List<RuleRuntimeStorm> rulesRuntime) {
+    RuleProcessorRuntimeStorm(List<? extends RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer>> rulesRuntime) {
         this.rulesRuntime = rulesRuntime;
     }
 
-    public List<RuleRuntimeStorm> getRulesRuntime() {
+    @Override
+    public List<? extends RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer>> getRulesRuntime() {
         return rulesRuntime;
     }
 
+    @Override
     public void declareOutput(OutputFieldsDeclarer declarer) {
-        for (RuleRuntimeStorm ruleRuntime:rulesRuntime) {
+        for (RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> ruleRuntime:rulesRuntime) {
             ruleRuntime.declareOutput(declarer);
         }
     }
 
     @Override
     public void setRulesRuntime(List<? extends RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer>> rulesRuntime) {
-        this.rulesRuntime = (List<RuleRuntimeStorm>) rulesRuntime;      //TODO: Try avoiding this cast
+        this.rulesRuntime = rulesRuntime;
     }
 
     @Override
-    public RulesProcessor getRuleProcessor() {
+    public RulesProcessor<I, O, F> getRuleProcessor() {
         return rulesProcessor;
     }
 
@@ -64,5 +73,7 @@ public class RuleProcessorRuntimeStorm implements RuleProcessorRuntime<Tuple, IO
     public void setRuleProcessor(RulesProcessor rulesProcessor) {
         this.rulesProcessor = rulesProcessor;
     }
+
+
 }
 

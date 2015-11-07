@@ -19,10 +19,10 @@
 package com.hortonworks.iotas.layout.runtime.rule;
 
 import backtype.storm.task.IOutputCollector;
+import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.Rule;
-import com.hortonworks.iotas.layout.design.rule.action.Action;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.FieldNameTypeExtractor;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.GroovyExpression;
@@ -30,10 +30,9 @@ import com.hortonworks.iotas.layout.runtime.rule.condition.script.GroovyScript;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.GroovyScriptEngine;
 
 /**
- * @param <O> Type of the design time output declared by a rule's {@link Action}. Example of output is {@link Schema}
  * @param <F> The type of the first operand in {@link Condition.ConditionElement} of a {@link Condition}, for example {@link Schema.Field}
  */
-public class GroovyRuleRuntimeBuilder<O, F> implements RuleRuntimeBuilder<Tuple, IOutputCollector> {
+public class GroovyRuleRuntimeBuilder<F> implements RuleRuntimeBuilder<Tuple, IOutputCollector, OutputFieldsDeclarer> {
     private FieldNameTypeExtractor<F> fieldNameTypeExtractor;
     private GroovyExpression<F> groovyExpression;
     private GroovyScriptEngine groovyScriptEngine;
@@ -59,7 +58,7 @@ public class GroovyRuleRuntimeBuilder<O, F> implements RuleRuntimeBuilder<Tuple,
     }
 
     @Override
-    public RuleRuntime<Tuple, IOutputCollector> getRuleRuntime(Rule rule) {
+    public RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer> getRuleRuntime(Rule rule) {
         return new RuleRuntimeStorm(rule, groovyScript);
     }
 }

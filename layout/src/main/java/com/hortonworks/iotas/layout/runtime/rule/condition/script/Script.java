@@ -26,13 +26,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptException;
+import java.io.Serializable;
 
 /**
  * @param <I> The type of input on which this script is evaluated, e.g. {@code tuple} for {@code Apache Storm}
  * @param <F> The name and type declaration of the fields that constitute the Condition to be evaluated e.g. {@link Field}
  * @param <E> The Script Engine used to evaluate the scripts
  */
-public abstract class Script<I, F, E> {
+public abstract class Script<I, F, E> implements Serializable {
     protected static final Logger log = LoggerFactory.getLogger(Script.class);
 
     protected final String expression;
