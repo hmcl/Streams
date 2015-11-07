@@ -32,7 +32,6 @@ public class RuleProcessorRuntimeConstructor<I, E, O> {
         this.builder = builder;
     }
 
-
     public void construct() {
         builder.build();
     }

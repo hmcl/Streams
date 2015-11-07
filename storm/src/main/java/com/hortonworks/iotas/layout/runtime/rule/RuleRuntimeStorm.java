@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.runtime;
+package com.hortonworks.iotas.layout.runtime.rule;
 
 import backtype.storm.task.IOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -25,7 +25,6 @@ import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.design.rule.exception.ConditionEvaluationException;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
 
 import javax.script.ScriptException;
@@ -35,7 +34,7 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector, Ou
     private final Rule rule;
     private final Script<Tuple, ?, ?> script;     // Script used to evaluate the condition
 
-    public RuleRuntimeStorm(Rule rule, Script<Tuple, ?, ?> script) {
+    RuleRuntimeStorm(Rule rule, Script<Tuple, ?, ?> script) {
         this.rule = rule;
         this.script = script;
     }

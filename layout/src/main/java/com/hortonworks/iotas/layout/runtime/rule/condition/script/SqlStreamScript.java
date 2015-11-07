@@ -16,17 +16,16 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.condition.script;
+package com.hortonworks.iotas.layout.runtime.rule.condition.script;
 
-import backtype.storm.tuple.Tuple;
+import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.Expression;
-import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngine;
 
 import javax.script.ScriptException;
 
 // TODO: Replace Object parameterized type with SQLStream Framework Object
-public class SqlStreamScript<F> extends Script<Tuple, F, SqlStreamScript.Framework> {
+public class SqlStreamScript<F> extends Script<IotasEvent, F, SqlStreamScript.Framework> {
 
     //TODO: Remove and replace with the actual framework object type
     interface Framework {
@@ -39,7 +38,7 @@ public class SqlStreamScript<F> extends Script<Tuple, F, SqlStreamScript.Framewo
     }
 
     @Override
-    public boolean evaluate(Tuple input) throws ScriptException {
+    public boolean evaluate(IotasEvent iotasEvent) throws ScriptException {
 //        return framework.eval(input);
         return false;
     }

@@ -42,8 +42,7 @@ public class Action<O> implements Serializable {
     private List<Component<O>> components;  // Can be sinks or processors
     private O declaredOutput;
 
-    public Action() {
-    }
+    public Action() { }
 
     public Action(List<Component<O>> components, O declaredOutput) {
         this.components = components;

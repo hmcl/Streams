@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.runtime;
+package com.hortonworks.iotas.layout.runtime.processor;
 
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
-import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
-import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 
 public class RulesProcessorRuntimeStormBuilder extends RuleProcessorRuntimeBuilder {

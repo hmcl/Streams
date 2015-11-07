@@ -16,19 +16,17 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.condition.script;
+package com.hortonworks.iotas.layout.runtime.rule.condition.script;
 
-import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.Expression;
-import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngine;
 
 import javax.script.ScriptException;
 import java.util.Map;
 
 //TODO
-public class GroovyScript<F> extends Script<Tuple, F, javax.script.ScriptEngine> {
+public class GroovyScript<F> extends Script<IotasEvent, F, javax.script.ScriptEngine> {
 
     public GroovyScript(Expression<F> expression,
                         ScriptEngine<javax.script.ScriptEngine> scriptEngine) {
@@ -36,10 +34,7 @@ public class GroovyScript<F> extends Script<Tuple, F, javax.script.ScriptEngine>
     }
 
     @Override
-    public boolean evaluate(Tuple input) throws ScriptException {
-        Object valueByField = input.getValueByField(IotasEvent.IOTAS_EVENT);
-        log.debug("valueByField = " + valueByField);
-        final IotasEvent iotasEvent = (IotasEvent) input.getValueByField(IotasEvent.IOTAS_EVENT);
+    public boolean evaluate(IotasEvent iotasEvent) throws ScriptException {
         for (Map.Entry<String, Object> fieldAndValue : iotasEvent.getFieldsAndValues().entrySet()) {
             log.debug("PUTTING INTO ENGINE key = {}, val = {}", fieldAndValue.getKey(), fieldAndValue.getValue());
 //            scriptEngine.put(fieldAndValue.getKey().trim(), fieldAndValue.getValue().toString().trim());

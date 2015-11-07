@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.topology;
+package com.hortonworks.iotas.layout.runtime.rule.topology;
 
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.component.Component;

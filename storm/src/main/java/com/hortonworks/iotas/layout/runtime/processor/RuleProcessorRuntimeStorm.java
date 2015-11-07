@@ -16,16 +16,14 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.runtime;
+package com.hortonworks.iotas.layout.runtime.processor;
 
 import backtype.storm.task.IOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
-import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
-import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,24 +35,8 @@ public class RuleProcessorRuntimeStorm implements RuleProcessorRuntime<Tuple, IO
     protected RulesProcessor rulesProcessor;
     protected List<RuleRuntimeStorm> rulesRuntime;
 
-    public static class Builder extends RuleProcessorRuntimeBuilder {
-        public Builder(RulesProcessor rulesProcessor, RuleRuntimeBuilder ruleRuntimeBuilder) {
-            super(rulesProcessor, ruleRuntimeBuilder);
-        }
 
-
-
-        @Override
-        public RuleProcessorRuntime getRuleProcessorRuntime() {
-            return new RuleProcessorRuntimeStorm(rulesProcessor, rulesRuntime) ;
-        }
-    }
-
-    /*public RuleProcessorRuntimeStorm(RulesRuntimeStormBuilder<Tuple, IOutputCollector> rulesRuntimeBuilder) {
-        rulesRuntime = rulesRuntimeBuilder.getRulesRuntime();
-    }*/
-
-    public RuleProcessorRuntimeStorm(List<RuleRuntimeStorm> rulesRuntime) {
+    RuleProcessorRuntimeStorm(List<RuleRuntimeStorm> rulesRuntime) {
         this.rulesRuntime = rulesRuntime;
     }
 

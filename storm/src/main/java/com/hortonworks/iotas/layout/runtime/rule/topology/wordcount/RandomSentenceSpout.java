@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.topology.wordcount;
+package com.hortonworks.iotas.layout.runtime.rule.topology.wordcount;
 
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;

@@ -25,14 +25,11 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.IotasEvent;
-import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public class RulesBolt<I, O, F> extends BaseRichBolt {
@@ -51,16 +48,6 @@ public class RulesBolt<I, O, F> extends BaseRichBolt {
         log.debug("++++++++ PREPARING");
         this.collector = collector;
 
-    }
-
-    private void buildRulesRuntime() {
-        final RuleRuntimeConstructor<Tuple, IOutputCollector> ruleRuntimeConstructor
-                = new RuleRuntimeConstructor<>(ruleRuntimeBuilder);
-        rulesRuntime = new ArrayList<>();
-        for (Rule<O,F> rule : rulesProcessor.getRules()) {
-            ruleRuntimeConstructor.construct(rule);
-            rulesRuntime.add(ruleRuntimeConstructor.getRuleRuntime(rule));
-        }
     }
 
     @Override

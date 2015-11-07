@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.topology;
+package com.hortonworks.iotas.layout.runtime.rule.topology;
 
 import backtype.storm.Config;
 import backtype.storm.ILocalCluster;
@@ -28,8 +28,12 @@ import backtype.storm.topology.TopologyBuilder;
 import com.hortonworks.bolt.RulesBolt;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeBuilder;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeConstructor;
+import com.hortonworks.iotas.layout.runtime.processor.RulesProcessorRuntimeStormBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.GroovyRuleRuntimeBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.SchemaFieldNameTypeExtractor;
-import com.hortonworks.rules.runtime.GroovyRuleRuntimeBuilder;
 
 public class RulesTopologyTest {
 
@@ -57,9 +61,12 @@ public class RulesTopologyTest {
     }
 
     public static IRichBolt getRulesBolt() {
-        RulesProcessor<Schema, Schema, Schema.Field> rulesProcessorMock = new RuleProcessorMockBuilder(1,2,2).build();
-        RulesBolt<Schema, Schema, Schema.Field> rulesBolt = new RulesBolt<>(rulesProcessorMock,
-                new GroovyRuleRuntimeBuilder<Schema, Schema.Field>(new SchemaFieldNameTypeExtractor()));
+        RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor = new RuleProcessorMockBuilder(1,2,2).build();
+        RuleRuntimeBuilder ruleRuntimeBuilder = new GroovyRuleRuntimeBuilder(new SchemaFieldNameTypeExtractor());
+        RuleProcessorRuntimeBuilder runtimeBuilder = new RulesProcessorRuntimeStormBuilder(rulesProcessor, ruleRuntimeBuilder);
+        RuleProcessorRuntimeConstructor runtimeConstructor = new RuleProcessorRuntimeConstructor(runtimeBuilder);
+        runtimeConstructor.construct();
+        RulesBolt<Schema, Schema, Schema.Field> rulesBolt = new RulesBolt<>(runtimeConstructor.getRuleProcessorRuntime());
 
         return rulesBolt;
     }

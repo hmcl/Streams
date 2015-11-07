@@ -25,9 +25,13 @@ import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.common.IotasEventImpl;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeBuilder;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeConstructor;
+import com.hortonworks.iotas.layout.runtime.processor.RulesProcessorRuntimeStormBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.GroovyRuleRuntimeBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.SchemaFieldNameTypeExtractor;
-import com.hortonworks.rules.runtime.GroovyRuleRuntimeBuilder;
-import com.hortonworks.rules.runtime.RuleRuntimeStorm;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -54,7 +58,7 @@ public class RulesBoltTest {
 
     //TODO: Check all of this
 
-    private RulesProcessor<Schema, Schema, Schema.Field> rulesProcessorMock;
+    private RulesProcessor<Schema, Schema, Schema.Field> rulesProcessor;
     private @Tested RulesBolt<Schema, Schema, Schema.Field> rulesBolt;
 
     private @Injectable OutputCollector mockOutputCollector;
@@ -62,10 +66,12 @@ public class RulesBoltTest {
 
     @Before
     public void setup() throws Exception {
-        rulesProcessorMock = new RuleProcessorMockBuilder(1,2,2).build();
-
-        rulesBolt = new RulesBolt<>(rulesProcessorMock,
-                new GroovyRuleRuntimeBuilder<Schema, Schema.Field>(new SchemaFieldNameTypeExtractor()));
+        rulesProcessor = new RuleProcessorMockBuilder(1,2,2).build();
+        RuleRuntimeBuilder ruleRuntimeBuilder = new GroovyRuleRuntimeBuilder(new SchemaFieldNameTypeExtractor());
+        RuleProcessorRuntimeBuilder runtimeBuilder = new RulesProcessorRuntimeStormBuilder(rulesProcessor, ruleRuntimeBuilder);
+        RuleProcessorRuntimeConstructor runtimeConstructor = new RuleProcessorRuntimeConstructor(runtimeBuilder);
+        runtimeConstructor.construct();
+        rulesBolt = new RulesBolt<>(runtimeConstructor.getRuleProcessorRuntime());
 
         rulesBolt.prepare(null, null, mockOutputCollector);
     }

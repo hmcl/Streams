@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.runtime;
+package com.hortonworks.iotas.layout.runtime.rule;
 
 import backtype.storm.task.IOutputCollector;
 import backtype.storm.tuple.Tuple;
@@ -24,12 +24,10 @@ import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.design.rule.action.Action;
 import com.hortonworks.iotas.layout.design.rule.condition.Condition;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.FieldNameTypeExtractor;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.GroovyExpression;
+import com.hortonworks.iotas.layout.runtime.rule.condition.script.GroovyScript;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.GroovyScriptEngine;
-import com.hortonworks.rules.condition.script.GroovyScript;
 
 /**
  * @param <O> Type of the design time output declared by a rule's {@link Action}. Example of output is {@link Schema}

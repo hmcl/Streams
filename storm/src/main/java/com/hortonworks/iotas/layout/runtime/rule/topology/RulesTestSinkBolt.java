@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.hortonworks.rules.topology;
+package com.hortonworks.iotas.layout.runtime.rule.topology;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
