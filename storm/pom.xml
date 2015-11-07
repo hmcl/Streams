@@ -14,7 +14,6 @@
     <properties>
         <storm.version>0.11.0-SNAPSHOT</storm.version>
         <hbase.version>0.98.4-hadoop2</hbase.version>
-        <groovy.version>2.4.5</groovy.version>
     </properties>
 
     <dependencies>
@@ -121,11 +120,6 @@
             <groupId>org.apache.storm</groupId>
             <artifactId>flux-core</artifactId>
             <version>${storm.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>${groovy.version}</version>
         </dependency>
         <!-- Test dependencies -->
         <dependency>

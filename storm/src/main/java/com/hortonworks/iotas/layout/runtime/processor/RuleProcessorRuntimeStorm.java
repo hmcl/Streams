@@ -42,7 +42,6 @@ public class RuleProcessorRuntimeStorm<I, O, F>  implements RuleProcessorRuntime
     protected RulesProcessor<I, O, F> rulesProcessor;
     protected List<? extends RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer>> rulesRuntime;
 
-
     RuleProcessorRuntimeStorm(List<? extends RuleRuntime<Tuple, IOutputCollector, OutputFieldsDeclarer>> rulesRuntime) {
         this.rulesRuntime = rulesRuntime;
     }

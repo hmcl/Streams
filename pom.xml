@@ -32,6 +32,7 @@
         <jersey.version>1.19</jersey.version>
         <jersey-media-multipart.version>2.19</jersey-media-multipart.version>
         <jmockit.version>1.19</jmockit.version>
+        <groovy.version>2.4.5</groovy.version>
         <!-- plugin versions -->
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
         <maven-surefire.version>2.18.1</maven-surefire.version>

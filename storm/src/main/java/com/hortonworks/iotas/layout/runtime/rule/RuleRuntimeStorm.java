@@ -44,7 +44,7 @@ public class RuleRuntimeStorm implements RuleRuntime<Tuple, IOutputCollector, Ou
     public boolean evaluate(Tuple input) {
         try {
             IotasEvent iotasEvent = (IotasEvent) input.getValueByField(IotasEvent.IOTAS_EVENT);
-            log.debug("valueByField = " + iotasEvent);
+            log.debug("iotasEvent = " + iotasEvent);
             log.debug("Evaluating condition for Rule: [{}] \n\tInput tuple: [{}]", rule, input);
             final boolean evaluates = script.evaluate(iotasEvent);
            log.debug("Rule condition evaluated to: [{}]. Rule: [{}] \n\tInput tuple: [{}]", evaluates, rule, input);
