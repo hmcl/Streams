@@ -63,7 +63,7 @@ public class RulesBolt extends BaseRichBolt {
         } catch (Exception e) {
             collector.fail(input);
             collector.reportError(e);
-            log.debug("",e);            // useful to debug unit tests
+            log.debug("",e);                        // useful to debug unit tests
         }
     }
 
