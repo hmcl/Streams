@@ -42,6 +42,7 @@ public class RulesTopologyTest {
     protected static final String RULES_TEST_SINK_BOLT = "RulesTestSinkBolt";
     protected static final String RULES_TEST_SINK_BOLT_1 = RULES_TEST_SINK_BOLT + "_1";
     protected static final String RULES_TEST_SINK_BOLT_2 = RULES_TEST_SINK_BOLT + "_2";
+    private RuleProcessorRuntime ruleProcessorRuntime;
 
     public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException {
         RulesTopologyTest rulesTopologyTest = new RulesTopologyTest();
@@ -59,8 +60,8 @@ public class RulesTopologyTest {
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout(RULES_TEST_SPOUT, new RulesTestSpout());
         builder.setBolt(RULES_BOLT, createRulesBolt(createRulesProcessorRuntime())).shuffleGrouping(RULES_TEST_SPOUT);
-        builder.setBolt(RULES_TEST_SINK_BOLT_1, new RulesTestSinkBolt()).shuffleGrouping(RULES_BOLT, getStream1());
-        builder.setBolt(RULES_TEST_SINK_BOLT_2, new RulesTestSinkBolt()).shuffleGrouping(RULES_BOLT, getStream2());
+        builder.setBolt(RULES_TEST_SINK_BOLT_1, new RulesTestSinkBolt()).shuffleGrouping(RULES_BOLT, getStream(0));
+        builder.setBolt(RULES_TEST_SINK_BOLT_2, new RulesTestSinkBolt()).shuffleGrouping(RULES_BOLT, getStream(1));
         return builder.createTopology();
     }
 
@@ -75,15 +76,11 @@ public class RulesTopologyTest {
         RulesProcessorRuntimeBuilder ruleProcessorRuntimeBuilder = new RulesProcessorRuntimeBuilder(rulesProcessor, ruleRuntimeConstructor);
         RuleProcessorRuntimeConstructor ruleProcessorRuntimeConstructor = new RuleProcessorRuntimeConstructor(ruleProcessorRuntimeBuilder);
         ruleProcessorRuntimeConstructor.construct();
-        return ruleProcessorRuntimeConstructor.getRuleProcessorRuntime();
+        ruleProcessorRuntime = ruleProcessorRuntimeConstructor.getRuleProcessorRuntime();
+        return ruleProcessorRuntime;
     }
 
-    protected String getStream1() {
-        return "rule_processsor_1.rule_1.1";
-    }
-
-
-    protected String getStream2() {
-        return "rule_processsor_1.rule_2.2";
+    protected String getStream(int i) {
+        return ruleProcessorRuntime.getRulesRuntime().get(i).getStreamId();
     }
 }
