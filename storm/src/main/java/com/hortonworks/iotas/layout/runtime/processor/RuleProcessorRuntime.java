@@ -64,7 +64,7 @@ public class RuleProcessorRuntime implements Serializable {
                     ruleRuntimeBuilder.buildExpression(rule);
                     ruleRuntimeBuilder.buildScriptEngine();
                     ruleRuntimeBuilder.buildScript();
-                    RuleRuntime ruleRuntime = ruleRuntimeBuilder.getRuleRuntime(rule);
+                    final RuleRuntime ruleRuntime = ruleRuntimeBuilder.getRuleRuntime(rule);
                     rulesRuntime.add(ruleRuntime);
                     log.trace("Added {}", ruleRuntime);
                 }

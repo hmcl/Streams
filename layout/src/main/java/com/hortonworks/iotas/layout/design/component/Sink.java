@@ -19,10 +19,11 @@
 package com.hortonworks.iotas.layout.design.component;
 
 /**
- * Marker class to clearly identify a {@link Sink}
+ * Marker class to clearly identify a {@link Sink} <br><br/>
+ * A {@link Sink} receives input but does not communicate with any downstream components, hence it emits no output
  */
 public class Sink extends Component {
     // Sink extending Component is a more accurate representation of the physical world than having Component implement
-    // interface Sink because the later implies that Processor "is a" Sink, which is not correct.
+    // a Sink interface because the later implies that Processor "is a" Sink, which is not correct.
     // On the other hand Sink "is a" Component
 }
