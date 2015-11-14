@@ -20,9 +20,14 @@ package com.hortonworks.iotas.layout.runtime.processor;
 
 import backtype.storm.topology.OutputFieldsDeclarer;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
+import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,14 +35,43 @@ import java.util.List;
  * Object representing a design time rules processor.
  */
 public class RuleProcessorRuntime implements Serializable {
+    protected static final Logger log = LoggerFactory.getLogger(RuleProcessorRuntime.class);
 
     protected RulesProcessor rulesProcessor;
     protected List<RuleRuntime> rulesRuntime;
 
-    RuleProcessorRuntime(List<RuleRuntime> rulesRuntime, RulesProcessor rulesProcessor) {
-        this.rulesRuntime = rulesRuntime;
+    private RuleProcessorRuntime(Builder builder) {
+        this.rulesProcessor = builder.rulesProcessor;
+        this.rulesRuntime = builder.rulesRuntime;
+    }
 
-        this.rulesProcessor = rulesProcessor;
+    public static class Builder {
+        private final RulesProcessor rulesProcessor;
+        private final RuleRuntimeBuilder ruleRuntimeBuilder;
+        private List<RuleRuntime> rulesRuntime;
+
+        public Builder(RulesProcessor rulesProcessor, RuleRuntimeBuilder ruleRuntimeBuilder) {
+            this.rulesProcessor = rulesProcessor;
+            this.ruleRuntimeBuilder = ruleRuntimeBuilder;
+        }
+
+        public RuleProcessorRuntime build() {
+            final List<Rule> rules = rulesProcessor.getRules();
+            rulesRuntime = new ArrayList<>();
+
+            if (rules != null) {
+                for (Rule rule : rules) {
+                    ruleRuntimeBuilder.buildExpression(rule);
+                    ruleRuntimeBuilder.buildScriptEngine();
+                    ruleRuntimeBuilder.buildScript();
+                    RuleRuntime ruleRuntime = ruleRuntimeBuilder.getRuleRuntime(rule);
+                    rulesRuntime.add(ruleRuntime);
+                    log.trace("Added {}", ruleRuntime);
+                }
+                log.debug("Finished building: {}", this);
+            }
+            return new RuleProcessorRuntime(this);
+        }
     }
 
     public List<RuleRuntime> getRulesRuntime() {
@@ -60,6 +94,14 @@ public class RuleProcessorRuntime implements Serializable {
 
     public void setRuleProcessor(RulesProcessor rulesProcessor) {
         this.rulesProcessor = rulesProcessor;
+    }
+
+    @Override
+    public String toString() {
+        return "RuleProcessorRuntime{" +
+                "rulesProcessor=" + rulesProcessor +
+                ", rulesRuntime=" + rulesRuntime +
+                '}';
     }
 }
 

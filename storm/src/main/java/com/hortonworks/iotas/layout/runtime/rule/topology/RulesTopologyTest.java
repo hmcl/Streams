@@ -29,14 +29,10 @@ import backtype.storm.topology.TopologyBuilder;
 import com.hortonworks.bolt.rules.RulesBolt;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
-import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeConstructor;
-import com.hortonworks.iotas.layout.runtime.processor.RulesProcessorRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.GroovyRuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeConstructor;
 
 public class RulesTopologyTest {
-
     protected static final String RULES_TEST_SPOUT = "RulesTestSpout";
     protected static final String RULES_BOLT = "rulesBolt";
     protected static final String RULES_TEST_SINK_BOLT = "RulesTestSinkBolt";
@@ -72,11 +68,7 @@ public class RulesTopologyTest {
     protected RuleProcessorRuntime createRulesProcessorRuntime() {
         RulesProcessor rulesProcessor = new RuleProcessorMockBuilder(1,2,2).build();
         RuleRuntimeBuilder ruleRuntimeBuilder = new GroovyRuleRuntimeBuilder();
-        RuleRuntimeConstructor ruleRuntimeConstructor = new RuleRuntimeConstructor(ruleRuntimeBuilder);
-        RulesProcessorRuntimeBuilder ruleProcessorRuntimeBuilder = new RulesProcessorRuntimeBuilder(rulesProcessor, ruleRuntimeConstructor);
-        RuleProcessorRuntimeConstructor ruleProcessorRuntimeConstructor = new RuleProcessorRuntimeConstructor(ruleProcessorRuntimeBuilder);
-        ruleProcessorRuntimeConstructor.construct();
-        ruleProcessorRuntime = ruleProcessorRuntimeConstructor.getRuleProcessorRuntime();
+        ruleProcessorRuntime = new RuleProcessorRuntime.Builder(rulesProcessor, ruleRuntimeBuilder).build();
         return ruleProcessorRuntime;
     }
 

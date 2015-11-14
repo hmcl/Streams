@@ -45,7 +45,7 @@ public class RuleRuntime implements Serializable {
 
     public boolean evaluate(Tuple input) {
         try {
-            boolean evaluates = false;
+            boolean evaluates;
             IotasEvent iotasEvent;
             if (input == null || (iotasEvent = (IotasEvent) input.getValueByField(IotasEvent.IOTAS_EVENT)) == null) {
                 throw new ConditionEvaluationException("Null or invalid tuple");
