@@ -24,7 +24,8 @@ import backtype.storm.tuple.Values;
 import com.hortonworks.bolt.rules.RulesBolt;
 import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.common.IotasEventImpl;
-import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeStorm;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
 import com.hortonworks.iotas.layout.runtime.rule.topology.RulesTopologyTest;
 import mockit.Expectations;
 import mockit.Injectable;
@@ -63,7 +64,7 @@ public class RulesBoltTest extends RulesTopologyTest {
 
     private @Injectable OutputCollector mockOutputCollector;
     private @Injectable Tuple mockTuple;
-    private RuleProcessorRuntime ruleProcessorRuntime;
+    private RuleProcessorRuntimeStorm ruleProcessorRuntime;
 
     @Before
     public void setup() throws Exception {
@@ -104,8 +105,8 @@ public class RulesBoltTest extends RulesTopologyTest {
 
         if(isSuccess) {
             new VerificationsInOrder() {{
-                mockOutputCollector.emit(ruleProcessorRuntime.getRulesRuntime().get(0).getStreamId(), mockTuple, withAny(VALUES)); times = 0;
-                mockOutputCollector.emit(ruleProcessorRuntime.getRulesRuntime().get(1).getStreamId(), mockTuple, withAny(VALUES)); times = 1;
+                mockOutputCollector.emit(((RuleRuntimeStorm)ruleProcessorRuntime.getRulesRuntime().get(0)).getStreamId(), mockTuple, withAny(VALUES)); times = 0;
+                mockOutputCollector.emit(((RuleRuntimeStorm)ruleProcessorRuntime.getRulesRuntime().get(0)).getStreamId(), mockTuple, withAny(VALUES)); times = 1;
                 mockOutputCollector.ack(mockTuple); times = 1;
             }};
 

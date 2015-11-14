@@ -24,13 +24,17 @@ import backtype.storm.LocalCluster;
 import backtype.storm.generated.AlreadyAliveException;
 import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.generated.StormTopology;
+import backtype.storm.task.OutputCollector;
 import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.TopologyBuilder;
+import backtype.storm.tuple.Tuple;
 import com.hortonworks.bolt.rules.RulesBolt;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
-import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeBuilder;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeStorm;
 import com.hortonworks.iotas.layout.runtime.rule.GroovyRuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
 
 public class RulesTopologyTest {
     protected static final String RULES_TEST_SPOUT = "RulesTestSpout";
@@ -38,7 +42,7 @@ public class RulesTopologyTest {
     protected static final String RULES_TEST_SINK_BOLT = "RulesTestSinkBolt";
     protected static final String RULES_TEST_SINK_BOLT_1 = RULES_TEST_SINK_BOLT + "_1";
     protected static final String RULES_TEST_SINK_BOLT_2 = RULES_TEST_SINK_BOLT + "_2";
-    private RuleProcessorRuntime ruleProcessorRuntime;
+    private RuleProcessorRuntimeStorm ruleProcessorRuntime;
 
     public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException {
         RulesTopologyTest rulesTopologyTest = new RulesTopologyTest();
@@ -61,18 +65,20 @@ public class RulesTopologyTest {
         return builder.createTopology();
     }
 
-    protected IRichBolt createRulesBolt(RuleProcessorRuntime rulesProcessorRuntime) {
+    protected IRichBolt createRulesBolt(RuleProcessorRuntimeStorm rulesProcessorRuntime) {
         return new RulesBolt(rulesProcessorRuntime);
     }
 
-    protected RuleProcessorRuntime createRulesProcessorRuntime() {
+    protected RuleProcessorRuntimeStorm createRulesProcessorRuntime() {
         RulesProcessor rulesProcessor = new RuleProcessorMockBuilder(1,2,2).build();
-        RuleRuntimeBuilder ruleRuntimeBuilder = new GroovyRuleRuntimeBuilder();
-        ruleProcessorRuntime = new RuleProcessorRuntime.Builder(rulesProcessor, ruleRuntimeBuilder).build();
+        RuleRuntimeBuilder<Tuple, OutputCollector> ruleRuntimeBuilder = new GroovyRuleRuntimeBuilder();
+        RuleProcessorRuntimeBuilder<Tuple, OutputCollector> ruleProcessorRuntimeBuilder =
+                new RuleProcessorRuntimeBuilder<>(rulesProcessor, ruleRuntimeBuilder);
+        ruleProcessorRuntime = new RuleProcessorRuntimeStorm(ruleProcessorRuntimeBuilder);
         return ruleProcessorRuntime;
     }
 
     protected String getStream(int i) {
-        return ruleProcessorRuntime.getRulesRuntime().get(i).getStreamId();
+        return ((RuleRuntimeStorm)ruleProcessorRuntime.getRulesRuntime().get(i)).getStreamId();
     }
 }

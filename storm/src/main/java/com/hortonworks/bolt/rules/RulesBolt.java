@@ -24,8 +24,8 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.IotasEvent;
-import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeStorm;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +34,11 @@ import java.util.Map;
 public class RulesBolt extends BaseRichBolt {
     protected static final Logger log = LoggerFactory.getLogger(RulesBolt.class);
 
-    private final RuleProcessorRuntime ruleProcessorRuntime;
+    private final RuleProcessorRuntimeStorm ruleProcessorRuntime;
     private OutputCollector collector;
 
 
-    public RulesBolt(RuleProcessorRuntime ruleProcessorRuntime) {
+    public RulesBolt(RuleProcessorRuntimeStorm ruleProcessorRuntime) {
         this.ruleProcessorRuntime = ruleProcessorRuntime;
     }
 
@@ -51,13 +51,18 @@ public class RulesBolt extends BaseRichBolt {
     @Override
     public void execute(Tuple input) {  // tuple input should an IotasEvent
         try {
-            Object iotasEvent = input.getValueByField(IotasEvent.IOTAS_EVENT);
-            log.debug("++++++++ Executing tuple [{}] with IotasEvent [{}]", input, iotasEvent);
+            final Object iotasEvent = input.getValueByField(IotasEvent.IOTAS_EVENT);
 
-            for (RuleRuntimeStorm rule : ruleProcessorRuntime.getRulesRuntime()) {
-                if (rule.evaluate(input)) {
-                    rule.execute(input, collector); // collector can be null when the rule does not forward a stream
+            if ((iotasEvent instanceof IotasEvent)) {
+                log.debug("++++++++ Executing tuple [{}] with IotasEvent [{}]", input, iotasEvent);
+
+                for (RuleRuntime<Tuple, OutputCollector> rule : ruleProcessorRuntime.getRulesRuntime()) {
+                    if (rule.evaluate((IotasEvent) iotasEvent)) {
+                        rule.execute(input, collector); // collector can be null when the rule does not forward a stream
+                    }
                 }
+            } else {
+                log.debug("Invalid tuple received [{}]. Tuple disregarded and rules not evaluated", input);
             }
             collector.ack(input);
         } catch (Exception e) {
