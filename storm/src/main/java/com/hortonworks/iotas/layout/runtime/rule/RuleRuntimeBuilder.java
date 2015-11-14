@@ -33,5 +33,5 @@ public interface RuleRuntimeBuilder extends Serializable {
 
     void buildScript();
 
-    RuleRuntime getRuleRuntime(Rule rule);
+    RuleRuntimeStorm getRuleRuntime(Rule rule);
 }

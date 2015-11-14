@@ -43,7 +43,7 @@ public class GroovyRuleRuntimeBuilder implements RuleRuntimeBuilder {
         groovyScript = new GroovyScript(groovyExpression, groovyScriptEngine);
     }
 
-    public RuleRuntime getRuleRuntime(Rule rule) {
-        return new RuleRuntime(rule, groovyScript);
+    public RuleRuntimeStorm getRuleRuntime(Rule rule) {
+        return new RuleRuntimeStorm(rule, groovyScript);
     }
 }

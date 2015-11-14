@@ -25,7 +25,7 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntime;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ public class RulesBolt extends BaseRichBolt {
             Object iotasEvent = input.getValueByField(IotasEvent.IOTAS_EVENT);
             log.debug("++++++++ Executing tuple [{}] with IotasEvent [{}]", input, iotasEvent);
 
-            for (RuleRuntime rule : ruleProcessorRuntime.getRulesRuntime()) {
+            for (RuleRuntimeStorm rule : ruleProcessorRuntime.getRulesRuntime()) {
                 if (rule.evaluate(input)) {
                     rule.execute(input, collector); // collector can be null when the rule does not forward a stream
                 }

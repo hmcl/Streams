@@ -21,8 +21,8 @@ package com.hortonworks.iotas.layout.runtime.processor;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.Rule;
-import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
+import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public class RuleProcessorRuntime implements Serializable {
     protected static final Logger log = LoggerFactory.getLogger(RuleProcessorRuntime.class);
 
     protected RulesProcessor rulesProcessor;
-    protected List<RuleRuntime> rulesRuntime;
+    protected List<RuleRuntimeStorm> rulesRuntime;
 
     private RuleProcessorRuntime(Builder builder) {
         this.rulesProcessor = builder.rulesProcessor;
@@ -48,7 +48,7 @@ public class RuleProcessorRuntime implements Serializable {
     public static class Builder {
         private final RulesProcessor rulesProcessor;
         private final RuleRuntimeBuilder ruleRuntimeBuilder;
-        private List<RuleRuntime> rulesRuntime;
+        private List<RuleRuntimeStorm> rulesRuntime;
 
         public Builder(RulesProcessor rulesProcessor, RuleRuntimeBuilder ruleRuntimeBuilder) {
             this.rulesProcessor = rulesProcessor;
@@ -64,7 +64,7 @@ public class RuleProcessorRuntime implements Serializable {
                     ruleRuntimeBuilder.buildExpression(rule);
                     ruleRuntimeBuilder.buildScriptEngine();
                     ruleRuntimeBuilder.buildScript();
-                    final RuleRuntime ruleRuntime = ruleRuntimeBuilder.getRuleRuntime(rule);
+                    final RuleRuntimeStorm ruleRuntime = ruleRuntimeBuilder.getRuleRuntime(rule);
                     rulesRuntime.add(ruleRuntime);
                     log.trace("Added {}", ruleRuntime);
                 }
@@ -74,17 +74,17 @@ public class RuleProcessorRuntime implements Serializable {
         }
     }
 
-    public List<RuleRuntime> getRulesRuntime() {
+    public List<RuleRuntimeStorm> getRulesRuntime() {
         return rulesRuntime;
     }
 
     public void declareOutput(OutputFieldsDeclarer declarer) {
-        for (RuleRuntime ruleRuntime:rulesRuntime) {
+        for (RuleRuntimeStorm ruleRuntime:rulesRuntime) {
             ruleRuntime.declareOutput(declarer);
         }
     }
 
-    public void setRulesRuntime(List<RuleRuntime> rulesRuntime) {
+    public void setRulesRuntime(List<RuleRuntimeStorm> rulesRuntime) {
         this.rulesRuntime = rulesRuntime;
     }
 
