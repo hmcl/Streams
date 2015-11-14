@@ -24,7 +24,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
-public interface RuleRuntimeBuilder extends Serializable {
+/**
+ * @param <I> Type of runtime input to this rule, for example {@code Tuple}
+ * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
+ */
+public interface RuleRuntimeBuilder<I, E> extends Serializable {
     Logger log = LoggerFactory.getLogger(RuleRuntimeBuilder.class);
 
     void buildExpression(Rule rule);
@@ -33,5 +37,5 @@ public interface RuleRuntimeBuilder extends Serializable {
 
     void buildScript();
 
-    RuleRuntimeStorm getRuleRuntime(Rule rule);
+    RuleRuntime<I, E> getRuleRuntime(Rule rule);
 }
