@@ -79,37 +79,38 @@ public class RulesBoltTest extends RulesTopologyTest {
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(IOTAS_EVENT);
         }};
 
-        callExecuteAndVerifyCollectorInteraction(true);
+        executeAndVerifyCollectorCalls(true, 0, 1);
     }
 
     @Test
-    public void test_invalidTuple_failsTuple() throws Exception {
+    public void test_invalidTuple_ruleDoesNotEvaluate() throws Exception {
         new Expectations() {{
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(null);
         }};
 
-        callExecuteAndVerifyCollectorInteraction(false);
+        executeAndVerifyCollectorCalls(true, 0, 0);
     }
 
     @Test
-    public void test_tupleInvalidFields_failsTuple() throws Exception {
+    public void test_tupleInvalidFields_ruleDoesNotEvaluate() throws Exception {
         new Expectations() {{
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(IOTAS_EVENT_INVALID_FIELDS);
         }};
 
-        callExecuteAndVerifyCollectorInteraction(false);
+        executeAndVerifyCollectorCalls(false, -1, -1);
     }
 
-    private void callExecuteAndVerifyCollectorInteraction(final boolean isSuccess) {
+    private void executeAndVerifyCollectorCalls(final boolean isSuccess, final int rule1NumTimes, final int rule2NumTimes) {
         rulesBolt.execute(mockTuple);
 
         if(isSuccess) {
             new VerificationsInOrder() {{
-                mockOutputCollector.emit(((RuleRuntimeStorm)ruleProcessorRuntime.getRulesRuntime().get(0)).getStreamId(), mockTuple, withAny(VALUES)); times = 0;
-                mockOutputCollector.emit(((RuleRuntimeStorm)ruleProcessorRuntime.getRulesRuntime().get(0)).getStreamId(), mockTuple, withAny(VALUES)); times = 1;
+                mockOutputCollector.emit(((RuleRuntimeStorm)ruleProcessorRuntime.getRulesRuntime().get(0)).getStreamId(),
+                        mockTuple, withAny(VALUES)); times = rule1NumTimes;
+                mockOutputCollector.emit(((RuleRuntimeStorm)ruleProcessorRuntime.getRulesRuntime().get(1)).getStreamId(),
+                        mockTuple, withAny(VALUES)); times = rule2NumTimes;
                 mockOutputCollector.ack(mockTuple); times = 1;
             }};
-
         } else {
             new VerificationsInOrder() {{
                 mockOutputCollector.fail(mockTuple);
