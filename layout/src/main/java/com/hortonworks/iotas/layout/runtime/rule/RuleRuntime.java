@@ -35,8 +35,8 @@ import java.io.Serializable;
 public abstract class RuleRuntime<I, E> implements Serializable {
     protected static final Logger log = LoggerFactory.getLogger(RuleRuntime.class);
 
-    private final Rule rule;
-    private final Script<IotasEvent, ?> script;     // Script used to evaluate the condition
+    protected final Rule rule;
+    protected final Script<IotasEvent, ?> script;     // Script used to evaluate the condition
 
     RuleRuntime(Rule rule, Script<IotasEvent, ?> script) {
         this.rule = rule;

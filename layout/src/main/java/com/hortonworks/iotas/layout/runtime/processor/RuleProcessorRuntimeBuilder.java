@@ -22,6 +22,8 @@ import com.hortonworks.iotas.layout.design.component.RulesProcessor;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,8 @@ import java.util.List;
  * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
  */
 public class RuleProcessorRuntimeBuilder<I, E> {
+    protected static final Logger log = LoggerFactory.getLogger(RuleProcessorRuntimeBuilder.class);
+
     private final RulesProcessor rulesProcessor;
     private final RuleRuntimeBuilder<I,E> ruleRuntimeBuilder;
 
@@ -41,7 +45,7 @@ public class RuleProcessorRuntimeBuilder<I, E> {
 
     public List<RuleRuntime<I,E>> getRulesRuntime() {
         final List<Rule> rules = rulesProcessor.getRules();
-        List<RuleRuntime<I, E>> rulesRuntime = new ArrayList<>();
+        final List<RuleRuntime<I, E>> rulesRuntime = new ArrayList<>();
 
         if (rules != null) {
             for (Rule rule : rules) {
@@ -50,9 +54,9 @@ public class RuleProcessorRuntimeBuilder<I, E> {
                 ruleRuntimeBuilder.buildScript();
                 RuleRuntime<I, E> ruleRuntime = ruleRuntimeBuilder.getRuleRuntime(rule);
                 rulesRuntime.add(ruleRuntime);
-                RuleProcessorRuntime.log.trace("Added {}", ruleRuntime);
+                log.trace("Added {}", ruleRuntime);
             }
-            RuleProcessorRuntime.log.debug("Finished building: {}", this);
+            log.debug("Finished building: {}", this);
         }
         return rulesRuntime;
     }

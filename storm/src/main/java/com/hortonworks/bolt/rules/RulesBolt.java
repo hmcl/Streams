@@ -49,11 +49,11 @@ public class RulesBolt extends BaseRichBolt {
     }
 
     @Override
-    public void execute(Tuple input) {  // tuple input should an IotasEvent
+    public void execute(Tuple input) {  // Input tuple is expected to be an IotasEvent
         try {
             final Object iotasEvent = input.getValueByField(IotasEvent.IOTAS_EVENT);
 
-            if ((iotasEvent instanceof IotasEvent)) {
+            if (iotasEvent instanceof IotasEvent) {
                 log.debug("++++++++ Executing tuple [{}] with IotasEvent [{}]", input, iotasEvent);
 
                 for (RuleRuntime<Tuple, OutputCollector> rule : ruleProcessorRuntime.getRulesRuntime()) {

@@ -31,13 +31,8 @@ import org.slf4j.LoggerFactory;
 public class RuleRuntimeStorm extends RuleRuntime<Tuple, OutputCollector> {
     private static final Logger log = LoggerFactory.getLogger(RuleRuntimeStorm.class);
 
-    private final Rule rule;
-    private final Script<IotasEvent, ?> script;     // Script used to evaluate the condition
-
     RuleRuntimeStorm(Rule rule, Script<IotasEvent, ?> script) {
         super(rule, script);
-        this.rule = rule;
-        this.script = script;
     }
 
     public void execute(Tuple input, OutputCollector collector) {
@@ -50,7 +45,7 @@ public class RuleRuntimeStorm extends RuleRuntime<Tuple, OutputCollector> {
         final String streamId = getStreamId();
         final Fields fields = getFields();
         declarer.declareStream(streamId, fields);
-        log.debug("Declared output stream. Stream Id [{}] Fields [{}]");
+        log.debug("Declared stream. Stream Id [{}] Fields [{}]", streamId, fields);
     }
 
     //TODO

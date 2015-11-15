@@ -74,7 +74,7 @@ public class RulesBoltTest extends RulesTopologyTest {
     }
 
     @Test
-    public void test_validTuple_oneRuleEvaluates() throws Exception {
+    public void test_validTuple_oneRuleEvaluates_acks() throws Exception {
         new Expectations() {{
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(IOTAS_EVENT);
         }};
@@ -83,7 +83,7 @@ public class RulesBoltTest extends RulesTopologyTest {
     }
 
     @Test
-    public void test_invalidTuple_ruleDoesNotEvaluate() throws Exception {
+    public void test_invalidTuple_ruleDoesNotEvaluate_acks() throws Exception {
         new Expectations() {{
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(null);
         }};
@@ -92,7 +92,7 @@ public class RulesBoltTest extends RulesTopologyTest {
     }
 
     @Test
-    public void test_tupleInvalidFields_ruleDoesNotEvaluate() throws Exception {
+    public void test_tupleInvalidFields_ruleDoesNotEvaluate_fails() throws Exception {
         new Expectations() {{
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(IOTAS_EVENT_INVALID_FIELDS);
         }};
