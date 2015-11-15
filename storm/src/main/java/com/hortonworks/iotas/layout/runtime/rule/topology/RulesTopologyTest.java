@@ -30,7 +30,7 @@ import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Tuple;
 import com.hortonworks.bolt.rules.RulesBolt;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
-import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeBuilder;
+import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeDependenciesBuilder;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeStorm;
 import com.hortonworks.iotas.layout.runtime.rule.GroovyRuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
@@ -72,9 +72,9 @@ public class RulesTopologyTest {
     protected RuleProcessorRuntimeStorm createRulesProcessorRuntime() {
         RulesProcessor rulesProcessor = new RuleProcessorMockBuilder(1,2,2).build();
         RuleRuntimeBuilder<Tuple, OutputCollector> ruleRuntimeBuilder = new GroovyRuleRuntimeBuilder();
-        RuleProcessorRuntimeBuilder<Tuple, OutputCollector> ruleProcessorRuntimeBuilder =
-                new RuleProcessorRuntimeBuilder<>(rulesProcessor, ruleRuntimeBuilder);
-        ruleProcessorRuntime = new RuleProcessorRuntimeStorm(ruleProcessorRuntimeBuilder);
+        RuleProcessorRuntimeDependenciesBuilder<Tuple, OutputCollector> dependenciesBuilder =
+                new RuleProcessorRuntimeDependenciesBuilder<>(rulesProcessor, ruleRuntimeBuilder);
+        ruleProcessorRuntime = new RuleProcessorRuntimeStorm(dependenciesBuilder);
         return ruleProcessorRuntime;
     }
 

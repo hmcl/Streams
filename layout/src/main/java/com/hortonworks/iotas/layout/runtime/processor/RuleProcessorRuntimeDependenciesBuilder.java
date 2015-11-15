@@ -32,13 +32,13 @@ import java.util.List;
  * @param <I> Type of runtime input to this rule, for example {@code Tuple}
  * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
  */
-public class RuleProcessorRuntimeBuilder<I, E> {
-    protected static final Logger log = LoggerFactory.getLogger(RuleProcessorRuntimeBuilder.class);
+public class RuleProcessorRuntimeDependenciesBuilder<I, E> {
+    protected static final Logger log = LoggerFactory.getLogger(RuleProcessorRuntimeDependenciesBuilder.class);
 
     private final RulesProcessor rulesProcessor;
     private final RuleRuntimeBuilder<I,E> ruleRuntimeBuilder;
 
-    public RuleProcessorRuntimeBuilder(RulesProcessor rulesProcessor, RuleRuntimeBuilder<I,E> ruleRuntimeBuilder) {
+    public RuleProcessorRuntimeDependenciesBuilder(RulesProcessor rulesProcessor, RuleRuntimeBuilder<I,E> ruleRuntimeBuilder) {
         this.rulesProcessor = rulesProcessor;
         this.ruleRuntimeBuilder = ruleRuntimeBuilder;
     }

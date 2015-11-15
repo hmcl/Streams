@@ -39,7 +39,7 @@ public class RuleProcessorRuntime<I, E> implements Serializable {
     protected RulesProcessor rulesProcessor;
     protected List<RuleRuntime<I,E>> rulesRuntime;
 
-    public RuleProcessorRuntime(RuleProcessorRuntimeBuilder<I,E> builder) {
+    public RuleProcessorRuntime(RuleProcessorRuntimeDependenciesBuilder<I,E> builder) {
         this.rulesProcessor = builder.getRulesProcessor();
         this.rulesRuntime = builder.getRulesRuntime();
     }

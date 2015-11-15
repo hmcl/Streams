@@ -27,7 +27,7 @@ import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
 
 public class RuleProcessorRuntimeStorm extends RuleProcessorRuntime<Tuple, OutputCollector> {
 
-    public RuleProcessorRuntimeStorm(RuleProcessorRuntimeBuilder<Tuple, OutputCollector> builder) {
+    public RuleProcessorRuntimeStorm(RuleProcessorRuntimeDependenciesBuilder<Tuple, OutputCollector> builder) {
         super(builder);
     }
 
