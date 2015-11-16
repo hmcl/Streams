@@ -35,7 +35,7 @@ public class GroovyScript extends Script<IotasEvent, javax.script.ScriptEngine> 
     }
 
     @Override
-    public boolean evaluate(IotasEvent iotasEvent) throws ScriptException {
+    public boolean  evaluate(IotasEvent iotasEvent) throws ScriptException {
         log.debug("Evaluating {}" + iotasEvent);
         for (Map.Entry<String, Object> fieldAndValue : iotasEvent.getFieldsAndValues().entrySet()) {
             log.debug("{Putting into engine key = {}, val = {}", fieldAndValue.getKey(), fieldAndValue.getValue());
