@@ -115,9 +115,9 @@ public class RuleProcessorMockBuilder {
 
     private Condition buildCondition(int idx) {
         if (idx % 2 == 0) {
-            return buildCondition(buildConditionElements(Operation.GREATER_THAN));
+            return buildCondition(buildConditionElements(Operation.GREATER_THAN)); // temperature  > 100  &&  humidity  > 50
         }
-        return buildCondition(buildConditionElements(Operation.LESS_THAN));
+        return buildCondition(buildConditionElements(Operation.LESS_THAN));        // temperature  < 100  &&  humidity  < 50
     }
 
     private Condition buildCondition(List<Condition.ConditionElement> conditionElements) {
@@ -136,10 +136,10 @@ public class RuleProcessorMockBuilder {
     private Condition.ConditionElement buildConditionElement(
             String firstOperand, Operation operation, String secondOperand,
             LogicalOperator logicalOperator) {
-        Condition.ConditionElement conditionElement =
-                new Condition.ConditionElement();
-        final Field temperature = new Field(firstOperand, Schema.Type.INTEGER);
-        conditionElement.setFirstOperand(temperature);
+
+        final Condition.ConditionElement conditionElement = new Condition.ConditionElement();
+        final Field firstOperandField = new Field(firstOperand, Schema.Type.INTEGER);
+        conditionElement.setFirstOperand(firstOperandField);
         conditionElement.setOperation(operation);
         conditionElement.setSecondOperand(secondOperand);
         if (logicalOperator != null) {

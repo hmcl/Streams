@@ -26,14 +26,19 @@ import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.common.IotasEventImpl;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeStorm;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
+import com.hortonworks.iotas.layout.runtime.rule.topology.RuleProcessorMockBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.topology.RulesTopologyTest;
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Tested;
 import mockit.VerificationsInOrder;
 import mockit.integration.junit4.JMockit;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,23 +49,32 @@ import java.util.HashMap;
 public class RulesBoltTest extends RulesTopologyTest {
     protected static final Logger log = LoggerFactory.getLogger(RulesBoltTest.class);
 
-    public static final IotasEventImpl IOTAS_EVENT = new IotasEventImpl(new HashMap<String, Object>() {{
-        put("temperature", 101);
-        put("humidity", 51);
-    }}, "dataSrcId", "23");
+    // For printing which tests are being run
+    public @Rule TestName testName = new TestName();
+    public @Rule TestWatcher watchman = new TestWatcher() {
+        @Override
+        public void starting(final Description method) {
+            log.debug("RUNNING TEST [{}] ", method.getMethodName());
+        }
+    };
 
-    public static final IotasEventImpl IOTAS_EVENT_INVALID_FIELDS = new IotasEventImpl(new HashMap<String, Object>() {{
+    private static final IotasEventImpl IOTAS_EVENT = new IotasEventImpl(new HashMap<String, Object>() {{
+        put(RuleProcessorMockBuilder.TEMPERATURE, 101);
+        put(RuleProcessorMockBuilder.HUMIDITY, 51);
+    }}, "dataSrcId_1", "23");
+
+    private static final IotasEventImpl IOTAS_EVENT_INVALID_FIELDS = new IotasEventImpl(new HashMap<String, Object>() {{
         put("non_existent_field1", 101);
         put("non_existent_field2", 51);
         put("non_existent_field3", 23);
-    }}, "dataSrcId", "23");
+    }}, "dataSrcId_2", "24");
 
     private static final Values VALUES = new Values(IOTAS_EVENT);
+    private static final Values VALUES_ILLEGAL = new Values(IOTAS_EVENT_INVALID_FIELDS);
 
-    //TODO: Check all of this
 
-    private @Tested
-    RulesBolt rulesBolt;
+//    private @Tested RulesBolt rulesBolt;
+    private RulesBolt rulesBolt;
 
     private @Injectable OutputCollector mockOutputCollector;
     private @Injectable Tuple mockTuple;
@@ -76,6 +90,7 @@ public class RulesBoltTest extends RulesTopologyTest {
     @Test
     public void test_validTuple_oneRuleEvaluates_acks() throws Exception {
         new Expectations() {{
+            mockTuple.getValues(); result = VALUES;
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(IOTAS_EVENT);
         }};
 
@@ -106,9 +121,15 @@ public class RulesBoltTest extends RulesTopologyTest {
         if(isSuccess) {
             new VerificationsInOrder() {{
                 mockOutputCollector.emit(((RuleRuntimeStorm)ruleProcessorRuntime.getRulesRuntime().get(0)).getStreamId(),
-                        mockTuple, withAny(VALUES)); times = rule1NumTimes;
+                        mockTuple, VALUES); times = rule1NumTimes;
+
+                Values actualValues;
                 mockOutputCollector.emit(((RuleRuntimeStorm)ruleProcessorRuntime.getRulesRuntime().get(1)).getStreamId(),
-                        mockTuple, withAny(VALUES)); times = rule2NumTimes;
+                        mockTuple, actualValues = withCapture()); times = rule2NumTimes;
+                Assert.assertEquals(VALUES, actualValues);
+                Assert.assertNotEquals(VALUES, VALUES_ILLEGAL);
+                Assert.assertNotEquals(VALUES_ILLEGAL, actualValues);
+
                 mockOutputCollector.ack(mockTuple); times = 1;
             }};
         } else {
@@ -117,5 +138,4 @@ public class RulesBoltTest extends RulesTopologyTest {
             }};
         }
     }
-
 }
