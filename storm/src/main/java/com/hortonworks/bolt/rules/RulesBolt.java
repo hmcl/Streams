@@ -62,7 +62,7 @@ public class RulesBolt extends BaseRichBolt {
                     }
                 }
             } else {
-                log.debug("Invalid tuple received [{}]. Tuple disregarded and rules not evaluated", input);
+                log.debug("Invalid tuple received. Tuple [{}]. IotasEvent [{}]. Tuple disregarded and rules not evaluated", input, iotasEvent);
             }
             collector.ack(input);
         } catch (Exception e) {

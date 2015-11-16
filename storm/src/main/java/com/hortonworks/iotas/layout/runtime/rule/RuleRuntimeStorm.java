@@ -48,7 +48,6 @@ public class RuleRuntimeStorm extends RuleRuntime<Tuple, OutputCollector> {
         log.debug("Declared stream. Stream Id [{}] Fields [{}]", streamId, fields);
     }
 
-    //TODO
     public String getStreamId() {
         return rule.getRuleProcessorName() + "." + rule.getName() + "." + rule.getId();
     }
