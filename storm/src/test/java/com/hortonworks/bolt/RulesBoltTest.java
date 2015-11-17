@@ -30,6 +30,7 @@ import com.hortonworks.iotas.layout.runtime.rule.topology.RuleProcessorMockBuild
 import com.hortonworks.iotas.layout.runtime.rule.topology.RulesTopologyTest;
 import mockit.Expectations;
 import mockit.Injectable;
+import mockit.Tested;
 import mockit.VerificationsInOrder;
 import mockit.integration.junit4.JMockit;
 import org.junit.Assert;
@@ -49,7 +50,7 @@ import java.util.HashMap;
 public class RulesBoltTest extends RulesTopologyTest {
     protected static final Logger log = LoggerFactory.getLogger(RulesBoltTest.class);
 
-    // For printing which tests are being run
+    // JUnit constructs for printing which tests are being run
     public @Rule TestName testName = new TestName();
     public @Rule TestWatcher watchman = new TestWatcher() {
         @Override
@@ -63,19 +64,17 @@ public class RulesBoltTest extends RulesTopologyTest {
         put(RuleProcessorMockBuilder.HUMIDITY, 51);
     }}, "dataSrcId_1", "23");
 
+    private static final Values IOTAS_EVENT_VALUES = new Values(IOTAS_EVENT);
+
     private static final IotasEventImpl IOTAS_EVENT_INVALID_FIELDS = new IotasEventImpl(new HashMap<String, Object>() {{
         put("non_existent_field1", 101);
         put("non_existent_field2", 51);
         put("non_existent_field3", 23);
     }}, "dataSrcId_2", "24");
 
-    private static final Values VALUES = new Values(IOTAS_EVENT);
-    private static final Values VALUES_ILLEGAL = new Values(IOTAS_EVENT_INVALID_FIELDS);
+    private static final Values IOTAS_EVENT_INVALID_FIELDS_VALUES = new Values(IOTAS_EVENT_INVALID_FIELDS);
 
-
-//    private @Tested RulesBolt rulesBolt;
-    private RulesBolt rulesBolt;
-
+    private @Tested RulesBolt rulesBolt;
     private @Injectable OutputCollector mockOutputCollector;
     private @Injectable Tuple mockTuple;
     private RuleProcessorRuntimeStorm ruleProcessorRuntime;
@@ -84,17 +83,16 @@ public class RulesBoltTest extends RulesTopologyTest {
     public void setup() throws Exception {
         ruleProcessorRuntime = createRulesProcessorRuntime();
         rulesBolt = (RulesBolt) createRulesBolt(ruleProcessorRuntime);
-        rulesBolt.prepare(null, null, mockOutputCollector);
     }
 
     @Test
     public void test_validTuple_oneRuleEvaluates_acks() throws Exception {
         new Expectations() {{
-            mockTuple.getValues(); result = VALUES;
+            mockTuple.getValues(); result = IOTAS_EVENT_VALUES;
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(IOTAS_EVENT);
         }};
 
-        executeAndVerifyCollectorCalls(true, 0, 1);
+        executeAndVerifyCollectorCalls(true, 1);
     }
 
     @Test
@@ -103,33 +101,34 @@ public class RulesBoltTest extends RulesTopologyTest {
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(null);
         }};
 
-        executeAndVerifyCollectorCalls(true, 0, 0);
+        executeAndVerifyCollectorCalls(true, 0);
     }
 
     @Test
     public void test_tupleInvalidFields_ruleDoesNotEvaluate_fails() throws Exception {
+//        test_validTuple_oneRuleEvaluates_acks();
         new Expectations() {{
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(IOTAS_EVENT_INVALID_FIELDS);
         }};
 
-        executeAndVerifyCollectorCalls(false, -1, -1);
+        executeAndVerifyCollectorCalls(false, -1);
     }
 
-    private void executeAndVerifyCollectorCalls(final boolean isSuccess, final int rule1NumTimes, final int rule2NumTimes) {
+    private void executeAndVerifyCollectorCalls(final boolean isSuccess, final int rule2NumTimes) {
         rulesBolt.execute(mockTuple);
 
         if(isSuccess) {
             new VerificationsInOrder() {{
                 mockOutputCollector.emit(((RuleRuntimeStorm)ruleProcessorRuntime.getRulesRuntime().get(0)).getStreamId(),
-                        mockTuple, VALUES); times = rule1NumTimes;
+                        mockTuple, IOTAS_EVENT_VALUES); times = 0;  // rule 1 does not trigger
 
                 Values actualValues;
                 mockOutputCollector.emit(((RuleRuntimeStorm)ruleProcessorRuntime.getRulesRuntime().get(1)).getStreamId(),
-                        mockTuple, actualValues = withCapture()); times = rule2NumTimes;
-                Assert.assertEquals(VALUES, actualValues);
-                Assert.assertNotEquals(VALUES, VALUES_ILLEGAL);
-                Assert.assertNotEquals(VALUES_ILLEGAL, actualValues);
+                        mockTuple, actualValues = withCapture()); times = rule2NumTimes;    // rule 2 triggers rule2NumTimes
 
+                Assert.assertEquals(IOTAS_EVENT_VALUES, actualValues);
+                Assert.assertNotEquals(IOTAS_EVENT_VALUES, IOTAS_EVENT_INVALID_FIELDS_VALUES);
+                Assert.assertNotEquals(IOTAS_EVENT_INVALID_FIELDS_VALUES, actualValues);
                 mockOutputCollector.ack(mockTuple); times = 1;
             }};
         } else {

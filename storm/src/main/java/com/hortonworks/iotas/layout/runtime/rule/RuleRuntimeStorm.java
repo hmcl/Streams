@@ -36,9 +36,9 @@ public class RuleRuntimeStorm extends RuleRuntime<Tuple, OutputCollector> {
     }
 
     public void execute(Tuple input, OutputCollector collector) {
-        log.debug("Executing rule [{}]\n\tInput tuple [{}]\n\tCollector [{}]\n\tStream:[{}]",
-                rule, input, collector, getStreamId());
         collector.emit(getStreamId(), input, input.getValues());
+        log.debug("Executed rule [{}]\n\tInput tuple [{}]\n\tCollector [{}]\n\tStream:[{}]",
+                rule, input, collector, getStreamId());
     }
 
     public void declareOutput(OutputFieldsDeclarer declarer) {

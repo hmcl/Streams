@@ -21,28 +21,42 @@ package com.hortonworks.iotas.layout.runtime.rule.condition.script;
 import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.Expression;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngine;
+import groovy.lang.Binding;
 
 import javax.script.ScriptException;
 import java.util.Map;
 
 //TODO
-public class GroovyScript extends Script<IotasEvent, javax.script.ScriptEngine> {
+public class GroovyScript extends Script<IotasEvent, groovy.lang.Script> {
+    private static final Binding EMPTY_BINDING = new Binding();
 
     public GroovyScript(Expression expression,
-                        ScriptEngine<javax.script.ScriptEngine> scriptEngine) {
+                        ScriptEngine<groovy.lang.Script> scriptEngine) {
         super(expression, scriptEngine);
         log.debug("Created Groovy Script: {}", super.toString());
     }
 
     @Override
-    public boolean  evaluate(IotasEvent iotasEvent) throws ScriptException {
-        log.debug("Evaluating {}" + iotasEvent);
-        for (Map.Entry<String, Object> fieldAndValue : iotasEvent.getFieldsAndValues().entrySet()) {
-            log.debug("{Putting into engine key = {}, val = {}", fieldAndValue.getKey(), fieldAndValue.getValue());
-            scriptEngine.put(fieldAndValue.getKey(), fieldAndValue.getValue());
+    public boolean evaluate(IotasEvent iotasEvent) throws ScriptException {
+        log.debug("Evaluating [{}]", iotasEvent);
+        boolean evaluates = false;
+        try {
+            if (iotasEvent != null) {
+                final Map<String, Object> fieldsToValues = iotasEvent.getFieldsAndValues();
+                scriptEngine.setBinding(new Binding(fieldsToValues));
+                log.debug("Set script binding to [{}]", fieldsToValues);
+                evaluates = (boolean) scriptEngine.run();
+                log.debug("Expression [{}] evaluated to [{}]", expression, evaluates);
+            }
+        } catch (groovy.lang.MissingPropertyException e) {
+            // Occurs when not all the properties required for evaluating the script are set. This can happen for example
+            // when receiving an IotasEvent that does not have all the fields required to evaluate the expression
+            evaluates = false;
         }
-        final boolean result = (boolean) scriptEngine.eval(expression);
-        log.debug("Expression [{}] evaluated to [{}]", expression, result);
-        return result;
+        finally {
+            scriptEngine.setBinding(EMPTY_BINDING);
+            log.debug("Script binding reset to empty binding");
+        }
+        return evaluates;
     }
 }

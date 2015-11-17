@@ -18,21 +18,29 @@
 
 package com.hortonworks.iotas.layout.runtime.rule.condition.script.engine;
 
-//TODO
-public class SqlStreamEngine implements ScriptEngine<Object> {
-    @Override
-    public Object getEngine() {
-        throw new UnsupportedOperationException("TODO: SqlStream Compiler Implementation");
-        /*Compiler comp = new Compiler(); // From Haohui's class
-        Evaluation obj = comp.compile("let x = 1:Integer,...; x + y > 0 and 1 < 2");
-        for (Tuple r : record) {
-            if (obj.filter(r)) {
-                action();
-            }
-        }*/
+import com.hortonworks.iotas.layout.runtime.rule.condition.expression.Expression;
+import groovy.lang.GroovyShell;
+
+import java.io.Serializable;
+
+public class GroovyShellScriptEngine implements ScriptEngine<groovy.lang.Script>, Serializable {
+
+    private Expression expression;
+
+    public GroovyShellScriptEngine(Expression expression) {
+        this.expression = expression;
     }
 
-    /*public String toString() {
+    @Override
+    public groovy.lang.Script getEngine() {
+        GroovyShell groovyShell = new GroovyShell();
+        return groovyShell.parse(expression.getExpression());
+    }
 
-    }*/
+    @Override
+    public String toString() {
+        return "GroovyShellScriptEngine{" +
+                "parsed_expression=" + expression +
+                '}';
+    }
 }

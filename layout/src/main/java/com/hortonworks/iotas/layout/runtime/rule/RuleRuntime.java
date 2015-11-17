@@ -45,10 +45,7 @@ public abstract class RuleRuntime<I, E> implements Serializable {
 
     public boolean evaluate(IotasEvent input) {
         try {
-            boolean evaluates = false;
-            if (input != null) {
-                evaluates = script.evaluate(input);
-            }
+            boolean evaluates = script.evaluate(input);
             log.debug("Rule condition evaluated to [{}].\n\t[{}]\n\tInput[{}]", evaluates, rule, input);
             return evaluates;
         } catch (ScriptException e) {
@@ -58,8 +55,8 @@ public abstract class RuleRuntime<I, E> implements Serializable {
 
     /**
      * Executes a {@link Rule}'s Action
-     * @param input runtime input to this rule, for example {@code Tuple} for {@code Storm}
-     * @param executor object required to execute this rule in the underlying streaming framework e.g {@code OutputCollector} for {@code Storm}
+     * @param input runtime input to this rule, for example, {@code Tuple} for {@code Storm}
+     * @param executor object required to execute this rule's action in the underlying streaming framework e.g {@code OutputCollector} for {@code Storm}
      */
     public abstract void execute(I input, E executor);
 
