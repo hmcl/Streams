@@ -23,27 +23,28 @@ import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 import java.util.Arrays;
 
 public class GroovyExpression extends Expression {
-
     public GroovyExpression(Condition condition) {
         super(condition);
     }
 
     @Override
     public String getExpression() {
-        final StringBuilder builder = new StringBuilder("");
-        for (Condition.ConditionElement element : condition.getConditionElements()) {
-            builder.append(getName(element.getFirstOperand()))               // x
-                    .append(getOperation(element.getOperation()))            // ==, !=, >, <, ...
-                    .append(element.getSecondOperand());                     // 5 - it is a constant
+        if (expression == null) {
+            final StringBuilder builder = new StringBuilder("");
+            for (Condition.ConditionElement element : condition.getConditionElements()) {
+                builder.append(getName(element.getFirstOperand()))               // x
+                        .append(getOperation(element.getOperation()))            // ==, !=, >, <, ...
+                        .append(element.getSecondOperand());                     // 5 - it is a constant
 
-            if (element.getLogicalOperator() != null) {
-                builder.append(" ");
-                builder.append(getLogicalOperator(element.getLogicalOperator()));   // && or ||
-                builder.append(" ");
+                if (element.getLogicalOperator() != null) {
+                    builder.append(" ");
+                    builder.append(getLogicalOperator(element.getLogicalOperator()));   // && or ||
+                    builder.append(" ");
+                }
             }
+            expression = builder.toString();                              // x == 5 [&& or ||]
+            log.debug("Built expression [{}] for condition [{}]", expression, condition);
         }
-        final String expression = builder.toString();                              // x == 5 [&& or ||]
-        log.debug("Built expression [{}] for condition [{}]", expression, condition);
         return expression;
     }
 
@@ -78,4 +79,6 @@ public class GroovyExpression extends Expression {
                         operation, Arrays.toString(Condition.ConditionElement.Operation.values())));
         }
     }
+
+
 }

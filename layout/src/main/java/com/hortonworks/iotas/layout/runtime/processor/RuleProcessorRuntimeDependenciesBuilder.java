@@ -56,12 +56,18 @@ public class RuleProcessorRuntimeDependenciesBuilder<I, E> {
                 rulesRuntime.add(ruleRuntime);
                 log.trace("Added {}", ruleRuntime);
             }
-            log.debug("Finished building: {}", this);
+            log.debug("Finished building. {}", this);
         }
         return rulesRuntime;
     }
 
     public RulesProcessor getRulesProcessor() {
         return rulesProcessor;
+    }
+
+    @Override
+    public String toString() {
+        return "RuleProcessorRuntimeDependenciesBuilder{" + rulesProcessor +
+                ", "+ ruleRuntimeBuilder + '}';
     }
 }

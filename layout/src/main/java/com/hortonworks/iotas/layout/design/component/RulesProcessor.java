@@ -35,4 +35,11 @@ public class RulesProcessor extends Component {     //TODO: Rename to RuleProces
     public void setRules(List<Rule> rules) {
         this.rules = rules;
     }
+
+    @Override
+    public String toString() {
+        return "RulesProcessor{" +
+                "rules=" + rules +
+                "} " + super.toString();
+    }
 }

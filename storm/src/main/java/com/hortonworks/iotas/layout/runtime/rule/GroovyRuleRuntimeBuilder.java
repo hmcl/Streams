@@ -45,4 +45,12 @@ public class GroovyRuleRuntimeBuilder implements RuleRuntimeBuilder<Tuple, Outpu
     public RuleRuntimeStorm getRuleRuntime(Rule rule) {
         return new RuleRuntimeStorm(rule, groovyScript);
     }
+
+    @Override
+    public String toString() {
+        return "GroovyRuleRuntimeBuilder{" +
+                ", groovyScriptEngine=" + groovyScriptEngine +
+                ", groovyScript=" + groovyScript +
+                '}';
+    }
 }

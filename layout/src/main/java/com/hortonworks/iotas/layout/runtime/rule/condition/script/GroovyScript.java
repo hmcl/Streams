@@ -38,7 +38,7 @@ public class GroovyScript extends Script<IotasEvent, groovy.lang.Script> {
 
     @Override
     public boolean evaluate(IotasEvent iotasEvent) throws ScriptException {
-        log.debug("Evaluating [{}]", iotasEvent);
+        log.debug("Evaluating [{}] with [{}]", expression, iotasEvent);
         boolean evaluates = false;
         try {
             if (iotasEvent != null) {
@@ -51,6 +51,7 @@ public class GroovyScript extends Script<IotasEvent, groovy.lang.Script> {
         } catch (groovy.lang.MissingPropertyException e) {
             // Occurs when not all the properties required for evaluating the script are set. This can happen for example
             // when receiving an IotasEvent that does not have all the fields required to evaluate the expression
+            log.debug("Missing property required to evaluate expression.", e);
             evaluates = false;
         }
         finally {

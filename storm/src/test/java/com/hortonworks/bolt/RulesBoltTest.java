@@ -92,7 +92,8 @@ public class RulesBoltTest extends RulesTopologyTest {
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(IOTAS_EVENT);
         }};
 
-        executeAndVerifyCollectorCalls(true, 1);
+        executeAndVerifyCollectorCalls(true, 1, IOTAS_EVENT_VALUES);
+
     }
 
     @Test
@@ -101,7 +102,7 @@ public class RulesBoltTest extends RulesTopologyTest {
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(null);
         }};
 
-        executeAndVerifyCollectorCalls(true, 0);
+        executeAndVerifyCollectorCalls(true, 0, null);
     }
 
     @Test
@@ -111,10 +112,10 @@ public class RulesBoltTest extends RulesTopologyTest {
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT); returns(IOTAS_EVENT_INVALID_FIELDS);
         }};
 
-        executeAndVerifyCollectorCalls(false, -1);
+        executeAndVerifyCollectorCalls(true, 0, null);
     }
 
-    private void executeAndVerifyCollectorCalls(final boolean isSuccess, final int rule2NumTimes) {
+    private void executeAndVerifyCollectorCalls(final boolean isSuccess, final int rule2NumTimes, final Values expectedValues) {
         rulesBolt.execute(mockTuple);
 
         if(isSuccess) {
@@ -126,9 +127,7 @@ public class RulesBoltTest extends RulesTopologyTest {
                 mockOutputCollector.emit(((RuleRuntimeStorm)ruleProcessorRuntime.getRulesRuntime().get(1)).getStreamId(),
                         mockTuple, actualValues = withCapture()); times = rule2NumTimes;    // rule 2 triggers rule2NumTimes
 
-                Assert.assertEquals(IOTAS_EVENT_VALUES, actualValues);
-                Assert.assertNotEquals(IOTAS_EVENT_VALUES, IOTAS_EVENT_INVALID_FIELDS_VALUES);
-                Assert.assertNotEquals(IOTAS_EVENT_INVALID_FIELDS_VALUES, actualValues);
+                Assert.assertEquals(expectedValues, actualValues);
                 mockOutputCollector.ack(mockTuple); times = 1;
             }};
         } else {

@@ -24,7 +24,6 @@ import groovy.lang.GroovyShell;
 import java.io.Serializable;
 
 public class GroovyShellScriptEngine implements ScriptEngine<groovy.lang.Script>, Serializable {
-
     private Expression expression;
 
     public GroovyShellScriptEngine(Expression expression) {
