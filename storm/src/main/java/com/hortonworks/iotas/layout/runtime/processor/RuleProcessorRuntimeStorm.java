@@ -25,8 +25,10 @@ import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
 
 
+/**
+ *  Represents a runtime rules processor in the {@code Storm} streaming framework
+ */
 public class RuleProcessorRuntimeStorm extends RuleProcessorRuntime<Tuple, OutputCollector> {
-
     public RuleProcessorRuntimeStorm(RuleProcessorRuntimeDependenciesBuilder<Tuple, OutputCollector> builder) {
         super(builder);
     }

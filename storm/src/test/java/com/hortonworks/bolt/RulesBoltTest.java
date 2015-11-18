@@ -51,32 +51,30 @@ public class RulesBoltTest extends RulesTopologyTest {
     protected static final Logger log = LoggerFactory.getLogger(RulesBoltTest.class);
 
     // JUnit constructs for printing which tests are being run
-    public
-    @Rule
-    TestName testName = new TestName();
-    public
-    @Rule
-    TestWatcher watchman = new TestWatcher() {
+    public @Rule TestName testName = new TestName();
+    public @Rule TestWatcher watchman = new TestWatcher() {
         @Override
         public void starting(final Description method) {
             log.debug("RUNNING TEST [{}] ", method.getMethodName());
         }
     };
 
-    private static final IotasEvent IOTAS_EVENT = new IotasEventImpl(new HashMap<String, Object>() {{
+    // Only one rule triggers with these values for temperature, humidity
+    private static final IotasEvent IOTAS_EVENT_MATCHES_TUPLE = new IotasEventImpl(new HashMap<String, Object>() {{
         put(RuleProcessorMockBuilder.TEMPERATURE, 101);
         put(RuleProcessorMockBuilder.HUMIDITY, 51);
     }}, "dataSrcId_1", "1");
 
-    private static final Values IOTAS_EVENT_VALUES = new Values(IOTAS_EVENT);
+    private static final Values IOTAS_EVENT_MATCHES_TUPLE_VALUES = new Values(IOTAS_EVENT_MATCHES_TUPLE);
 
-    private static final IotasEvent IOTAS_EVENT_INVALID_FIELDS = new IotasEventImpl(new HashMap<String, Object>() {{
+    private static final IotasEvent IOTAS_EVENT_NO_MATCH_TUPLE = new IotasEventImpl(new HashMap<String, Object>() {{
         put("non_existent_field1", 101);
         put("non_existent_field2", 51);
         put("non_existent_field3", 23);
     }}, "dataSrcId_2", "2");
 
-    private static final IotasEvent IOTAS_EVENT_GOOD_AND_INVALID_FIELDS = new IotasEventImpl(new HashMap<String, Object>() {{
+    // Only one rule triggers with these values for temperature, humidity. Other fields are disregarded
+    private static final IotasEvent IOTAS_EVENT_MATCH_AND_NO_MATCH_TUPLE = new IotasEventImpl(new HashMap<String, Object>() {{
         put("non_existent_field1", 101);
         put(RuleProcessorMockBuilder.TEMPERATURE, 101);
         put("non_existent_field2", 51);
@@ -84,17 +82,11 @@ public class RulesBoltTest extends RulesTopologyTest {
         put("non_existent_field3", 23);
     }}, "dataSrcId_2", "3");
 
-    private static final Values IOTAS_EVENT_GOOD_AND_INVALID_FIELDS_VALUES = new Values(IOTAS_EVENT_GOOD_AND_INVALID_FIELDS);
+    private static final Values IOTAS_EVENT_MATCH_AND_NO_MATCH_TUPLE_VALUES = new Values(IOTAS_EVENT_MATCH_AND_NO_MATCH_TUPLE);
 
-    private
-    @Tested
-    RulesBolt rulesBolt;
-    private
-    @Injectable
-    OutputCollector mockOutputCollector;
-    private
-    @Injectable
-    Tuple mockTuple;
+    private @Tested RulesBolt rulesBolt;
+    private @Injectable OutputCollector mockOutputCollector;
+    private @Injectable Tuple mockTuple;
     private RuleProcessorRuntimeStorm ruleProcessorRuntime;
 
     @Before
@@ -104,56 +96,58 @@ public class RulesBoltTest extends RulesTopologyTest {
     }
 
     @Test
-    public void test_tupleAllFieldsValid_oneRuleEvaluates_acks() throws Exception {
+    public void test_allFieldsMatchTuple_oneRuleEvaluates_acks() throws Exception {
         new Expectations() {{
             mockTuple.getValues();
-            result = IOTAS_EVENT_VALUES;
+            result = IOTAS_EVENT_MATCHES_TUPLE_VALUES;
+
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT);
-            returns(IOTAS_EVENT);
+            returns(IOTAS_EVENT_MATCHES_TUPLE);
         }};
 
-        executeAndVerifyCollectorAcks(1, IOTAS_EVENT_VALUES);
+        executeAndVerifyCollectorCallsAcks(1, IOTAS_EVENT_MATCHES_TUPLE_VALUES);
     }
 
     @Test
-    public void test_tupleSomeFieldsValid_oneRuleEvaluates_acks() throws Exception {
+    public void test_someFieldsMatchTuple_oneRuleEvaluates_acks() throws Exception {
         new Expectations() {{
             mockTuple.getValues();
-            result = IOTAS_EVENT_GOOD_AND_INVALID_FIELDS_VALUES;
+            result = IOTAS_EVENT_MATCH_AND_NO_MATCH_TUPLE_VALUES;
+
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT);
-            returns(IOTAS_EVENT_GOOD_AND_INVALID_FIELDS);
+            returns(IOTAS_EVENT_MATCH_AND_NO_MATCH_TUPLE);
         }};
 
-        executeAndVerifyCollectorAcks(1, IOTAS_EVENT_GOOD_AND_INVALID_FIELDS_VALUES);
+        executeAndVerifyCollectorCallsAcks(1, IOTAS_EVENT_MATCH_AND_NO_MATCH_TUPLE_VALUES);
     }
 
     @Test
-    public void test_tupleInvalidFields_ruleDoesNotEvaluate_acks() throws Exception {
+    public void test_noFieldsMatchTuple_ruleDoesNotEvaluate_fails() throws Exception {
+//        test_allFieldsMatchTuple_oneRuleEvaluates_acks();
+        new Expectations() {{
+            mockTuple.getValueByField(IotasEvent.IOTAS_EVENT);
+            returns(IOTAS_EVENT_NO_MATCH_TUPLE);
+        }};
+
+        executeAndVerifyCollectorCallsAcks(0, null);
+    }
+
+    @Test
+    public void test_nullIotasEvent_ruleDoesNotEvaluate_acks() throws Exception {
         new Expectations() {{
             mockTuple.getValueByField(IotasEvent.IOTAS_EVENT);
             returns(null);
         }};
 
-        executeAndVerifyCollectorAcks(0, null);
+        executeAndVerifyCollectorCallsAcks(0, null);
     }
 
-    @Test
-    public void test_tupleInvalidFields_ruleDoesNotEvaluate_fails() throws Exception {
-//        test_tupleAllFieldsValid_oneRuleEvaluates_acks();
-        new Expectations() {{
-            mockTuple.getValueByField(IotasEvent.IOTAS_EVENT);
-            returns(IOTAS_EVENT_INVALID_FIELDS);
-        }};
-
-        executeAndVerifyCollectorAcks(0, null);
-    }
-
-    private void executeAndVerifyCollectorAcks(final int rule2NumTimes, final Values expectedValues) {
+    private void executeAndVerifyCollectorCallsAcks(final int rule2NumTimes, final Values expectedValues) {
         rulesBolt.execute(mockTuple);
 
         new VerificationsInOrder() {{
             mockOutputCollector.emit(((RuleRuntimeStorm) ruleProcessorRuntime.getRulesRuntime().get(0)).getStreamId(),
-                    mockTuple, IOTAS_EVENT_VALUES);
+                    mockTuple, IOTAS_EVENT_MATCHES_TUPLE_VALUES);
             times = 0;  // rule 1 does not trigger
 
             Values actualValues;

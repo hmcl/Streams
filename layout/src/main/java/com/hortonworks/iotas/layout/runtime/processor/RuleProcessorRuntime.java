@@ -29,7 +29,7 @@ import java.util.List;
 
 
 /**
- * Object representing a runtime rules processor
+ * Represents a runtime rules processor
  * @param <I> Type of runtime input to this rule, for example {@code Tuple}
  * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
  */
@@ -54,10 +54,7 @@ public class RuleProcessorRuntime<I, E> implements Serializable {
 
     @Override
     public String toString() {
-        return "RuleProcessorRuntime{" +
-                "rulesProcessor=" + rulesProcessor +
-                ", rulesRuntime=" + rulesRuntime +
-                '}';
+        return "RuleProcessorRuntime{" + rulesProcessor + ", " + rulesRuntime + '}';
     }
 }
 

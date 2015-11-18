@@ -82,15 +82,15 @@ public class GroovyTest {
         boolean x = binding.hasVariable("x");
 
 //        script.setBinding(null);
-        script.setBinding(new Binding());
+//        script.setBinding(new Binding());
 
 
         /*Binding binding1 = new Binding();
         binding1.setProperty("x",55);
         binding1.setProperty("y",33);
         script.setBinding(binding1);*/
-        Object result1 = script.run();
-        System.out.printf("evaluating [%s] with (x,y)=(%s,%s) => %s\n", s, script.getBinding().getProperty("x"), script.getBinding().getProperty("y"), result);
+//        Object result1 = script.run();
+//        System.out.printf("evaluating [%s] with (x,y)=(%s,%s) => %s\n", s, script.getBinding().getProperty("x"), script.getBinding().getProperty("y"), result);
 
         binding.setProperty("y",0);
         result = script.run();
@@ -101,8 +101,8 @@ public class GroovyTest {
         binding.setProperty("x1",-1);
         binding.setProperty("y1",-3);
         result = script.run();
-        System.out.printf("evaluating [%s] with (x,y)=(%s,%s) => %s\n", s, binding.getProperty("x"), binding.getProperty("y"), result);
-        System.out.printf("evaluating [%s] with (x,y,z)=(%s,%s,%s) => %s\n", s, binding.getProperty("x"), binding.getProperty("y"), binding.getProperty("z"), result);
+//        System.out.printf("evaluating [%s] with (x,y)=(%s,%s) => %s\n", s, binding.getProperty("x"), binding.getProperty("y"), result);
+//        System.out.printf("evaluating [%s] with (x,y,z)=(%s,%s,%s) => %s\n", s, binding.getProperty("x"), binding.getProperty("y"), binding.getProperty("z"), result);
        /*
 
 

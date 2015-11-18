@@ -29,6 +29,7 @@ import javax.script.ScriptException;
 import java.io.Serializable;
 
 /**
+ * Represents a rule runtime
  * @param <I> Type of runtime input to this rule, for example {@code Tuple}
  * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
  */
@@ -62,9 +63,6 @@ public abstract class RuleRuntime<I, E> implements Serializable {
 
     @Override
     public String toString() {
-        return "RuleRuntime{" +
-                "rule=" + rule +
-                ", script=" + script +
-                '}';
+        return "RuleRuntime{" + rule + ", " + script + '}';
     }
 }

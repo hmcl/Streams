@@ -52,9 +52,6 @@ public abstract class Expression {
 
     @Override
     public String toString() {
-        return "Expression{" +
-                "condition=" + condition +
-                ", expression='" + expression + '\'' +
-                '}';
+        return "Expression{"+ condition + ", " + expression + '}';
     }
 }

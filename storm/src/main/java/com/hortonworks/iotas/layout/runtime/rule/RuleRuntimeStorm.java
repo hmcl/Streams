@@ -28,6 +28,9 @@ import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Represents a rule runtime in the {@code Storm} streaming framework
+ */
 public class RuleRuntimeStorm extends RuleRuntime<Tuple, OutputCollector> {
     private static final Logger log = LoggerFactory.getLogger(RuleRuntimeStorm.class);
 

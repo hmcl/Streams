@@ -54,7 +54,7 @@ public class RulesBolt extends BaseRichBolt {
             final Object iotasEvent = input.getValueByField(IotasEvent.IOTAS_EVENT);
 
             if (iotasEvent instanceof IotasEvent) {
-                log.debug("++++++++ Executing tuple [{}] with IotasEvent [{}]", input, iotasEvent);
+                log.debug("++++++++ Executing tuple [{}] which contains IotasEvent [{}]", input, iotasEvent);
 
                 for (RuleRuntime<Tuple, OutputCollector> rule : ruleProcessorRuntime.getRulesRuntime()) {
                     if (rule.evaluate((IotasEvent) iotasEvent)) {
@@ -62,7 +62,8 @@ public class RulesBolt extends BaseRichBolt {
                     }
                 }
             } else {
-                log.debug("Invalid tuple received. Tuple [{}]. IotasEvent [{}]. Tuple disregarded and rules not evaluated", input, iotasEvent);
+                log.debug("Invalid tuple received. Tuple disregarded and rules not evaluated.\n\tTuple [{}]." +
+                        "\n\tIotasEvent [{}].", input, iotasEvent);
             }
             collector.ack(input);
         } catch (Exception e) {

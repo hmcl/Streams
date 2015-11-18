@@ -43,10 +43,12 @@ public class GroovyScript extends Script<IotasEvent, groovy.lang.Script> {
         try {
             if (iotasEvent != null) {
                 final Map<String, Object> fieldsToValues = iotasEvent.getFieldsAndValues();
-                scriptEngine.setBinding(new Binding(fieldsToValues));
-                log.debug("Set script binding to [{}]", fieldsToValues);
-                evaluates = (boolean) scriptEngine.run();
-                log.debug("Expression [{}] evaluated to [{}]", expression, evaluates);
+                if (fieldsToValues != null) {
+                    scriptEngine.setBinding(new Binding(fieldsToValues));
+                    log.debug("Set script binding to [{}]", fieldsToValues);
+                    evaluates = (boolean) scriptEngine.run();
+                    log.debug("Expression [{}] evaluated to [{}]", expression, evaluates);
+                }
             }
         } catch (groovy.lang.MissingPropertyException e) {
             // Occurs when not all the properties required for evaluating the script are set. This can happen for example
