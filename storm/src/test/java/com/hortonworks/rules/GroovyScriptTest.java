@@ -18,26 +18,15 @@
 
 package com.hortonworks.rules;
 
-import com.hortonworks.iotas.common.IotasEventImpl;
-import com.hortonworks.iotas.layout.design.rule.condition.Condition;
-import com.hortonworks.iotas.layout.runtime.rule.condition.expression.Expression;
-import com.hortonworks.iotas.layout.runtime.rule.condition.script.GroovyScript;
-import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngine;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
-import mockit.Tested;
 import mockit.integration.junit4.JMockit;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.HashMap;
-
 @RunWith(JMockit.class)
 public class GroovyScriptTest {
-    private static final IotasEventImpl IOTAS_EVENT = new IotasEventImpl(new HashMap<String, Object>() {{
+    @Test
+    public void emptyTest() throws Exception { }
+    /*private static final IotasEventImpl IOTAS_EVENT = new IotasEventImpl(new HashMap<String, Object>() {{
         put("F1", 3);
         put("F2", 4);
     }}, "dataSrcId_1", "id_1");
@@ -79,7 +68,7 @@ public class GroovyScriptTest {
             System.out.println("static block");
         }
 
-    }
+    }*/
 
 
 
