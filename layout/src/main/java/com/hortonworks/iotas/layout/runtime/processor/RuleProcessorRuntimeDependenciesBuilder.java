@@ -18,13 +18,18 @@
 
 package com.hortonworks.iotas.layout.runtime.processor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
+import com.hortonworks.iotas.layout.design.component.RulesProcessorBuilder;
+import com.hortonworks.iotas.layout.design.component.RulesProcessorJsonBuilder;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
+import org.apache.hadoop.mapred.OutputCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +43,8 @@ public class RuleProcessorRuntimeDependenciesBuilder<I, E> {
     private final RulesProcessor rulesProcessor;
     private final RuleRuntimeBuilder<I,E> ruleRuntimeBuilder;
 
-    public RuleProcessorRuntimeDependenciesBuilder(RulesProcessor rulesProcessor, RuleRuntimeBuilder<I,E> ruleRuntimeBuilder) {
-        this.rulesProcessor = rulesProcessor;
+    public RuleProcessorRuntimeDependenciesBuilder(RulesProcessorBuilder rulesProcessorBuilder, RuleRuntimeBuilder<I,E> ruleRuntimeBuilder) {
+        this.rulesProcessor = rulesProcessorBuilder.getRulesProcessor();
         this.ruleRuntimeBuilder = ruleRuntimeBuilder;
     }
 
