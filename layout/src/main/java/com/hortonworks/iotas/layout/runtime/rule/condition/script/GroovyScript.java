@@ -54,7 +54,8 @@ public class GroovyScript extends Script<IotasEvent, javax.script.ScriptEngine> 
             if (e.getCause() != null && e.getCause().getCause() instanceof groovy.lang.MissingPropertyException) {
                 // Occurs when not all the properties required for evaluating the script are set. This can happen for example
                 // when receiving an IotasEvent that does not have all the fields required to evaluate the expression
-                log.debug("Missing property required to evaluate expression.", e);
+                log.debug("Missing property required to evaluate expression. {}", e.getCause().getMessage());
+                log.trace("",e);
                 evaluates = false;
             } else {
                 throw e;
