@@ -38,7 +38,8 @@ public class GroovyScript extends Script<IotasEvent, javax.script.ScriptEngine> 
 
     @Override
     public boolean evaluate(IotasEvent iotasEvent) throws ScriptException {
-        log.debug("Evaluating [{}] with [{}]", expression, iotasEvent);
+        final String expressionStr = expression.asString();
+        log.debug("Evaluating [{}] with [{}]", expressionStr, iotasEvent);
         boolean evaluates = false;
         try {
             if (iotasEvent != null) {
@@ -46,8 +47,7 @@ public class GroovyScript extends Script<IotasEvent, javax.script.ScriptEngine> 
                 if (fieldsToValues != null) {
                     getEngineScopeBindings().putAll(fieldsToValues);
                     log.debug("Set script binding to [{}]", fieldsToValues);
-                    evaluates = (boolean) scriptEngine.eval(expression);
-                    log.debug("Expression [{}] evaluated to [{}]", expression, evaluates);
+                    evaluates = (boolean) scriptEngine.eval(expressionStr);
                 }
             }
         } catch (ScriptException e) {
@@ -63,6 +63,7 @@ public class GroovyScript extends Script<IotasEvent, javax.script.ScriptEngine> 
         } finally {
             clearBindings();
         }
+        log.debug("Expression [{}] evaluated to [{}]", expressionStr, evaluates);
         return evaluates;
     }
 

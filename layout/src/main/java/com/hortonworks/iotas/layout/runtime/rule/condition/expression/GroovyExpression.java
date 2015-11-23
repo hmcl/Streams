@@ -28,7 +28,7 @@ public class GroovyExpression extends Expression {
     }
 
     @Override
-    public String getExpression() {
+    public String asString() {
         if (expression == null) {           // Builds and caches the expression string the first time it is called
             final StringBuilder builder = new StringBuilder("");
             for (Condition.ConditionElement element : condition.getConditionElements()) {

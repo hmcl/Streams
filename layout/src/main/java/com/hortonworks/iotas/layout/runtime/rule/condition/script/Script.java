@@ -36,14 +36,14 @@ import java.io.Serializable;
 public abstract class Script<I, E> implements Serializable {
     protected static final Logger log = LoggerFactory.getLogger(Script.class);
 
-    protected final String expression;
+    protected final Expression expression;
     protected final E scriptEngine;
 
     /**
      * Sets the {@link Expression} to be evaluated by the {@link ScriptEngine}
      */
     public Script(Expression expression, ScriptEngine<E> scriptEngine) {
-        this.expression = expression.getExpression();
+        this.expression = expression;
         this.scriptEngine = scriptEngine.getEngine();
     }
 
@@ -51,6 +51,6 @@ public abstract class Script<I, E> implements Serializable {
 
     @Override
     public String toString() {
-        return "Script{" + expression + ", scriptEngine=" + scriptEngine + '}';
+        return "Script{" + expression.asString() + ", scriptEngine=" + scriptEngine + '}';
     }
 }

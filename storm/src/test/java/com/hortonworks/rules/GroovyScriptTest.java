@@ -63,8 +63,8 @@ public class GroovyScriptTest {
         }
 
         {
-            expression.getExpression(); result = "F1 > 1 && F2 > 2";    // F1 - Field1.getName()
-//            expression.getExpression(); result = resultStr;    // F1 - Field1.getName()
+            expression.asString(); result = "F1 > 1 && F2 > 2";    // F1 - Field1.getName()
+//            expression.asString(); result = resultStr;    // F1 - Field1.getName()
             System.out.println("static block");
         }
 

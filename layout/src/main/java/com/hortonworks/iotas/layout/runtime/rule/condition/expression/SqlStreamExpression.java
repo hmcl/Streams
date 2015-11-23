@@ -29,7 +29,7 @@ public class SqlStreamExpression extends Expression {
     }
 
     @Override
-    public String getExpression() {
+    public String asString() {
         final StringBuilder builder = new StringBuilder("");
         for (Condition.ConditionElement element : condition.getConditionElements()) {
             builder.append(getType(element.getFirstOperand()))              // Integer
