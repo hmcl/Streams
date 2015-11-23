@@ -91,7 +91,7 @@ public class RulesBoltTest extends RulesTopologyTest {
 
     @Before
     public void setup() throws Exception {
-        ruleProcessorRuntime = createRulesProcessorRuntime();
+        ruleProcessorRuntime = createRulesProcessorRuntime(createRuleRuntimeBuilder());
         rulesBolt = (RulesBolt) createRulesBolt(ruleProcessorRuntime);
     }
 

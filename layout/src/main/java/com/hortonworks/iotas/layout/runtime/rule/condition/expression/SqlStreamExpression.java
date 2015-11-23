@@ -23,8 +23,8 @@ import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 import java.util.Arrays;
 
 public class SqlStreamExpression extends Expression {
-    public static final String RULE_SCHEMA = "rule_schema";
-    public static final String RULE_TABLE = "rule_table";
+    public static final String RULE_SCHEMA = "ruleschema";  // _ underscores not supported by Sql Streaming framework
+    public static final String RULE_TABLE = "ruletable";
 
     public SqlStreamExpression(Condition condition) {
         super(condition);
@@ -58,14 +58,14 @@ public class SqlStreamExpression extends Expression {
 
     // "SELECT F1, F2, F3 FROM RT WHERE F1 < 2 AND F2 < 3 AND F3 < 4"     // RT - Rules Table
     public String select(String tableName) {
-        return "SELECT " + buildSelectExpression() + "FROM " + tableName.toUpperCase() + " WHERE " + asString();
+        return "SELECT " + buildSelectExpression() + "FROM " + tableName.toUpperCase() + " WHERE " + asString().toUpperCase();
     }
 
     // F1 INTEGER or F2 STRING or ...
     private String buildCreateDefinition() {
         final StringBuilder builder = new StringBuilder("");
         for (Condition.ConditionElement element : condition.getConditionElements()) {
-            builder.append(getName(element.getFirstOperand())).append(" ")
+            builder.append(getName(element.getFirstOperand()))
                     .append(getType(element.getFirstOperand())).append(", ");
         }
         if (builder.length() >= 2) {
