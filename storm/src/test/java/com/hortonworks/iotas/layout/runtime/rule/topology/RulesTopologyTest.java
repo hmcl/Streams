@@ -32,9 +32,9 @@ import com.hortonworks.bolt.rules.RulesBolt;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeDependenciesBuilder;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeStorm;
-import com.hortonworks.iotas.layout.runtime.rule.GroovyRuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
+import com.hortonworks.iotas.layout.runtime.rule.SqlStreamRuleRuntimeBuilder;
 
 public class RulesTopologyTest {
     protected static final String RULES_TEST_SPOUT = "RulesTestSpout";
@@ -59,19 +59,25 @@ public class RulesTopologyTest {
     protected StormTopology createTopology() {
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout(RULES_TEST_SPOUT, new RulesTestSpout());
-        builder.setBolt(RULES_BOLT, createRulesBolt(createRulesProcessorRuntime())).shuffleGrouping(RULES_TEST_SPOUT);
+        builder.setBolt(RULES_BOLT, createRulesBolt(createRulesProcessorRuntime(createRuleRuntimeBuilder()))).shuffleGrouping(RULES_TEST_SPOUT);
         builder.setBolt(RULES_TEST_SINK_BOLT_1, new RulesTestSinkBolt()).shuffleGrouping(RULES_BOLT, getStream(0));
         builder.setBolt(RULES_TEST_SINK_BOLT_2, new RulesTestSinkBolt()).shuffleGrouping(RULES_BOLT, getStream(1));
         return builder.createTopology();
+    }
+
+    protected RuleRuntimeBuilder<Tuple, OutputCollector> createRuleRuntimeBuilder() {
+//        return new GroovyRuleRuntimeBuilder();
+        return new SqlStreamRuleRuntimeBuilder();
     }
 
     protected IRichBolt createRulesBolt(RuleProcessorRuntimeStorm rulesProcessorRuntime) {
         return new RulesBolt(rulesProcessorRuntime);
     }
 
-    protected RuleProcessorRuntimeStorm createRulesProcessorRuntime() {
+
+    protected RuleProcessorRuntimeStorm createRulesProcessorRuntime(RuleRuntimeBuilder<Tuple, OutputCollector> ruleRuntimeBuilder) {
         RulesProcessor rulesProcessor = new RuleProcessorMockBuilder(1,2,2).build();
-        RuleRuntimeBuilder<Tuple, OutputCollector> ruleRuntimeBuilder = new GroovyRuleRuntimeBuilder();
+
         RuleProcessorRuntimeDependenciesBuilder<Tuple, OutputCollector> dependenciesBuilder =
                 new RuleProcessorRuntimeDependenciesBuilder<>(rulesProcessor, ruleRuntimeBuilder);
         ruleProcessorRuntime = new RuleProcessorRuntimeStorm(dependenciesBuilder);
