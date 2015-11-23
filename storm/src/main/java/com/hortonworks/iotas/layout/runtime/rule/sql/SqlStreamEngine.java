@@ -119,7 +119,7 @@ public class SqlStreamEngine implements ScriptEngine<SqlStreamEngine> {
     private class RulesDataSourcesProvider implements DataSourcesProvider {
         @Override
         public String scheme() {
-            return "RBTS";
+            return SqlStreamExpression.RULE_SCHEMA;
         }
 
         @Override

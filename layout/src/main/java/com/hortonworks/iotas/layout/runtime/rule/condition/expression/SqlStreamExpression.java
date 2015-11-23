@@ -23,8 +23,8 @@ import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 import java.util.Arrays;
 
 public class SqlStreamExpression extends Expression {
-    public static final String RULE_SCHEMA = "ruleschema";  // _ underscores not supported by Sql Streaming framework
-    public static final String RULE_TABLE = "ruletable";
+    public static final String RULE_SCHEMA = "RULESCHEMA";  // _ underscores not supported by Sql Streaming framework
+    public static final String RULE_TABLE = "RULETABLE";
 
     public SqlStreamExpression(Condition condition) {
         super(condition);
@@ -52,13 +52,13 @@ public class SqlStreamExpression extends Expression {
     // "CREATE EXTERNAL TABLE RT (F1 INTEGER, F2 INTEGER, F3 INTEGER) LOCATION 'RTS:///RT'"
     // RTS - Rules Table Schema
     public String createTable(String schemaName, String tableName) {
-        return "CREATE EXTERNAL TABLE " + tableName.toUpperCase() + " (" + buildCreateDefinition() + ") " +
-                "LOCATION '" + schemaName.toUpperCase() + ":///" + tableName.toUpperCase() +"'";
+        return "CREATE EXTERNAL TABLE " + tableName + " (" + buildCreateDefinition() + ") " +
+                "LOCATION '" + schemaName + ":///" + tableName +"'";
     }
 
     // "SELECT F1, F2, F3 FROM RT WHERE F1 < 2 AND F2 < 3 AND F3 < 4"     // RT - Rules Table
     public String select(String tableName) {
-        return "SELECT " + buildSelectExpression() + "FROM " + tableName.toUpperCase() + " WHERE " + asString().toUpperCase();
+        return "SELECT " + buildSelectExpression() + "FROM " + tableName + " WHERE " + asString().toUpperCase();
     }
 
     // F1 INTEGER or F2 STRING or ...
