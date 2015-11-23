@@ -24,7 +24,6 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngine;
 import org.apache.storm.sql.DataSourcesProvider;
-import org.apache.storm.sql.DataSourcesRegistry;
 import org.apache.storm.sql.StormSql;
 import org.apache.storm.sql.runtime.ChannelContext;
 import org.apache.storm.sql.runtime.ChannelHandler;
@@ -33,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,10 +58,18 @@ public class SqlStreamEngine implements ScriptEngine<SqlStreamEngine> {
     // so for now this is a reasonable solution
     public SqlStreamEngine() {
         // This sequence of steps cannot be changed
-        this.dataSource = this.new RulesDataSource();          // Step 1 && Step 2 - RulesDataSource Sets Channel Context
-        this.channelHandler = this.new RulesChannelHandler();
-        this.dataSourceProvider = this.new RulesDataSourcesProvider();
-        compileQuery();
+        this.dataSource = this.new RulesDataSource();                   // Step 1 && Step 2 - RulesDataSource Sets Channel Context
+        this.channelHandler = this.new RulesChannelHandler();           // Step 3
+        this.dataSourceProvider = this.new RulesDataSourcesProvider();  // Step 4
+    }
+
+    public void compileQuery(List<String> statements) {
+        try {
+            StormSql stormSql = StormSql.construct();
+            stormSql.execute(statements, channelHandler);
+        } catch (Exception e) {
+            throw new RuntimeException("Error compiling query. ", e);
+        }
     }
 
     public boolean eval(Values input) {
@@ -82,20 +88,6 @@ public class SqlStreamEngine implements ScriptEngine<SqlStreamEngine> {
 
     private Values createValues(Tuple input) {
         return (Values) input.getValues();
-    }
-
-    private void compileQuery() {
-        try {
-            //TODO: Change API to register data source provider
-            DataSourcesRegistry.providerMap().put("RBTS", dataSourceProvider);                 // RBTS - Rules Bolt Table Schema
-            List<String> stmnt = new ArrayList<>();
-            stmnt.add("CREATE EXTERNAL TABLE RBT (F1 INTEGER, F2 INT, F3 INT) LOCATION 'RBTS:///RBT'");
-            stmnt.add("SELECT F1,F2,F3 FROM RBT WHERE F1 < 2 AND F2 < 3 AND F3 < 4");
-            StormSql stormSql = StormSql.construct();
-            stormSql.execute(stmnt, channelHandler);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed preparing query", e);
-        }
     }
 
     private class RulesDataSource implements DataSource {

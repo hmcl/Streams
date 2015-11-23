@@ -23,6 +23,8 @@ import com.hortonworks.iotas.layout.design.rule.condition.Condition;
 import java.util.Arrays;
 
 public class SqlStreamExpression extends Expression {
+    public static final String RULE_SCHEMA = "rule_schema";
+    public static final String RULE_TABLE = "rule_table";
 
     public SqlStreamExpression(Condition condition) {
         super(condition);
@@ -32,10 +34,9 @@ public class SqlStreamExpression extends Expression {
     public String asString() {
         final StringBuilder builder = new StringBuilder("");
         for (Condition.ConditionElement element : condition.getConditionElements()) {
-            builder.append(getType(element.getFirstOperand()))              // Integer
-                    .append(getName(element.getFirstOperand()))             // x
-                    .append(getOperation(element.getOperation()))           // =, !=, >, <, ...
-                    .append(element.getSecondOperand());                    // 5 - it is a constant
+            builder.append(getName(element.getFirstOperand()))          // x
+                .append(getOperation(element.getOperation()))           // =, !=, >, <, ...
+                .append(element.getSecondOperand());                    // 5 - it is a constant
 
             if (element.getLogicalOperator() != null) {
                 builder.append(" ");
@@ -43,11 +44,46 @@ public class SqlStreamExpression extends Expression {
                 builder.append(" ");
             }
         }
-        final String expression = builder.toString();                              // Integer x = 5 [AND or OR]
+        final String expression = builder.toString();                              // x = 5 [AND or OR]
         log.debug("Built expression [{}] for condition [{}]", expression, condition);
         return expression;
     }
 
+    // "CREATE EXTERNAL TABLE RT (F1 INTEGER, F2 INTEGER, F3 INTEGER) LOCATION 'RTS:///RT'"
+    // RTS - Rules Table Schema
+    public String createTable(String schemaName, String tableName) {
+        return "CREATE EXTERNAL TABLE " + tableName.toUpperCase() + " (" + buildCreateDefinition() + ") " +
+                "LOCATION '" + schemaName.toUpperCase() + ":///" + tableName.toUpperCase() +"'";
+    }
+
+    // "SELECT F1, F2, F3 FROM RT WHERE F1 < 2 AND F2 < 3 AND F3 < 4"     // RT - Rules Table
+    public String select(String tableName) {
+        return "SELECT " + buildSelectExpression() + "FROM " + tableName.toUpperCase() + " WHERE " + asString();
+    }
+
+    // F1 INTEGER or F2 STRING or ...
+    private String buildCreateDefinition() {
+        final StringBuilder builder = new StringBuilder("");
+        for (Condition.ConditionElement element : condition.getConditionElements()) {
+            builder.append(getName(element.getFirstOperand())).append(" ")
+                    .append(getType(element.getFirstOperand())).append(", ");
+        }
+        if (builder.length() >= 2) {
+            builder.setLength(builder.length() - 2);    // remove the last ", "
+        }
+        return builder.toString().toUpperCase();
+    }
+
+    private String buildSelectExpression() {
+        final StringBuilder builder = new StringBuilder("");
+        for (Condition.ConditionElement element : condition.getConditionElements()) {
+            builder.append(getName(element.getFirstOperand())).append(", ");
+        }
+        if (builder.length() >= 2) {
+            builder.setLength(builder.length() - 2);    // remove the last ", "
+        }
+        return builder.toString().toUpperCase();
+    }
 
     private String getLogicalOperator(Condition.ConditionElement.LogicalOperator logicalOperator) {
         switch(logicalOperator) {

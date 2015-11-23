@@ -21,16 +21,31 @@ package com.hortonworks.iotas.layout.runtime.rule.sql;
 import backtype.storm.tuple.Values;
 import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.Expression;
+import com.hortonworks.iotas.layout.runtime.rule.condition.expression.SqlStreamExpression;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngine;
 
 import javax.script.ScriptException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.hortonworks.iotas.layout.runtime.rule.condition.expression.SqlStreamExpression.RULE_SCHEMA;
+import static com.hortonworks.iotas.layout.runtime.rule.condition.expression.SqlStreamExpression.RULE_TABLE;
 
 public class SqlStreamScript extends Script<IotasEvent, SqlStreamEngine> {
+
     public SqlStreamScript(Expression expression,
                            ScriptEngine<SqlStreamEngine> scriptEngine) {
         super(expression, scriptEngine);
 
+        ((SqlStreamEngine)scriptEngine).compileQuery(createQuery((SqlStreamExpression) expression));
+    }
+
+    private List<String> createQuery(SqlStreamExpression expression) {
+        final List<String> statements = new ArrayList<>(2);
+        statements.add(expression.createTable(RULE_SCHEMA, RULE_TABLE));
+        statements.add(expression.select(RULE_TABLE));
+        return statements;
     }
 
     @Override
