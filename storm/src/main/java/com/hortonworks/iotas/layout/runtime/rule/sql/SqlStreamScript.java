@@ -16,49 +16,40 @@
  * limitations under the License.
  */
 
-package com.hortonworks.iotas.layout.runtime.rule.condition.script;
+package com.hortonworks.iotas.layout.runtime.rule.sql;
 
+import backtype.storm.tuple.Values;
 import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.Expression;
+import com.hortonworks.iotas.layout.runtime.rule.condition.script.Script;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngine;
 
 import javax.script.ScriptException;
 
-// TODO: Replace Object parameterized type with SQLStream Framework Object
-public class SqlStreamScript extends Script<IotasEvent, SqlStreamScript.Framework> {
-
-    //TODO: Remove and replace with the actual framework object type
-    interface Framework {
-
-    }
-
+public class SqlStreamScript extends Script<IotasEvent, SqlStreamEngine> {
     public SqlStreamScript(Expression expression,
-                           ScriptEngine<Framework> scriptEngine) {
+                           ScriptEngine<SqlStreamEngine> scriptEngine) {
         super(expression, scriptEngine);
+
     }
 
     @Override
     public boolean evaluate(IotasEvent iotasEvent) throws ScriptException {
-//        return framework.eval(input);
-        return false;
+        final String expressionStr = expression.asString();
+        log.debug("Evaluating [{}] with [{}]", expressionStr, iotasEvent);
+        boolean evaluates = false;
+        if (iotasEvent != null) {
+            evaluates = scriptEngine.eval(createValues(iotasEvent));
+        }
+        log.debug("Expression [{}] evaluated to [{}]", expressionStr, evaluates);
+        return evaluates;
     }
-    /*public SqlStreamScript() {
-        Interface:
 
-        *//*public interface Evaluation {
-            bool	filter(Tuple record);
+    private Values createValues(IotasEvent iotasEvent) {
+        final Values values = new Values();
+        for (Object value : iotasEvent.getFieldsAndValues().values()) {
+            values.add(value);
         }
-
-        Webserver side code:
-
-        Compiler comp = new Compiler(); // From Haohui's class
-        Evaluation obj = comp.compile("let x = 1:Integer,...; x + y > 0 and 1 < 2");
-        for (Tuple r : record) {
-            if (obj.filter(r)) {
-                action();
-            }
-        }
-
-        *//*
-    }*/
+        return values;
+    }
 }
