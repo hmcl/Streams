@@ -32,11 +32,6 @@
         </dependency>
         <dependency>
             <groupId>com.hortonworks</groupId>
-            <artifactId>webservice</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.hortonworks</groupId>
             <artifactId>notification-service</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -73,10 +68,6 @@
             <version>${storm.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-hdfs</artifactId>
             <version>${storm.version}</version>
@@ -85,7 +76,7 @@
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-core</artifactId>
             <version>${storm.version}</version>
-            <!--<scope>provided</scope>-->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.storm</groupId>
