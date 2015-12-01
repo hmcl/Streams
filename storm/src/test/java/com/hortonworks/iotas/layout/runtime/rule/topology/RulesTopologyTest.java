@@ -32,9 +32,9 @@ import com.hortonworks.bolt.rules.RulesBolt;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeDependenciesBuilder;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeStorm;
-import com.hortonworks.iotas.layout.runtime.rule.GroovyRuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
+import com.hortonworks.iotas.layout.runtime.rule.SqlStreamRuleRuntimeBuilder;
 
 public class RulesTopologyTest {
     protected static final String RULES_TEST_SPOUT = "RulesTestSpout";
@@ -66,8 +66,8 @@ public class RulesTopologyTest {
     }
 
     protected RuleRuntimeBuilder<Tuple, OutputCollector> createRuleRuntimeBuilder() {
-        return new GroovyRuleRuntimeBuilder();
-//        return new SqlStreamRuleRuntimeBuilder();
+//        return new GroovyRuleRuntimeBuilder();
+        return new SqlStreamRuleRuntimeBuilder();
     }
 
     protected IRichBolt createRulesBolt(RuleProcessorRuntimeStorm rulesProcessorRuntime) {

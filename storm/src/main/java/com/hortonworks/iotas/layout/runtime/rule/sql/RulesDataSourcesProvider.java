@@ -22,12 +22,21 @@ import org.apache.storm.sql.runtime.DataSource;
 import org.apache.storm.sql.runtime.DataSourcesProvider;
 import org.apache.storm.sql.runtime.FieldInfo;
 import org.apache.storm.sql.runtime.ISqlTridentDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.List;
 
 public class RulesDataSourcesProvider implements DataSourcesProvider {
     public static DataSourcesProvider delegate;
+    protected static final Logger log = LoggerFactory.getLogger(RulesDataSourcesProvider.class);
+
+
+    public RulesDataSourcesProvider() {
+        log.info("$$$$$$$$$$$$$$$$$ - RulesDataSourcesProvider - $$$$$$$$$$$$$$$$$$$$$$");
+        System.out.println("$$$$$$$$$$$$$$$$$ - RulesDataSourcesProvider - $$$$$$$$$$$$$$$$$$$$$$");
+    }
 
     @Override
     public String scheme() {

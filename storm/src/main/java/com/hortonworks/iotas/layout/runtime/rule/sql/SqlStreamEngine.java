@@ -62,7 +62,7 @@ public class SqlStreamEngine implements ScriptEngine<SqlStreamEngine> {
         // This sequence of steps cannot be changed
         this.dataSource = this.new RulesDataSource();                   // Step 1 && Step 2 - RulesDataSource Sets Channel Context
         this.channelHandler = this.new RulesChannelHandler();           // Step 3
-        this.dataSourceProvider = this.new RulesDataSourcesProvider();  // Step 4
+        this.dataSourceProvider = this.new RulesDataSourcesProviderInner();  // Step 4
     }
 
     public void compileQuery(List<String> statements) {
@@ -115,7 +115,7 @@ public class SqlStreamEngine implements ScriptEngine<SqlStreamEngine> {
         public void exceptionCaught(Throwable cause) { }
     }
 
-    private class RulesDataSourcesProvider implements DataSourcesProvider {
+    private class RulesDataSourcesProviderInner implements DataSourcesProvider {
         @Override
         public String scheme() {
             return SqlStreamExpression.RULE_SCHEMA;
