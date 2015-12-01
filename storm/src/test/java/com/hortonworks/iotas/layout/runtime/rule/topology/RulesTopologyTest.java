@@ -49,17 +49,22 @@ public class RulesTopologyTest {
         rulesTopologyTest.submitTopology();
     }
     protected void submitTopology() throws AlreadyAliveException, InvalidTopologyException {
-        final Config config = new Config();
-        config.setDebug(true);
+        final Config config = getConfig();
         final String topologyName = "RulesTopologyTest";
         ILocalCluster localCluster = new LocalCluster();
-        localCluster.submitTopology(topologyName, config, createTopology());
+        localCluster.submitTopology(topologyName, config, createTopology(config));
     }
 
-    protected StormTopology createTopology() {
+    protected Config getConfig() {
+        final Config config = new Config();
+        config.setDebug(true);
+        return config;
+    }
+
+    protected StormTopology createTopology(Config config) {
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout(RULES_TEST_SPOUT, new RulesTestSpout());
-        builder.setBolt(RULES_BOLT, createRulesBolt(createRulesProcessorRuntime(createRuleRuntimeBuilder()))).shuffleGrouping(RULES_TEST_SPOUT);
+        builder.setBolt(RULES_BOLT, createRulesBolt(config, createRulesProcessorRuntime(createRuleRuntimeBuilder()))).shuffleGrouping(RULES_TEST_SPOUT);
         builder.setBolt(RULES_TEST_SINK_BOLT_1, new RulesTestSinkBolt()).shuffleGrouping(RULES_BOLT, getStream(0));
         builder.setBolt(RULES_TEST_SINK_BOLT_2, new RulesTestSinkBolt()).shuffleGrouping(RULES_BOLT, getStream(1));
         return builder.createTopology();
@@ -70,8 +75,11 @@ public class RulesTopologyTest {
         return new SqlStreamRuleRuntimeBuilder();
     }
 
-    protected IRichBolt createRulesBolt(RuleProcessorRuntimeStorm rulesProcessorRuntime) {
-        return new RulesBolt(rulesProcessorRuntime);
+    protected IRichBolt createRulesBolt(Config config, RuleProcessorRuntimeStorm rulesProcessorRuntime) {
+        RulesBolt rulesBolt = new RulesBolt(rulesProcessorRuntime.getDeclaredOutputs());
+        config.put(RulesBolt.RULE_PROCESSOR_RUNTIME, rulesProcessorRuntime);
+//        rulesBolt.setRuleProcessorRuntime(rulesProcessorRuntime);
+        return rulesBolt;
     }
 
 

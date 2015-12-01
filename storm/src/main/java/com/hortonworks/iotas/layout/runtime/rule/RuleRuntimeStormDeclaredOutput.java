@@ -18,26 +18,32 @@
 
 package com.hortonworks.iotas.layout.runtime.rule;
 
-import com.hortonworks.iotas.layout.design.rule.Rule;
+import backtype.storm.tuple.Fields;
 
 import java.io.Serializable;
 
-/**
- * @param <I> Type of runtime input to this rule, for example {@code Tuple}
- * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
- */
-public interface RuleRuntimeBuilder<I, E> extends Serializable {
-    /** Creates a new instance of RuleRuntimeBuilder */
-    RuleRuntimeBuilder<I, E> newInstance();
+public class RuleRuntimeStormDeclaredOutput implements Serializable {
+    final String streamId;
+    final Fields field;
 
-    /** Sets the {@link Rule} that is to be used in the subsequent steps of the build  process */
-    void setRule(Rule rule);
+    public RuleRuntimeStormDeclaredOutput(String streamId, Fields field) {
+        this.streamId = streamId;
+        this.field = field;
+    }
 
-    void buildExpression();
+    public String getStreamId() {
+        return streamId;
+    }
 
-    void buildScriptEngine();
+    public Fields getField() {
+        return field;
+    }
 
-    void buildScript();
-
-    RuleRuntime<I, E> buildRuleRuntime();
+    @Override
+    public String toString() {
+        return "RuleRuntimeStormDeclaredOutput{" +
+                "streamId='" + streamId + '\'' +
+                ", field=" + field +
+                '}';
+    }
 }

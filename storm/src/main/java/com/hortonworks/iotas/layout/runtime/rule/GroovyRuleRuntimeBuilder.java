@@ -32,6 +32,11 @@ public class GroovyRuleRuntimeBuilder implements RuleRuntimeBuilder<Tuple, Outpu
     private GroovyScript groovyScript;
 
     @Override
+    public static RuleRuntimeBuilder<Tuple, OutputCollector> newInstance() {
+        return null;
+    }
+
+    @Override
     public void setRule(Rule rule) {
         this.rule = rule;
     }

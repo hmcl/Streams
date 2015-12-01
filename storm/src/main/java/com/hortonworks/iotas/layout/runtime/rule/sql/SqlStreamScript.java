@@ -38,7 +38,7 @@ public class SqlStreamScript extends Script<IotasEvent, SqlStreamEngine> {
                            ScriptEngine<SqlStreamEngine> scriptEngine) {
         super(expression, scriptEngine);
 
-        RulesDataSourcesProvider.delegate = ((SqlStreamEngine)scriptEngine).getDataSourceProvider();
+        RulesDataSourcesProvider.setDelegate(((SqlStreamEngine)scriptEngine).getDataSourceProvider());
 
         ((SqlStreamEngine)scriptEngine).compileQuery(createQuery((SqlStreamExpression) expression));
     }

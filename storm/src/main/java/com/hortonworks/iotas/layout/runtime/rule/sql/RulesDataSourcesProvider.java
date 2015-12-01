@@ -29,13 +29,11 @@ import java.net.URI;
 import java.util.List;
 
 public class RulesDataSourcesProvider implements DataSourcesProvider {
-    public static DataSourcesProvider delegate;
+    private static DataSourcesProvider delegate;
     protected static final Logger log = LoggerFactory.getLogger(RulesDataSourcesProvider.class);
 
-
     public RulesDataSourcesProvider() {
-        log.info("$$$$$$$$$$$$$$$$$ - RulesDataSourcesProvider - $$$$$$$$$$$$$$$$$$$$$$");
-        System.out.println("$$$$$$$$$$$$$$$$$ - RulesDataSourcesProvider - $$$$$$$$$$$$$$$$$$$$$$");
+        log.debug("Created RulesDataSourcesProvider with delegate [{}]", delegate);
     }
 
     @Override
@@ -51,5 +49,10 @@ public class RulesDataSourcesProvider implements DataSourcesProvider {
     @Override
     public ISqlTridentDataSource constructTrident(URI uri, String s, String s1, List<FieldInfo> list) {
         return delegate.constructTrident(uri, s, s1, list);
+    }
+
+    static void setDelegate(DataSourcesProvider delegate) {
+        RulesDataSourcesProvider.delegate = delegate;
+        log.debug("Set DataSourcesProvider delegate to [{}]", delegate.getClass().getName());
     }
 }
