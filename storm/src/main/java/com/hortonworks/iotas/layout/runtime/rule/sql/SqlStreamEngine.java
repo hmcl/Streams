@@ -24,18 +24,18 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import com.hortonworks.iotas.layout.runtime.rule.condition.expression.SqlStreamExpression;
 import com.hortonworks.iotas.layout.runtime.rule.condition.script.engine.ScriptEngine;
-import org.apache.storm.sql.DataSourcesProvider;
-import org.apache.storm.sql.DataSourcesRegistry;
 import org.apache.storm.sql.StormSql;
 import org.apache.storm.sql.runtime.ChannelContext;
 import org.apache.storm.sql.runtime.ChannelHandler;
 import org.apache.storm.sql.runtime.DataSource;
+import org.apache.storm.sql.runtime.DataSourcesProvider;
+import org.apache.storm.sql.runtime.FieldInfo;
+import org.apache.storm.sql.runtime.ISqlTridentDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 //TODO
 public class SqlStreamEngine implements ScriptEngine<SqlStreamEngine> {
@@ -63,7 +63,6 @@ public class SqlStreamEngine implements ScriptEngine<SqlStreamEngine> {
         this.dataSource = this.new RulesDataSource();                   // Step 1 && Step 2 - RulesDataSource Sets Channel Context
         this.channelHandler = this.new RulesChannelHandler();           // Step 3
         this.dataSourceProvider = this.new RulesDataSourcesProvider();  // Step 4
-        DataSourcesRegistry.providerMap().put(SqlStreamExpression.RULE_SCHEMA, dataSourceProvider);
     }
 
     public void compileQuery(List<String> statements) {
@@ -123,10 +122,17 @@ public class SqlStreamEngine implements ScriptEngine<SqlStreamEngine> {
         }
 
         @Override
-        public DataSource construct(URI uri, String inputFormatClass,
-                String outputFormatClass, List<Map.Entry<String, Class<?>>> fields) {
+        public DataSource construct(URI uri, String s, String s1, List<FieldInfo> list) {
             return SqlStreamEngine.this.dataSource;
+        }
+
+        @Override
+        public ISqlTridentDataSource constructTrident(URI uri, String s, String s1, List<FieldInfo> list) {
+            return null;
         }
     }
 
+    public DataSourcesProvider getDataSourceProvider() {
+        return dataSourceProvider;
+    }
 }

@@ -58,7 +58,7 @@ public class SqlStreamExpression extends Expression {
 
     // "SELECT F1, F2, F3 FROM RT WHERE F1 < 2 AND F2 < 3 AND F3 < 4"     // RT - Rules Table
     public String select(String tableName) {
-        return "SELECT " + buildSelectExpression() + "FROM " + tableName + " WHERE " + asString().toUpperCase();
+        return "SELECT STREAM " + buildSelectExpression() + "FROM " + tableName + " WHERE " + asString().toUpperCase();
     }
 
     // F1 INTEGER or F2 STRING or ...

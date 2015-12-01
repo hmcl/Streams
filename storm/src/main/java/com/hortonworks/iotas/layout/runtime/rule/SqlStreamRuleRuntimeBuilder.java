@@ -26,23 +26,33 @@ import com.hortonworks.iotas.layout.runtime.rule.sql.SqlStreamEngine;
 import com.hortonworks.iotas.layout.runtime.rule.sql.SqlStreamScript;
 
 public class SqlStreamRuleRuntimeBuilder implements RuleRuntimeBuilder<Tuple, OutputCollector> {
+    private Rule rule;
     private SqlStreamExpression sqlStreamExpression;
     private SqlStreamEngine sqlStreamEngine;
     private SqlStreamScript sqlStreamScript;
 
-    public void buildExpression(Rule rule) {
+    @Override
+    public void setRule(Rule rule) {
+        this.rule = rule;
+    }
+
+    @Override
+    public void buildExpression() {
         sqlStreamExpression = new SqlStreamExpression(rule.getCondition());
     }
 
+    @Override
     public void buildScriptEngine() {
         sqlStreamEngine = new SqlStreamEngine();
     }
 
+    @Override
     public void buildScript() {
         sqlStreamScript = new SqlStreamScript(sqlStreamExpression, sqlStreamEngine);
     }
 
-    public RuleRuntimeStorm getRuleRuntime(Rule rule) {
+    @Override
+    public RuleRuntimeStorm buildRuleRuntime() {
         return new RuleRuntimeStorm(rule, sqlStreamScript);
     }
 
