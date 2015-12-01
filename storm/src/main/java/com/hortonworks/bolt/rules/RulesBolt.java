@@ -27,6 +27,7 @@ import com.hortonworks.iotas.common.IotasEvent;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeStorm;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntime;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStormDeclaredOutput;
+import com.hortonworks.iotas.layout.runtime.rule.RulesBoltDependenciesFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,27 +39,20 @@ public class RulesBolt extends BaseRichBolt {
 
     private static final Logger log = LoggerFactory.getLogger(RulesBolt.class);
 
-
-    private final List<RuleRuntimeStormDeclaredOutput> declaredOutputs;
+    private final RulesBoltDependenciesFactory dependenciesBuilder;
     private OutputCollector collector;
-    private RuleProcessorRuntimeStorm ruleProcessorRuntime;
-    private boolean ruleProcessorRuntimeSet;
 
+    // transient fields
+    private transient RuleProcessorRuntimeStorm ruleProcessorRuntime;
 
-    public RulesBolt(List<RuleRuntimeStormDeclaredOutput> declaredOutputs) {
-        this.declaredOutputs = declaredOutputs;
+    public RulesBolt(RulesBoltDependenciesFactory boltDependenciesFactory) {
+        this.dependenciesBuilder = boltDependenciesFactory;
     }
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
-        setRuleProcessorRuntime((RuleProcessorRuntimeStorm) stormConf.get(RULE_PROCESSOR_RUNTIME));
-
-        if (!isRuleProcessorRuntimeSet()) {
-            throw new RuntimeException(String.format("RuleProcessorRuntime object not set and is required. " +
-                    "Please set RuleProcessorRuntime using the property [%S]", RULE_PROCESSOR_RUNTIME));
-        }
-
         this.collector = collector;
+        ruleProcessorRuntime = dependenciesBuilder.createRuleProcessorRuntimeStorm();
     }
 
     @Override
@@ -82,25 +76,15 @@ public class RulesBolt extends BaseRichBolt {
         } catch (Exception e) {
             collector.fail(input);
             collector.reportError(e);
-            log.debug("",e);                        // useful to debug unit tests
+            log.debug("", e);                        // useful to debug unit tests
         }
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        List<RuleRuntimeStormDeclaredOutput> declaredOutputs = dependenciesBuilder.createDeclaredOutputs();
         for (RuleRuntimeStormDeclaredOutput declaredOutput : declaredOutputs) {
             declarer.declareStream(declaredOutput.getStreamId(), declaredOutput.getField());
         }
-    }
-
-    private void setRuleProcessorRuntime(RuleProcessorRuntimeStorm ruleProcessorRuntime) {
-        if (ruleProcessorRuntime != null) {
-            this.ruleProcessorRuntime = ruleProcessorRuntime;
-            ruleProcessorRuntimeSet = true;
-        }
-    }
-
-    private boolean isRuleProcessorRuntimeSet() {
-        return ruleProcessorRuntimeSet;
     }
 }

@@ -27,8 +27,6 @@ import java.io.Serializable;
  * @param <E> Type of object required to execute this rule in the underlying streaming framework e.g {@code IOutputCollector}
  */
 public interface RuleRuntimeBuilder<I, E> extends Serializable {
-    /** Creates a new instance of RuleRuntimeBuilder */
-    RuleRuntimeBuilder<I, E> newInstance();
 
     /** Sets the {@link Rule} that is to be used in the subsequent steps of the build  process */
     void setRule(Rule rule);
