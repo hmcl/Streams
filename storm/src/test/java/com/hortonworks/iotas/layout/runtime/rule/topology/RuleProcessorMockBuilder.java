@@ -22,6 +22,7 @@ import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.common.Schema.Field;
 import com.hortonworks.iotas.layout.design.component.Component;
 import com.hortonworks.iotas.layout.design.component.RulesProcessor;
+import com.hortonworks.iotas.layout.design.component.RulesProcessorBuilder;
 import com.hortonworks.iotas.layout.design.component.Sink;
 import com.hortonworks.iotas.layout.design.rule.Rule;
 import com.hortonworks.iotas.layout.design.rule.action.Action;
@@ -32,7 +33,7 @@ import com.hortonworks.iotas.layout.design.rule.condition.Condition.ConditionEle
 import java.util.ArrayList;
 import java.util.List;
 
-public class RuleProcessorMockBuilder {
+public class RuleProcessorMockBuilder implements RulesProcessorBuilder {
     public static final String TEMPERATURE = "temperature";
     public static final String HUMIDITY = "humidity";
     public static final String RULE_PROCESSOR = "rule_processor";
@@ -50,7 +51,8 @@ public class RuleProcessorMockBuilder {
         this.numSinks = numSinksPerRule;
     }
 
-    public RulesProcessor build() {
+    @Override
+    public RulesProcessor getRulesProcessor () {
         RulesProcessor rulesProcessor = new RulesProcessor();
         rulesProcessor.setDeclaredInput(buildDeclaredInputsOutputs());
         rulesProcessor.setId(ruleProcessorId);

@@ -27,7 +27,7 @@ import backtype.storm.generated.StormTopology;
 import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.TopologyBuilder;
 import com.hortonworks.bolt.rules.RulesBolt;
-import com.hortonworks.iotas.layout.design.component.RulesProcessor;
+import com.hortonworks.iotas.layout.design.component.RulesProcessorBuilder;
 import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeStorm;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
 import com.hortonworks.iotas.layout.runtime.rule.RulesBoltDependenciesFactory;
@@ -61,14 +61,14 @@ public class RulesTopologyTest {
     protected StormTopology createTopology() {
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout(RULES_TEST_SPOUT, new RulesTestSpout());
-        builder.setBolt(RULES_BOLT, createRulesBolt(createDependenciesBuilderFactory(createRulesProcessor(), getScriptType()))).shuffleGrouping(RULES_TEST_SPOUT);
+        builder.setBolt(RULES_BOLT, createRulesBolt(createDependenciesBuilderFactory(createRulesProcessorBuilder(), getScriptType()))).shuffleGrouping(RULES_TEST_SPOUT);
         builder.setBolt(RULES_TEST_SINK_BOLT_1, new RulesTestSinkBolt()).shuffleGrouping(RULES_BOLT, getStream(0));
         builder.setBolt(RULES_TEST_SINK_BOLT_2, new RulesTestSinkBolt()).shuffleGrouping(RULES_BOLT, getStream(1));
         return builder.createTopology();
     }
 
-    protected RulesBoltDependenciesFactory createDependenciesBuilderFactory(RulesProcessor rulesProcessor, RulesBoltDependenciesFactory.ScriptType scriptType) {
-        rulesBoltDependenciesFactory = new RulesBoltDependenciesFactory(rulesProcessor, scriptType);
+    protected RulesBoltDependenciesFactory createDependenciesBuilderFactory(RulesProcessorBuilder rulesProcessorBuilder, RulesBoltDependenciesFactory.ScriptType scriptType) {
+        rulesBoltDependenciesFactory = new RulesBoltDependenciesFactory(rulesProcessorBuilder, scriptType);
         return rulesBoltDependenciesFactory;
     }
 
@@ -76,8 +76,8 @@ public class RulesTopologyTest {
         return new RulesBolt(dependenciesBuilder);
     }
 
-    protected RulesProcessor createRulesProcessor() {
-        return new RuleProcessorMockBuilder(1,2,2).build();
+    protected RulesProcessorBuilder createRulesProcessorBuilder() {
+        return new RuleProcessorMockBuilder(1,2,2);
     }
 
     protected String getStream(int i) {

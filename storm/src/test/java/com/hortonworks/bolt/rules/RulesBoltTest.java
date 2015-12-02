@@ -91,7 +91,7 @@ public class RulesBoltTest extends RulesTopologyTest {
 
     @Before
     public void setup() throws Exception {
-        RulesBoltDependenciesFactory dependenciesBuilderFactory = createDependenciesBuilderFactory(createRulesProcessor(), getScriptType());
+        RulesBoltDependenciesFactory dependenciesBuilderFactory = createDependenciesBuilderFactory(createRulesProcessorBuilder(), getScriptType());
         ruleProcessorRuntime = dependenciesBuilderFactory.createRuleProcessorRuntimeStorm();
         createAndPrepareRulesBolt(dependenciesBuilderFactory);
     }
