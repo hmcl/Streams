@@ -40,7 +40,7 @@ public class RuleProcessorRuntimeDependenciesBuilder<I, E> {
     private final RuleRuntimeBuilder<I,E> ruleRuntimeBuilder;
 
     public RuleProcessorRuntimeDependenciesBuilder(RulesProcessorBuilder rulesProcessorBuilder, RuleRuntimeBuilder<I,E> ruleRuntimeBuilder) {
-        this.rulesProcessor = rulesProcessorBuilder.getRulesProcessor();
+        this.rulesProcessor = rulesProcessorBuilder.build();
         this.ruleRuntimeBuilder = ruleRuntimeBuilder;
     }
 

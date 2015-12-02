@@ -52,7 +52,7 @@ public class RuleProcessorMockBuilder implements RulesProcessorBuilder {
     }
 
     @Override
-    public RulesProcessor getRulesProcessor () {
+    public RulesProcessor build() {
         RulesProcessor rulesProcessor = new RulesProcessor();
         rulesProcessor.setDeclaredInput(buildDeclaredInputsOutputs());
         rulesProcessor.setId(ruleProcessorId);
