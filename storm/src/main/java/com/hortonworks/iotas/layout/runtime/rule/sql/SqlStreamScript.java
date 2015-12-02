@@ -39,6 +39,7 @@ public class SqlStreamScript extends Script<IotasEvent, SqlStreamEngine> {
         super(expression, scriptEngine);
 
         // This is needed to avoid ServiceLoader limitation. Please read comments in RulesDataSourcesProvider
+        // The delegate must be set before compiling the query
         RulesDataSourcesProvider.setDelegate(((SqlStreamEngine)scriptEngine).getDataSourceProvider());
 
         ((SqlStreamEngine)scriptEngine).compileQuery(createQuery((SqlStreamExpression) expression));
