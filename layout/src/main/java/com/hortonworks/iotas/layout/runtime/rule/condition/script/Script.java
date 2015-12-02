@@ -34,8 +34,6 @@ import java.io.Serializable;
  * @param <E> The Script Engine used to evaluate the scripts
  */
 public abstract class Script<I, E> implements Serializable {
-    public enum ScriptType {GROOVY, SQL};
-
     protected static final Logger log = LoggerFactory.getLogger(Script.class);
 
     protected final Expression expression;
