@@ -174,17 +174,5 @@ public abstract class RulesBoltTest extends RulesTopologyTest {
         }};
     }
 
-    @RunWith(JMockit.class)
-    public static class RulesBoltGroovyTest extends RulesBoltTest {
-        protected RulesBoltDependenciesFactory.ScriptType getScriptType() {
-            return RulesBoltDependenciesFactory.ScriptType.GROOVY;
-        }
-    }
 
-    @RunWith(JMockit.class)
-    public static class RulesBoltSqlTest extends RulesBoltTest {
-        protected RulesBoltDependenciesFactory.ScriptType getScriptType() {
-            return RulesBoltDependenciesFactory.ScriptType.SQL;
-        }
-    }
 }
