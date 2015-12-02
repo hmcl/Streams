@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 
 @RunWith(JMockit.class)
-public class RulesBoltTest extends RulesTopologyTest {
+public abstract class RulesBoltTest extends RulesTopologyTest {
     protected static final Logger log = LoggerFactory.getLogger(RulesBoltTest.class);
 
     // JUnit constructs for printing which tests are being run
@@ -172,5 +172,19 @@ public class RulesBoltTest extends RulesTopologyTest {
         new VerificationsInOrder() {{
             mockOutputCollector.fail(mockTuple);
         }};
+    }
+
+    @RunWith(JMockit.class)
+    public static class RulesBoltGroovyTest extends RulesBoltTest {
+        protected RulesBoltDependenciesFactory.ScriptType getScriptType() {
+            return RulesBoltDependenciesFactory.ScriptType.GROOVY;
+        }
+    }
+
+    @RunWith(JMockit.class)
+    public static class RulesBoltSqlTest extends RulesBoltTest {
+        protected RulesBoltDependenciesFactory.ScriptType getScriptType() {
+            return RulesBoltDependenciesFactory.ScriptType.SQL;
+        }
     }
 }

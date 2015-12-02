@@ -31,7 +31,7 @@ import com.hortonworks.iotas.layout.design.component.RulesProcessorBuilder;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
 import com.hortonworks.iotas.layout.runtime.rule.RulesBoltDependenciesFactory;
 
-public class RulesTopologyTest {
+public abstract class RulesTopologyTest {
     protected static final String RULES_TEST_SPOUT = "RulesTestSpout";
     protected static final String RULES_BOLT = "rulesBolt";
     protected static final String RULES_TEST_SINK_BOLT = "RulesTestSinkBolt";
@@ -39,10 +39,6 @@ public class RulesTopologyTest {
     protected static final String RULES_TEST_SINK_BOLT_2 = RULES_TEST_SINK_BOLT + "_2";
     private RulesBoltDependenciesFactory rulesBoltDependenciesFactory;
 
-    public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException {
-        RulesTopologyTest rulesTopologyTest = new RulesTopologyTest();
-        rulesTopologyTest.submitTopology();
-    }
     protected void submitTopology() throws AlreadyAliveException, InvalidTopologyException {
         final Config config = getConfig();
         final String topologyName = "RulesTopologyTest";
@@ -82,8 +78,26 @@ public class RulesTopologyTest {
         return ((RuleRuntimeStorm)rulesBoltDependenciesFactory.createRuleProcessorRuntimeStorm().getRulesRuntime().get(i)).getStreamId();   //TODO:
     }
 
-    protected RulesBoltDependenciesFactory.ScriptType getScriptType() {
-//        return RulesBoltDependenciesFactory.ScriptType.GROOVY;
-        return RulesBoltDependenciesFactory.ScriptType.SQL;
+    protected abstract RulesBoltDependenciesFactory.ScriptType getScriptType();
+
+    public static class RulesTopologyTestGroovy extends RulesTopologyTest {
+        public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException {
+            RulesTopologyTest rulesTopologyTest = new RulesTopologyTestGroovy();
+            rulesTopologyTest.submitTopology();
+        }
+
+        protected RulesBoltDependenciesFactory.ScriptType getScriptType() {
+            return RulesBoltDependenciesFactory.ScriptType.GROOVY;
+        }
+    }
+
+    public static class RulesTopologyTestSql extends RulesTopologyTest {
+        public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException {
+            RulesTopologyTest rulesTopologyTest = new RulesTopologyTestSql();
+            rulesTopologyTest.submitTopology();
+        }
+        protected RulesBoltDependenciesFactory.ScriptType getScriptType() {
+            return RulesBoltDependenciesFactory.ScriptType.SQL;
+        }
     }
 }
