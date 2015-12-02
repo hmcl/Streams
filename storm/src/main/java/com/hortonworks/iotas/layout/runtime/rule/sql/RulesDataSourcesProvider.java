@@ -32,7 +32,7 @@ import java.util.List;
  * which uses reflection to create the the service classes, but does not cover the case where the service class is an
  * inner class. We need the service class to be an inner class for the reasons justified in {@link SqlStreamEngine}.
  * */
-A
+
 public class RulesDataSourcesProvider implements DataSourcesProvider {
     private static DataSourcesProvider delegate;
     protected static final Logger log = LoggerFactory.getLogger(RulesDataSourcesProvider.class);
