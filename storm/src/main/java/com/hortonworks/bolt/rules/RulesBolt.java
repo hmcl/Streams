@@ -35,24 +35,22 @@ import java.util.List;
 import java.util.Map;
 
 public class RulesBolt extends BaseRichBolt {
-    public static final String RULE_PROCESSOR_RUNTIME = "com.hortonworks.iotas.storm.rule.processor.runtime";
-
     private static final Logger log = LoggerFactory.getLogger(RulesBolt.class);
 
-    private final RulesBoltDependenciesFactory dependenciesBuilder;
+    private final RulesBoltDependenciesFactory boltDependenciesFactory;
     private OutputCollector collector;
 
     // transient fields
     private transient RuleProcessorRuntimeStorm ruleProcessorRuntime;
 
     public RulesBolt(RulesBoltDependenciesFactory boltDependenciesFactory) {
-        this.dependenciesBuilder = boltDependenciesFactory;
+        this.boltDependenciesFactory = boltDependenciesFactory;
     }
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
-        ruleProcessorRuntime = dependenciesBuilder.createRuleProcessorRuntimeStorm();
+        ruleProcessorRuntime = boltDependenciesFactory.createRuleProcessorRuntimeStorm();
     }
 
     @Override
@@ -82,7 +80,7 @@ public class RulesBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        List<RuleRuntimeStormDeclaredOutput> declaredOutputs = dependenciesBuilder.createDeclaredOutputs();
+        final List<RuleRuntimeStormDeclaredOutput> declaredOutputs = boltDependenciesFactory.createDeclaredOutputs();
         for (RuleRuntimeStormDeclaredOutput declaredOutput : declaredOutputs) {
             declarer.declareStream(declaredOutput.getStreamId(), declaredOutput.getField());
         }
