@@ -52,9 +52,8 @@ public class SqlStreamEngine implements ScriptEngine<SqlStreamEngine> {
     private DataSourcesProvider dataSourceProvider;     // step 4
     private boolean evaluates;
 
-    // TODO: Revisit
     // Doing work in the constructor is not ideal but all of these inner classes make the code much simpler
-    // and avoids lots of callbacks. However, this should not be an issue for testing as this is a very focused
+    // and avoid lots of callbacks. Nevertheless, this should not be an issue for testing as this is a very focused
     // class that has a very specific purpose and therefore is very unlikely to change.
     // Furthermore, the SQL streaming framework is still under development and it's API is subject to changing,
     // so for now this is a reasonable solution
@@ -62,7 +61,7 @@ public class SqlStreamEngine implements ScriptEngine<SqlStreamEngine> {
         // This sequence of steps cannot be changed
         this.dataSource = this.new RulesDataSource();                   // Step 1 && Step 2 - RulesDataSource Sets Channel Context
         this.channelHandler = this.new RulesChannelHandler();           // Step 3
-        this.dataSourceProvider = this.new RulesDataSourcesProviderInner();  // Step 4
+        this.dataSourceProvider = this.new RulesDataSourcesProvider();  // Step 4
     }
 
     public void compileQuery(List<String> statements) {
@@ -115,7 +114,7 @@ public class SqlStreamEngine implements ScriptEngine<SqlStreamEngine> {
         public void exceptionCaught(Throwable cause) { }
     }
 
-    private class RulesDataSourcesProviderInner implements DataSourcesProvider {
+    private class RulesDataSourcesProvider implements DataSourcesProvider {
         @Override
         public String scheme() {
             return SqlStreamExpression.RULE_SCHEMA;

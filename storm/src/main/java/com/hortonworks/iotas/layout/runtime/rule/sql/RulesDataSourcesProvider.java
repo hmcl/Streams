@@ -28,6 +28,11 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.util.List;
 
+/** This is an auxiliary service class that is needed in order to circumvent a limitation of {@link java.util.ServiceLoader},
+ * which uses reflection to create the the service classes, but does not cover the case where the service class is an
+ * inner class. We need the service class to be an inner class for the reasons justified in {@link SqlStreamEngine}.
+ * */
+A
 public class RulesDataSourcesProvider implements DataSourcesProvider {
     private static DataSourcesProvider delegate;
     protected static final Logger log = LoggerFactory.getLogger(RulesDataSourcesProvider.class);
