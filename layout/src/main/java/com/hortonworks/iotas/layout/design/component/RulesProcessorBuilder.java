@@ -18,6 +18,8 @@
 
 package com.hortonworks.iotas.layout.design.component;
 
-public interface RulesProcessorBuilder {
+import java.io.Serializable;
+
+public interface RulesProcessorBuilder extends Serializable{
     RulesProcessor build();
 }

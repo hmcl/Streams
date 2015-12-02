@@ -28,7 +28,6 @@ import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.TopologyBuilder;
 import com.hortonworks.bolt.rules.RulesBolt;
 import com.hortonworks.iotas.layout.design.component.RulesProcessorBuilder;
-import com.hortonworks.iotas.layout.runtime.processor.RuleProcessorRuntimeStorm;
 import com.hortonworks.iotas.layout.runtime.rule.RuleRuntimeStorm;
 import com.hortonworks.iotas.layout.runtime.rule.RulesBoltDependenciesFactory;
 
@@ -38,7 +37,6 @@ public class RulesTopologyTest {
     protected static final String RULES_TEST_SINK_BOLT = "RulesTestSinkBolt";
     protected static final String RULES_TEST_SINK_BOLT_1 = RULES_TEST_SINK_BOLT + "_1";
     protected static final String RULES_TEST_SINK_BOLT_2 = RULES_TEST_SINK_BOLT + "_2";
-    private RuleProcessorRuntimeStorm ruleProcessorRuntime;
     private RulesBoltDependenciesFactory rulesBoltDependenciesFactory;
 
     public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException {
