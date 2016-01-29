@@ -58,7 +58,7 @@ public class GroovyScriptTest {
     @Test
     public void benchmark() throws ScriptException {
         int runs = 10;
-        long samples = 1_000_000L;
+        long samples = 10_000_000L;
         System.out.printf("Initiating test. runs=%d, samples=%s\n", runs, samples);
 
         for (int i = 0; i < runs; i++) {

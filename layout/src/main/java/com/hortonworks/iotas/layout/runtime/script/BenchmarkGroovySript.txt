@@ -1,0 +1,436 @@
+Initiating test. runs=10, samples=10000000      - 10M
+run 0
+oldTime = 57964983419
+oldTimeAvg = 5796
+newTime = 110813891892
+newTimeAvg = 11081
+
+run 1
+oldTime = 55111915384
+oldTimeAvg = 5511
+newTime = 110463205177
+newTimeAvg = 11046
+
+run 2
+oldTime = 52600137981
+oldTimeAvg = 5260
+newTime = 109008376008
+newTimeAvg = 10900
+
+run 3
+oldTime = 53316707871
+oldTimeAvg = 5331
+newTime = 109398118445
+newTimeAvg = 10939
+
+run 4
+oldTime = 53317383657
+oldTimeAvg = 5331
+newTime = 108456935399
+newTimeAvg = 10845
+
+run 5
+oldTime = 54123042812
+oldTimeAvg = 5412
+newTime = 109816102942
+newTimeAvg = 10981
+
+run 6
+oldTime = 53033013896
+oldTimeAvg = 5303
+newTime = 109686290813
+newTimeAvg = 10968
+
+run 7
+oldTime = 54506401289
+oldTimeAvg = 5450
+newTime = 109118642608
+newTimeAvg = 10911
+
+run 8
+oldTime = 53274194377
+oldTimeAvg = 5327
+newTime = 109677528489
+newTimeAvg = 10967
+
+run 9
+oldTime = 53990756881
+oldTimeAvg = 5399
+newTime = 110098728912
+newTimeAvg = 11009
+
+samples 1M
+oldTime = 7774543967
+oldTimeAvg = 7774
+newTime = 13000304803
+newTimeAvg = 13000
+
+oldTime = 8627267088
+oldTimeAvg = 8627
+newTime = 13259340304
+newTimeAvg = 13259
+
+run 0
+oldTime = 7940515795
+oldTimeAvg = 7940
+newTime = 13463450333
+newTimeAvg = 13463
+
+run 1
+oldTime = 7473408120
+oldTimeAvg = 7473
+newTime = 12759330147
+newTimeAvg = 12759
+
+run 2
+oldTime = 8028749762
+oldTimeAvg = 8028
+newTime = 13174056884
+newTimeAvg = 13174
+
+run 3
+oldTime = 7078833549
+oldTimeAvg = 7078
+newTime = 13471095046
+newTimeAvg = 13471
+
+run 4
+oldTime = 7864770464
+oldTimeAvg = 7864
+newTime = 14387182240
+newTimeAvg = 14387
+
+run 5
+oldTime = 7307056960
+oldTimeAvg = 7307
+newTime = 13957549866
+newTimeAvg = 13957
+
+run 6
+oldTime = 7572801999
+oldTimeAvg = 7572
+newTime = 13637357771
+newTimeAvg = 13637
+
+run 7
+oldTime = 7907564641
+oldTimeAvg = 7907
+newTime = 13510943104
+newTimeAvg = 13510
+
+run 8
+oldTime = 7754320411
+oldTimeAvg = 7754
+newTime = 14011170628
+newTimeAvg = 14011
+
+run 9
+oldTime = 7885540940
+oldTimeAvg = 7885
+newTime = 13538078582
+newTimeAvg = 13538
+
+Initiating test. runs=10, samples=1000000
+run 0
+oldTime = 8507915553
+oldTimeAvg = 8507
+newTime = 13461525592
+newTimeAvg = 13461
+
+run 1
+oldTime = 8014866178
+oldTimeAvg = 8014
+newTime = 13245299508
+newTimeAvg = 13245
+
+run 2
+oldTime = 7464662910
+oldTimeAvg = 7464
+newTime = 13949888339
+newTimeAvg = 13949
+
+run 3
+oldTime = 7484691847
+oldTimeAvg = 7484
+newTime = 14132305197
+newTimeAvg = 14132
+
+run 4
+oldTime = 8298673410
+oldTimeAvg = 8298
+newTime = 13991220156
+newTimeAvg = 13991
+
+run 5
+oldTime = 7951955890
+oldTimeAvg = 7951
+newTime = 14097092210
+newTimeAvg = 14097
+
+run 6
+oldTime = 8053783765
+oldTimeAvg = 8053
+newTime = 13937847395
+newTimeAvg = 13937
+
+run 7
+oldTime = 8115475605
+oldTimeAvg = 8115
+newTime = 13758911384
+newTimeAvg = 13758
+
+run 8
+oldTime = 7508062138
+oldTimeAvg = 7508
+newTime = 14674942592
+newTimeAvg = 14674
+
+run 9
+oldTime = 7347188130
+oldTimeAvg = 7347
+newTime = 13726277893
+newTimeAvg = 13726
+
+Initiating test. runs=10, samples=1000000
+run 0
+oldTime = 7060020015
+oldTimeAvg = 7060
+newTime = 11917689984
+newTimeAvg = 11917
+
+run 1
+oldTime = 5698784209
+oldTimeAvg = 5698
+newTime = 11803845203
+newTimeAvg = 11803
+
+run 2
+oldTime = 5770185214
+oldTimeAvg = 5770
+newTime = 12146265079
+newTimeAvg = 12146
+
+run 3
+oldTime = 5877542312
+oldTimeAvg = 5877
+newTime = 12669868241
+newTimeAvg = 12669
+
+run 4
+oldTime = 6085180809
+oldTimeAvg = 6085
+newTime = 12520325014
+newTimeAvg = 12520
+
+run 5
+oldTime = 5752378210
+oldTimeAvg = 5752
+newTime = 12025436824
+newTimeAvg = 12025
+
+run 6
+oldTime = 5671904466
+oldTimeAvg = 5671
+newTime = 12418646084
+newTimeAvg = 12418
+
+run 7
+oldTime = 5825337789
+oldTimeAvg = 5825
+newTime = 12253209640
+newTimeAvg = 12253
+
+run 8
+oldTime = 5640008639
+oldTimeAvg = 5640
+newTime = 11974296319
+newTimeAvg = 11974
+
+run 9
+oldTime = 5896071538
+oldTimeAvg = 5896
+newTime = 12386361494
+newTimeAvg = 12386
+
+Initiating test. runs=10, samples=1000
+run 0
+oldTime = 622500091
+oldTimeAvg = 622500
+newTime = 96962203
+newTimeAvg = 96962
+
+run 1
+oldTime = 29679009
+oldTimeAvg = 29679
+newTime = 40195764
+newTimeAvg = 40195
+
+run 2
+oldTime = 25294698
+oldTimeAvg = 25294
+newTime = 34892703
+newTimeAvg = 34892
+
+run 3
+oldTime = 31158506
+oldTimeAvg = 31158
+newTime = 52048017
+newTimeAvg = 52048
+
+run 4
+oldTime = 22346115
+oldTimeAvg = 22346
+newTime = 26188859
+newTimeAvg = 26188
+
+run 5
+oldTime = 15379381
+oldTimeAvg = 15379
+newTime = 24943616
+newTimeAvg = 24943
+
+run 6
+oldTime = 15000145
+oldTimeAvg = 15000
+newTime = 19749784
+newTimeAvg = 19749
+
+run 7
+oldTime = 14487161
+oldTimeAvg = 14487
+newTime = 24286561
+newTimeAvg = 24286
+
+run 8
+oldTime = 17635176
+oldTimeAvg = 17635
+newTime = 46591386
+newTimeAvg = 46591
+
+run 9
+oldTime = 18190365
+oldTimeAvg = 18190
+newTime = 49819996
+newTimeAvg = 49819
+
+Initiating test. runs=10, samples=10000
+run 0
+oldTime = 678097322
+oldTimeAvg = 67809
+newTime = 366044835
+newTimeAvg = 36604
+
+run 1
+oldTime = 89949306
+oldTimeAvg = 8994
+newTime = 265683152
+newTimeAvg = 26568
+
+run 2
+oldTime = 112691370
+oldTimeAvg = 11269
+newTime = 166500874
+newTimeAvg = 16650
+
+run 3
+oldTime = 67085233
+oldTimeAvg = 6708
+newTime = 328207745
+newTimeAvg = 32820
+
+run 4
+oldTime = 78627699
+oldTimeAvg = 7862
+newTime = 132709027
+newTimeAvg = 13270
+
+run 5
+oldTime = 65442078
+oldTimeAvg = 6544
+newTime = 119069445
+newTimeAvg = 11906
+
+run 6
+oldTime = 62824888
+oldTimeAvg = 6282
+newTime = 533892362
+newTimeAvg = 53389
+
+run 7
+oldTime = 71040835
+oldTimeAvg = 7104
+newTime = 159198487
+newTimeAvg = 15919
+
+run 8
+oldTime = 63397895
+oldTimeAvg = 6339
+newTime = 154689255
+newTimeAvg = 15468
+
+run 9
+oldTime = 64973658
+oldTimeAvg = 6497
+newTime = 123923870
+newTimeAvg = 12392
+
+Initiating test. runs=10, samples=100000
+run 0
+oldTime = 1498938273
+oldTimeAvg = 14989
+newTime = 1534675080
+newTimeAvg = 15346
+
+run 1
+oldTime = 583348922
+oldTimeAvg = 5833
+newTime = 1140599959
+newTimeAvg = 11405
+
+run 2
+oldTime = 529186566
+oldTimeAvg = 5291
+newTime = 1105151535
+newTimeAvg = 11051
+
+run 3
+oldTime = 678447928
+oldTimeAvg = 6784
+newTime = 1228587701
+newTimeAvg = 12285
+
+run 4
+oldTime = 618357682
+oldTimeAvg = 6183
+newTime = 1355097613
+newTimeAvg = 13550
+
+run 5
+oldTime = 555095162
+oldTimeAvg = 5550
+newTime = 1128093148
+newTimeAvg = 11280
+
+run 6
+oldTime = 579726884
+oldTimeAvg = 5797
+newTime = 1304559767
+newTimeAvg = 13045
+
+run 7
+oldTime = 675289750
+oldTimeAvg = 6752
+newTime = 1136110649
+newTimeAvg = 11361
+
+run 8
+oldTime = 533327527
+oldTimeAvg = 5333
+newTime = 1141107564
+newTimeAvg = 11411
+
+run 9
+oldTime = 541026130
+oldTimeAvg = 5410
+newTime = 1301928577
+newTimeAvg = 13019
