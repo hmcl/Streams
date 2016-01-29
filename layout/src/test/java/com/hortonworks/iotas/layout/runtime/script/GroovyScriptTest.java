@@ -56,7 +56,7 @@ public class GroovyScriptTest {
     }
 
     @Test
-    public void benchMark() throws ScriptException {
+    public void benchmark() throws ScriptException {
         int runs = 10;
         long samples = 1_000_000L;
         System.out.printf("Initiating test. runs=%d, samples=%s\n", runs, samples);
@@ -77,50 +77,47 @@ public class GroovyScriptTest {
     private long benchmarkOld(long samples) throws ScriptException {
         GroovyScriptEngine groovyScriptEngine = new GroovyScriptEngine();
         String groovyExpression = "x > 1 && y < 3";
-        HashMap<String, Object> fieldsAndValue = new HashMap<>();
-        fieldsAndValue.put("x", 2);
-        fieldsAndValue.put("y", 1);
-        IotasEventImpl iotasEvent = new IotasEventImpl(fieldsAndValue, "1");
+        IotasEventImpl iotasEvent = getIotasEvent();
         GroovyScript<Boolean> gs = new GroovyScript<>(groovyExpression, groovyScriptEngine);
 
-//        System.out.println("Start test Old");
         long time = 0;
         for (int i = 0; i < samples; i++) {
             time+= testOld(gs, iotasEvent);
         }
-//        System.out.println("End test Old");
         return time;
-    }
-
-    long testOld(GroovyScript<Boolean> gs, IotasEvent iotasEvent) throws ScriptException {
-        long t1 = System.nanoTime();
-        gs.evaluate(iotasEvent);
-        long t2 = System.nanoTime();
-        return t2 - t1;
     }
 
     private long benchmarkNew(long samples) throws ScriptException {
         GroovyScriptEngine groovyScriptEngine = new GroovyScriptEngine();
         String groovyExpression = "x > 1 && y < 3";
-        HashMap<String, Object> fieldsAndValue = new HashMap<>();
-        fieldsAndValue.put("x", 2);
-        fieldsAndValue.put("y", 1);
-        IotasEventImpl iotasEvent = new IotasEventImpl(fieldsAndValue, "1");
+        IotasEventImpl iotasEvent = getIotasEvent();
         GroovyScript1<Boolean> gs = new GroovyScript1<>(groovyExpression, groovyScriptEngine);
 
-//        System.out.println("Start test New");
         long time = 0;
         for (int i = 0; i < samples; i++) {
             time+= testNew(gs, iotasEvent);
         }
-//        System.out.println("End test Mew");
         return time;
     }
 
-    long testNew(GroovyScript1<Boolean> gs, IotasEvent iotasEvent) throws ScriptException {
+    private long testOld(GroovyScript<Boolean> gs, IotasEvent iotasEvent) throws ScriptException {
         long t1 = System.nanoTime();
         gs.evaluate(iotasEvent);
         long t2 = System.nanoTime();
         return t2 - t1;
+    }
+
+    private long testNew(GroovyScript1<Boolean> gs, IotasEvent iotasEvent) throws ScriptException {
+        long t1 = System.nanoTime();
+        gs.evaluate(iotasEvent);
+        long t2 = System.nanoTime();
+        return t2 - t1;
+    }
+
+    private IotasEventImpl getIotasEvent() {
+        HashMap<String, Object> fieldsAndValue = new HashMap<>();
+        fieldsAndValue.put("x", 2);
+        fieldsAndValue.put("y", 1);
+        return new IotasEventImpl(fieldsAndValue, "1");
     }
 }
