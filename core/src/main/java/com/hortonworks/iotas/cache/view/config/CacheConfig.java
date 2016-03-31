@@ -16,34 +16,18 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache;
+package com.hortonworks.iotas.cache.view.config;
+
+import java.util.List;
+
+public class CacheConfig {
+    private String id;
+    private TypeConfig.Cache cacheType;
+    private ConnectionConfig connectionConfig;
+    private DataStoreConfig dataStoreConfig;
+    private ExpiryPolicy expiryPolicy;
+    List<ViewConfig> viewsConfig;
 
 
-import com.hortonworks.iotas.cache.stats.CacheStats;
-import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
 
-import java.util.Collection;
-import java.util.Map;
-
-
-public interface Cache<K, V> {
-    V get(K key);
-
-    Map<K, V> getAll(Collection<? extends K> keys);
-
-    void put(K key, V val);
-
-    void putAll(Map<? extends K,? extends V> entries);
-
-    void remove(K key);
-
-    void removeAll(Collection<? extends K> keys);
-
-    void clear();
-
-    long size();
-
-    CacheStats stats();
-
-    ExpiryPolicy getExpiryPolicy();
 }

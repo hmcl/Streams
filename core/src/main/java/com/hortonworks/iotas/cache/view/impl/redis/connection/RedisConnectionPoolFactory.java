@@ -16,34 +16,23 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache;
+package com.hortonworks.iotas.cache.view.impl.redis.connection;
 
+import com.lambdaworks.redis.RedisClient;
+import com.lambdaworks.redis.RedisConnection;
+import com.lambdaworks.redis.RedisConnectionPool;
+import com.lambdaworks.redis.codec.RedisCodec;
 
-import com.hortonworks.iotas.cache.stats.CacheStats;
-import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
+public class RedisConnectionPoolFactory<K,V> extends AbstractRedisConnectionFactory<K,V> {
+    // Defaults for Lettuce Redis Client 3.4.2
+    private static final int MAX_IDLE = 5;
+    private static final int MAX_ACTIVE = 20;
 
-import java.util.Collection;
-import java.util.Map;
+    public RedisConnectionPoolFactory(RedisClient redisClient, RedisCodec<K, V> codec) {
+        super(redisClient, codec);
+    }
 
-
-public interface Cache<K, V> {
-    V get(K key);
-
-    Map<K, V> getAll(Collection<? extends K> keys);
-
-    void put(K key, V val);
-
-    void putAll(Map<? extends K,? extends V> entries);
-
-    void remove(K key);
-
-    void removeAll(Collection<? extends K> keys);
-
-    void clear();
-
-    long size();
-
-    CacheStats stats();
-
-    ExpiryPolicy getExpiryPolicy();
+    public RedisConnection<K, V> create() {
+        return redisClient.pool(codec, MAX_IDLE, MAX_ACTIVE).allocateConnection();
+    }
 }

@@ -16,34 +16,23 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache;
+package com.hortonworks.iotas.cache.view.config;
 
+public class RedisConnectionConfig extends ConnectionConfig {
+    private Pool pool;
 
-import com.hortonworks.iotas.cache.stats.CacheStats;
-import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
+    class Pool {
+        int min;
+        int max;
 
-import java.util.Collection;
-import java.util.Map;
+        public Pool(int min, int max) {
+            this.min = min;
+            this.max = max;
+        }
+    }
 
-
-public interface Cache<K, V> {
-    V get(K key);
-
-    Map<K, V> getAll(Collection<? extends K> keys);
-
-    void put(K key, V val);
-
-    void putAll(Map<? extends K,? extends V> entries);
-
-    void remove(K key);
-
-    void removeAll(Collection<? extends K> keys);
-
-    void clear();
-
-    long size();
-
-    CacheStats stats();
-
-    ExpiryPolicy getExpiryPolicy();
+    public RedisConnectionConfig(String host, String port, Pool pool) {
+        super(host, port);
+        this.pool = pool;
+    }
 }

@@ -16,34 +16,32 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache;
+package com.hortonworks.iotas.cache.view.datastore.phoenix;
 
-
-import com.hortonworks.iotas.cache.stats.CacheStats;
-import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
+import com.hortonworks.iotas.cache.view.datastore.AbstractDataStore;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
 
 import java.util.Collection;
 import java.util.Map;
 
+//TODO Remove abstract and create Phoenix Implementation
+public abstract class PhoenixDataStore<K,V> extends AbstractDataStore<K,V>
+        implements DataStoreReader<K,V>, DataStoreWriter<K,V> {
 
-public interface Cache<K, V> {
-    V get(K key);
+    public PhoenixDataStore(String nameSpace) {
+        super(nameSpace);
+    }
 
-    Map<K, V> getAll(Collection<? extends K> keys);
+    public abstract V read(K key);
 
-    void put(K key, V val);
+    public abstract Map<K, V> readAll(Collection<? extends K> keys);
 
-    void putAll(Map<? extends K,? extends V> entries);
+    public abstract void write(K key, V val);
 
-    void remove(K key);
+    public abstract void writeAll(Map<? extends K, ? extends V> entries);
 
-    void removeAll(Collection<? extends K> keys);
+    public abstract void delete(K key);
 
-    void clear();
-
-    long size();
-
-    CacheStats stats();
-
-    ExpiryPolicy getExpiryPolicy();
+    public abstract void deleteAll(Collection<? extends K> keys);
 }
