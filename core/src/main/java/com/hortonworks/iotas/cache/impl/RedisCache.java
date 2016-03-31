@@ -1,12 +1,8 @@
 package com.hortonworks.iotas.cache.impl;
 
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableMap;
-
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.stats.CacheStats;
 import com.hortonworks.iotas.storage.exception.StorageException;
-import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
 
 import java.util.ArrayList;
@@ -20,11 +16,12 @@ public class RedisCache<K,V> implements Cache<K,V> {
 
     @Override
     public V get(K key) throws StorageException {
-        return redisConnection.hget(key);
+//        return redisConnection.hget(key);
+        return null;
     }
 
     @Override
-    public ImmutableMap<K, V> getAllPresent(Iterable<? extends K> keys) {
+    public Map<K, V> getAllPresent(Iterable<? extends K> keys) {
         return null;
     }
 
@@ -44,7 +41,7 @@ public class RedisCache<K,V> implements Cache<K,V> {
     }
 
     @Override
-    public ImmutableMap<K, V> removeAllPresent(Iterable<? extends K> keys) {
+    public Map<K, V> removeAllPresent(Iterable<? extends K> keys) {
         return null;
     }
 
