@@ -3,7 +3,7 @@ package com.hortonworks.iotas.cache.redis;
 import java.util.Collection;
 import java.util.Map;
 
-public interface DataStoreWriter<K, V> {
+public interface DataStoreReaderWriter<K, V> extends DataStoreReader<K,V> {
     void write(K key, V val);
 
     void writeAll(Map<K, V> entries);
