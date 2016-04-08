@@ -26,6 +26,7 @@ public class RedisCache<K,V> implements Cache<K,V> {
 
     @Override
     public Map<K, V> getAllPresent(Iterable<? extends K> keys) {
+//        redisConnection.get()
         return null;
     }
 
