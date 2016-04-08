@@ -3,11 +3,7 @@ package com.hortonworks.iotas.cache.redis;
 import java.util.Collection;
 import java.util.Map;
 
-public interface MapDataStore<K, V> {
-    V read(K key);
-
-    Map<K, V> readAll(Collection<K> keys);
-
+public interface DataStoreWriter<K, V> {
     void write(K key, V val);
 
     void writeAll(Map<K, V> entries);
