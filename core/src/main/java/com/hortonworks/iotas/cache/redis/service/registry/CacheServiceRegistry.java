@@ -1,4 +1,7 @@
-package com.hortonworks.iotas.cache.redis;
+package com.hortonworks.iotas.cache.redis.service.registry;
+
+import com.hortonworks.iotas.cache.redis.service.CacheService;
+import com.hortonworks.iotas.cache.redis.service.CacheServiceId;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,20 +9,15 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CacheServiceRegistry {
-    protected static final Logger LOG = LoggerFactory.getLogger(CacheServiceRegistry.class);
+public enum CacheServiceRegistry {
+    INSTANCE;
 
-    private CacheServiceRegistry instance = new CacheServiceRegistry();
+    protected static final Logger LOG = LoggerFactory.getLogger(CacheServiceRegistry.class);
 
     private Map<CacheServiceId, CacheService> idToService;
 
-
-    private CacheServiceRegistry() {
+    CacheServiceRegistry() {
         idToService = new HashMap<>();
-    }
-
-    public CacheServiceRegistry getInstance() {
-        return instance;
     }
 
     public void register(CacheServiceId cacheServiceId, CacheService cacheService) {

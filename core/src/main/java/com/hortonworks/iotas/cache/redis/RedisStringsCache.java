@@ -1,6 +1,7 @@
 package com.hortonworks.iotas.cache.redis;
 
 import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.redis.service.CacheService;
 import com.hortonworks.iotas.cache.stats.CacheStats;
 import com.hortonworks.iotas.storage.exception.StorageException;
 import com.lambdaworks.redis.RedisConnection;
@@ -12,14 +13,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-public class RedisCache<K,V> implements Cache<K,V> {
-    private static final Logger LOG = LoggerFactory.getLogger(RedisCache.class);
+public class RedisStringsCache<K,V> implements Cache<K,V> {
+    private static final Logger LOG = LoggerFactory.getLogger(RedisStringsCache.class);
+
+    private CacheService<K,V> cacheService;
 
     private RedisConnection<K,V> redisConnection;
 
 
     @Override
     public V get(K key) throws StorageException {
+        final V val = redisConnection.get(key);
+        if (val == null) {
+            val = cacheService.load(key);
+        }
+
 //        return redisConnection.hget(key);
         return null;
     }

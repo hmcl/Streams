@@ -1,4 +1,4 @@
-package com.hortonworks.iotas.cache.redis;
+package com.hortonworks.iotas.cache.redis.datastore;
 
 import java.util.Collection;
 import java.util.Map;
@@ -6,5 +6,5 @@ import java.util.Map;
 public interface DataStoreReader<K, V> {
     V read(K key);
 
-    Map<K, V> readAll(Collection<K> keys);
+    Map<K, V> readAll(Collection<? extends K> keys);
 }

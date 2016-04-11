@@ -1,8 +1,10 @@
 package com.hortonworks.iotas.cache.redis;
 
+import com.hortonworks.iotas.cache.redis.service.CacheService;
+
 import java.util.Map;
 
-public class RedisStorageBackedCache<K,V> extends RedisCache<K, V> {
+public class RedisStorageBackedCache<K,V> extends RedisStringsCache<K, V> {
     private CacheService cacheService;
 
     public RedisStorageBackedCache(CacheService cacheService) {

@@ -19,6 +19,7 @@ public class RedisCacheTestMain {
     protected static final Logger LOG = LoggerFactory.getLogger(RedisCacheTestMain.class);
 
     private static RedisConnection<String, String> connection;
+    private static RedisConnection<String, String> connection1;
     private static Executor executor;
 
     public static void main(String[] args) throws InterruptedException {
@@ -46,6 +47,7 @@ public class RedisCacheTestMain {
         RedisClient redisClient = RedisClient.create(new RedisURI("127.0.0.1", 6379, 10L, TimeUnit.SECONDS));
 //        RedisClient redisClient = RedisClient.create(new RedisURI.Builder.redis("127.0.0.1", 6379).build());
         connection = redisClient.connect();
+        connection1 = redisClient.connect();
     }
 
     public static RedisConnection<String, String> getConnection() {
