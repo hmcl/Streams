@@ -62,7 +62,8 @@ public class RedisCacheTestMain {
     }
 
     private static void setConnection() {
-        RedisClient redisClient = RedisClient.create(new RedisURI("127.0.0.1", 6379, 10L, TimeUnit.SECONDS));
+//        RedisClient redisClient = RedisClient.create(new RedisURI("127.0.0.1", 6379, 10L, TimeUnit.SECONDS));
+        RedisClient redisClient = RedisClient.create("redis://127.0.0.1:6379");
 //        RedisClient redisClient = RedisClient.create(new RedisURI.Builder.redis("127.0.0.1", 6379).build());
         connection = redisClient.connect();
         connection1 = redisClient.connect();

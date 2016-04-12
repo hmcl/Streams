@@ -43,7 +43,7 @@ public enum CacheServiceRegistry {
         LOG.info("Registered {} as {}.", cacheService, cacheServiceId);
     }
 
-    public CacheService getCacheService(CacheServiceId cacheServiceId) {
+    public <K,V> CacheService<K,V> getCacheService(CacheServiceId cacheServiceId) {
         return idToService.get(cacheServiceId);
     }
 }

@@ -10,9 +10,9 @@ public interface DataStore<K, V> {
 
     void write(K key, V val);
 
-    void writeAll(Map<K, V> entries);
+    void writeAll(Map<? extends K, ? extends V> entries);
 
     void delete(K key);
 
-    void deleteAll(Collection<K> keys);
+    void deleteAll(Collection<? extends K> keys);
 }

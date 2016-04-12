@@ -63,8 +63,8 @@ public class GuavaCache implements Cache<StorableKey, Storable> {
         return guavaCache.getAllPresent(keys);
     }
 
-    public void put(StorableKey key, Storable value) {
-        guavaCache.put(key, value);
+    public void put(StorableKey key, Storable val) {
+        guavaCache.put(key, val);
     }
 
     public void putAll(Map<? extends StorableKey, ? extends Storable> map) {

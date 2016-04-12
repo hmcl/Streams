@@ -29,46 +29,62 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class RedisStringsCache<K,V> implements Cache<K,V> {
     private static final Logger LOG = LoggerFactory.getLogger(RedisStringsCache.class);
 
     private CacheService<K,V> cacheService;
-
     private RedisConnection<K,V> redisConnection;
 
+    public RedisStringsCache(CacheService<K, V> cacheService, RedisConnection<K, V> redisConnection) {
+        this.cacheService = cacheService;
+        this.redisConnection = redisConnection;
+    }
 
     @Override
     public V get(K key) throws StorageException {
-        final V val = redisConnection.get(key);
+        V val = redisConnection.get(key);
         if (val == null) {
             val = cacheService.load(key);
         }
-
-//        return redisConnection.hget(key);
-        return null;
+        return val;
     }
 
     @Override
     public Map<K, V> getAllPresent(Iterable<? extends K> keys) {
-//        redisConnection.get()
-        return null;
+        final Map<K, V> existing = new HashMap<>();
+        final List<K> nonExisting = new LinkedList<>();
+
+        for (K key : keys) {
+            final V val = get(key);
+            if (val != null) {
+                existing.put(key, val);
+            } else {
+                nonExisting.add(key);
+            }
+        }
+        LOG.debug("Entries existing in cache [{}]. Keys non existing in cache: [{}]", existing, nonExisting);
+        return existing;
     }
 
     @Override
-    public void put(K key, V value) {
-        redisConnection.set(key, value);
+    public void put(K key, V val) {
+        redisConnection.set(key, val);
+        LOG.debug("Set {}=>{}", key, val);
     }
 
     @Override
-    public void putAll(Map<? extends K, ? extends V> m) {
-
+    public void putAll(Map<? extends K, ? extends V> entries) {
+        redisConnection.mset(entries);
     }
 
     @Override
     public void remove(K key) {
-
+        redisConnection.del(key);
     }
 
     @Override
@@ -80,6 +96,11 @@ public class RedisStringsCache<K,V> implements Cache<K,V> {
     public void clear() {
         Collection<? extends K> keys = new ArrayList<>();
         removeAllPresent(keys);
+
+        Map<? extends Number, ? extends Number> mnn = null;
+        Map<Integer, Integer> mii = null;
+        mnn = mii;
+
     }
 
     @Override

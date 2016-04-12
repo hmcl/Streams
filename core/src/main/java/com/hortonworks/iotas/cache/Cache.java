@@ -14,9 +14,9 @@ public interface Cache<K, V> {
 
     Map<K, V> getAllPresent(Iterable<? extends K> keys);
 
-    void put(K key, V value);
+    void put(K key, V val);
 
-    void putAll(Map<? extends K,? extends V> m);
+    void putAll(Map<? extends K,? extends V> entries);
 
     void remove(K key);
 

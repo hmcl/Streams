@@ -19,6 +19,7 @@
 package com.hortonworks.iotas.cache.redis.service;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 public class CacheServiceId {
     private URI uri;
@@ -39,6 +40,10 @@ public class CacheServiceId {
 
     public String getId() {
         return id;
+    }
+
+    public static CacheServiceId redis(String host, int port) {
+        return new CacheServiceId("redis://" +  host + ":" + port);
     }
 
     @Override

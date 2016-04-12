@@ -41,7 +41,7 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
     }
 
     public void loadAll(final Collection<? extends K> keys) {
-        executorService.submit(new Callable<Map<K, V>>() {
+        executorService.invokeAll(new Callable<Map<K, V>>() {
             @Override
             public Map<K, V> call() throws Exception {
                 cache.putAll(dataStore.readAll(keys));
@@ -49,4 +49,13 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
             }
         });
     }
+
+    private class Task implements Callable<Map<K,V>> {
+        @Override
+        public Map<K, V> call() throws Exception {
+            return null;
+        }
+    }
+
+
 }

@@ -48,8 +48,7 @@ public class CacheService<K,V> {
     }
 
     public void loadAll(Collection<? extends K> keys) {
+        return cacheLoader.loadAll(keys);
 
     }
-
-
-}
+ }
