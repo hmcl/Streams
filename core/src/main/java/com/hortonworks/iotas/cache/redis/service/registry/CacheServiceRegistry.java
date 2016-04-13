@@ -32,18 +32,18 @@ public enum CacheServiceRegistry {
 
     protected static final Logger LOG = LoggerFactory.getLogger(CacheServiceRegistry.class);
 
-    private Map<CacheServiceId, CacheService> idToService;
+    private Map<CacheServiceId, CacheService<?,?>> idToService;
 
     CacheServiceRegistry() {
         idToService = new HashMap<>();
     }
 
-    public void register(CacheServiceId cacheServiceId, CacheService cacheService) {
+    public <K,V> void register(CacheServiceId cacheServiceId, CacheService<K,V> cacheService) {
         idToService.put(cacheServiceId, cacheService);
-        LOG.info("Registered {} as {}.", cacheService, cacheServiceId);
+        LOG.info("Registered cache service [{}] with id [{}].", cacheService, cacheServiceId);
     }
 
     public <K,V> CacheService<K,V> getCacheService(CacheServiceId cacheServiceId) {
-        return idToService.get(cacheServiceId);
+        return (CacheService<K, V>) idToService.get(cacheServiceId);
     }
 }

@@ -24,31 +24,24 @@ import com.hortonworks.iotas.cache.redis.datastore.DataStoreReader;
 import com.hortonworks.iotas.cache.redis.loader.CacheLoader;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class CacheService<K,V> {
-    private final Cache<K,V> cache;
-    private DataStore<K,V> dataStore;
-    private CacheLoader<K,V> cacheLoader;
+    protected final Cache<K,V> cache;
 
     public CacheService(CacheServiceFactory<K,V> factory) {
         this.cache = factory.createCache();
-        this.dataStore = factory.createDataStore();
     }
 
     public Cache<K,V> getCache() {
         return cache;
     }
 
-    public DataStore<K,V> getDataStore() {
-        return dataStore;
-    }
-
     public V load(K key) {
-        return cacheLoader.load(key);
+        return null;
     }
 
-    public void loadAll(Collection<? extends K> keys) {
-        return cacheLoader.loadAll(keys);
-
+    public Map<K, V> loadAll(Collection<? extends K> keys) {
+        return null;
     }
  }

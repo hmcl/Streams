@@ -18,45 +18,35 @@
 
 package com.hortonworks.iotas.cache.redis.service;
 
-import java.net.URI;
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.redis.datastore.DataStore;
+import com.hortonworks.iotas.cache.redis.loader.CacheLoader;
 
-public class CacheServiceId {
-    private URI uri;
-    private final String id;
+import java.util.Collection;
 
-    public CacheServiceId(URI uri) {
-        this(uri.toString());
-        this.uri = uri;
+public class DataStoreCacheService<K,V> extends CacheService<K,V> {
+    private DataStore<K,V> dataStore;
+    private CacheLoader<K,V> cacheLoader;
+
+    public DataStoreCacheService(CacheServiceFactory<K,V> factory) {
+        super(factory);
+        this.dataStore = factory.createDataStore();
     }
 
-    public CacheServiceId(String id) {
-        this.id = id;
+    public Cache<K,V> getCache() {
+        return cache;
     }
 
-    public URI getUri() {
-        return uri;
+    public DataStore<K,V> getDataStore() {
+        return dataStore;
     }
 
-    public String getId() {
-        return id;
+    public V load(K key) {
+        return cacheLoader.load(key);
     }
 
-    public static CacheServiceId redis(String host, int port) {
-        return new CacheServiceId("redis://" +  host + ":" + port);
+    public void loadAll(Collection<? extends K> keys) {
+        return cacheLoader.loadAll(keys);
+
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        CacheServiceId that = (CacheServiceId) o;
-
-        return !(id != null ? !id.equals(that.id) : that.id != null);
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
-}
+ }

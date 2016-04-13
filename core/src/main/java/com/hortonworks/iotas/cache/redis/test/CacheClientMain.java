@@ -46,18 +46,14 @@ public class CacheClientMain {
     public void registerCache() {
         cacheRegistry.register(CacheServiceId.redis("localhost", 6379), new CacheService<>(new CacheServiceFactory<String, String>() {
             @Override
-            public Cache createCache() {
+            public Cache<String, String> createCache() {
                 return null;
             }
 
             @Override
-            public DataStore createDataStore() {
+            public DataStore<String, String> createDataStore() {
                 return null;
             }
         }));
-        Cache<String, String> cache = cacheService.getCache();
-        String val = cache.get("key");
-        cache.put("key", "val");
-        cache.putAll(new HashMap<String, String>(){{put("key", "val"); put("key1", "val1");}});
     }
 }

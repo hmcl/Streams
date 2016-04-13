@@ -21,6 +21,10 @@ package com.hortonworks.iotas.cache.redis.loader;
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.redis.datastore.DataStore;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -29,6 +33,8 @@ import java.util.concurrent.Executors;
 
 public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
     private static final int DEFAULT_NUM_THREADS = 5;
+    private static final Logger LOG = LoggerFactory.getLogger(CacheLoaderAsync.class);
+
     private final ExecutorService executorService;
 
     public CacheLoaderAsync(Cache<K, V> cache, DataStore<K,V> dataStore) {
@@ -41,13 +47,25 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
     }
 
     public void loadAll(final Collection<? extends K> keys) {
-        executorService.invokeAll(new Callable<Map<K, V>>() {
-            @Override
-            public Map<K, V> call() throws Exception {
-                cache.putAll(dataStore.readAll(keys));
-                return null;
-            }
-        });
+        try {
+            executorService.invokeAll(buildCallables(keys));
+        } catch (InterruptedException e) {
+            LOG.error("Failed to load keys [" + keys + "]", e);
+        }
+    }
+
+    private Collection<? extends Callable<Map<K,V>>> buildCallables(Collection<? extends K> keys) {
+        Collection<? extends Callable<Map<K,V>>> callables = new ArrayList<>(keys.size());
+        for (final K key : keys) {
+            callables.add(new Callable<Map<K, V>>() {
+                @Override
+                public Map<K, V> call() throws Exception {
+                    cache.put(key, dataStore.readAll());
+
+                }
+            })
+        }
+        executorService.
     }
 
     private class Task implements Callable<Map<K,V>> {
