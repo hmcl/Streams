@@ -21,8 +21,29 @@ package com.hortonworks.iotas.cache.redis.service.registry;
 import com.hortonworks.iotas.cache.redis.service.CacheService;
 import com.hortonworks.iotas.cache.redis.service.CacheServiceId;
 
-public interface CacheServiceRegistry {
-    <K,V> void register(CacheServiceId cacheServiceId, CacheService<K,V> cacheService);
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    <K,V> CacheService<K,V> getCacheService(CacheServiceId cacheServiceId);
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+public enum CacheServiceLocalRegistry implements CacheServiceRegistry {
+    INSTANCE;
+
+    protected static final Logger LOG = LoggerFactory.getLogger(CacheServiceLocalRegistry.class);
+
+    private final ConcurrentMap<CacheServiceId, CacheService<?,?>> serviceIdToService;
+
+    CacheServiceLocalRegistry() {
+        serviceIdToService = new ConcurrentHashMap<>();
+    }
+
+    public <K,V> void register(CacheServiceId cacheServiceId, CacheService<K,V> cacheService) {
+        serviceIdToService.put(cacheServiceId, cacheService);
+        LOG.info("Registered cache service [{}] with id [{}].", cacheService, cacheServiceId);
+    }
+
+    public <K,V> CacheService<K,V> getCacheService(CacheServiceId cacheServiceId) {
+        return (CacheService<K, V>) serviceIdToService.get(cacheServiceId);
+    }
 }

@@ -23,12 +23,12 @@ import com.hortonworks.iotas.cache.redis.datastore.DataStore;
 import com.hortonworks.iotas.cache.redis.service.CacheService;
 import com.hortonworks.iotas.cache.redis.service.CacheServiceFactory;
 import com.hortonworks.iotas.cache.redis.service.CacheServiceId;
-import com.hortonworks.iotas.cache.redis.service.registry.CacheServiceRegistry;
+import com.hortonworks.iotas.cache.redis.service.registry.CacheServiceLocalRegistry;
 
 import java.util.HashMap;
 
 public class CacheClientMain {
-    private static final CacheServiceRegistry cacheRegistry = CacheServiceRegistry.INSTANCE;
+    private static final CacheServiceLocalRegistry cacheRegistry = CacheServiceLocalRegistry.INSTANCE;
     public static void main(String[] args) {
         CacheClientMain instance = new CacheClientMain();
         instance.<String, String>registerCache(new CacheServiceId("id1"));
