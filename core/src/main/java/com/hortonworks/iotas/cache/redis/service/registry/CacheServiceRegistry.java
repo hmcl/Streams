@@ -24,26 +24,26 @@ import com.hortonworks.iotas.cache.redis.service.CacheServiceId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public enum CacheServiceRegistry {
     INSTANCE;
 
     protected static final Logger LOG = LoggerFactory.getLogger(CacheServiceRegistry.class);
 
-    private Map<CacheServiceId, CacheService<?,?>> idToService;
+    private final ConcurrentMap<CacheServiceId, CacheService<?,?>> serviceIdToService;
 
     CacheServiceRegistry() {
-        idToService = new HashMap<>();
+        serviceIdToService = new ConcurrentHashMap<>();
     }
 
     public <K,V> void register(CacheServiceId cacheServiceId, CacheService<K,V> cacheService) {
-        idToService.put(cacheServiceId, cacheService);
+        serviceIdToService.put(cacheServiceId, cacheService);
         LOG.info("Registered cache service [{}] with id [{}].", cacheService, cacheServiceId);
     }
 
     public <K,V> CacheService<K,V> getCacheService(CacheServiceId cacheServiceId) {
-        return (CacheService<K, V>) idToService.get(cacheServiceId);
+        return (CacheService<K, V>) serviceIdToService.get(cacheServiceId);
     }
 }

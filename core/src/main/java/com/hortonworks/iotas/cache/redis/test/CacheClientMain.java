@@ -25,33 +25,42 @@ import com.hortonworks.iotas.cache.redis.service.CacheServiceFactory;
 import com.hortonworks.iotas.cache.redis.service.CacheServiceId;
 import com.hortonworks.iotas.cache.redis.service.registry.CacheServiceRegistry;
 
-import org.apache.commons.collections.map.HashedMap;
-
 import java.util.HashMap;
 
 public class CacheClientMain {
     private static final CacheServiceRegistry cacheRegistry = CacheServiceRegistry.INSTANCE;
     public static void main(String[] args) {
-
+        CacheClientMain instance = new CacheClientMain();
+        instance.<String, String>registerCache(new CacheServiceId("id1"));
+        instance.<Integer, Integer>registerCache(new CacheServiceId("id2"));
+        CacheService<String, String> id1 = cacheRegistry.getCacheService(new CacheServiceId("id1"));
     }
 
     public void method() {
-        CacheService<String, String> cacheService = cacheRegistry.getCacheService(CacheServiceId.redis("localhost", 6379));
+        CacheService<String, String> cacheService = cacheRegistry.getCacheService(getDefaultRedisId());
         Cache<String, String> cache = cacheService.getCache();
         String val = cache.get("key");
         cache.put("key", "val");
         cache.putAll(new HashMap<String, String>(){{put("key", "val"); put("key1", "val1");}});
     }
 
-    public void registerCache() {
-        cacheRegistry.register(CacheServiceId.redis("localhost", 6379), new CacheService<>(new CacheServiceFactory<String, String>() {
+    private CacheServiceId getDefaultRedisId() {
+        return getRedisId("localhost", 6379);
+    }
+
+    private CacheServiceId getRedisId(String host, int port) {
+        return CacheServiceId.redis(host, port);
+    }
+
+    public <K, V> void registerCache(CacheServiceId id) {
+        cacheRegistry.register(id, new CacheService<>(new CacheServiceFactory<K, V>() {
             @Override
-            public Cache<String, String> createCache() {
+            public Cache<K, V> createCache() {
                 return null;
             }
 
             @Override
-            public DataStore<String, String> createDataStore() {
+            public DataStore<K, V> createDataStore() {
                 return null;
             }
         }));

@@ -23,6 +23,9 @@ import com.hortonworks.iotas.cache.redis.datastore.DataStore;
 import com.hortonworks.iotas.cache.redis.datastore.DataStoreReader;
 import com.hortonworks.iotas.cache.redis.loader.CacheLoader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -43,5 +46,21 @@ public class CacheService<K,V> {
 
     public Map<K, V> loadAll(Collection<? extends K> keys) {
         return null;
+    }
+
+    public void write(K key, V val) {
+
+    }
+
+    public void writeAll(Map<? extends K, ? extends V> entries){
+
+    }
+
+    public void delete(K key) {
+
+    }
+
+    public void deleteAll(Collection<? extends K> keys) {
+
     }
  }

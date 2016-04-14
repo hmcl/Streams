@@ -45,6 +45,10 @@ public class RedisStringsCache<K,V> implements Cache<K,V> {
         this.redisConnection = redisConnection;
     }
 
+    public RedisStringsCache(RedisConnection<K, V> redisConnection) {
+        this(null, redisConnection);
+    }
+
     @Override
     public V get(K key) throws StorageException {
         V val = redisConnection.get(key);

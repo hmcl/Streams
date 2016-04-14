@@ -20,33 +20,53 @@ package com.hortonworks.iotas.cache.redis.service;
 
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.redis.datastore.DataStore;
+import com.hortonworks.iotas.cache.redis.datastore.writer.DataStoreWriter;
 import com.hortonworks.iotas.cache.redis.loader.CacheLoader;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class DataStoreCacheService<K,V> extends CacheService<K,V> {
     private DataStore<K,V> dataStore;
     private CacheLoader<K,V> cacheLoader;
+    private DataStoreWriter<K,V> dataStoreWriter;
 
     public DataStoreCacheService(CacheServiceFactory<K,V> factory) {
         super(factory);
         this.dataStore = factory.createDataStore();
     }
 
-    public Cache<K,V> getCache() {
-        return cache;
-    }
-
     public DataStore<K,V> getDataStore() {
         return dataStore;
     }
-
+    
+    @Override
     public V load(K key) {
         return cacheLoader.load(key);
     }
 
-    public void loadAll(Collection<? extends K> keys) {
+    @Override
+    public Map<K, V> loadAll(Collection<? extends K> keys) {
         return cacheLoader.loadAll(keys);
-
     }
- }
+
+    @Override
+    public void write(K key, V val) {
+        dataStoreWriter.write(key, val);
+    }
+
+    @Override
+    public void writeAll(Map<? extends K, ? extends V> entries) {
+        dataStoreWriter.writeAll(entries);
+    }
+
+    @Override
+    public void delete(K key) {
+        dataStoreWriter.delete(key);
+    }
+
+    @Override
+    public void deleteAll(Collection<? extends K> keys) {
+        dataStoreWriter.deleteAll(keys);
+    }
+}

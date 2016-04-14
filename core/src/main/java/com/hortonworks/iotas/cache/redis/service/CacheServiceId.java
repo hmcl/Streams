@@ -21,20 +21,14 @@ package com.hortonworks.iotas.cache.redis.service;
 import java.net.URI;
 
 public class CacheServiceId {
-    private URI uri;
     private final String id;
 
     public CacheServiceId(URI uri) {
         this(uri.toString());
-        this.uri = uri;
     }
 
     public CacheServiceId(String id) {
         this.id = id;
-    }
-
-    public URI getUri() {
-        return uri;
     }
 
     public String getId() {
