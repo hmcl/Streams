@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by hlouro on 8/6/15.
  */
 public interface Cache<K, V> {
-    V get(K key) throws StorageException;
+    V get(K key);
 
     Map<K, V> getAllPresent(Collection<? extends K> keys);
 
@@ -21,7 +21,7 @@ public interface Cache<K, V> {
 
     void remove(K key);
 
-    Map<K, V> removeAllPresent(Iterable<? extends K> keys);
+    Map<K, V> removeAllPresent(Collection<? extends K> keys);
 
     void clear();
 

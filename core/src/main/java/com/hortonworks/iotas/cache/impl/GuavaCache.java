@@ -41,7 +41,7 @@ public class GuavaCache implements Cache<StorableKey, Storable> {
         });
     }
 
-    public Storable get(StorableKey key) throws StorageException {
+    public Storable get(StorableKey key) {
         Storable val = null;
         try {
             val = guavaCache.get(key);
@@ -76,7 +76,7 @@ public class GuavaCache implements Cache<StorableKey, Storable> {
         guavaCache.invalidate(key);
     }
 
-    public Map<StorableKey, Storable> removeAllPresent(Iterable<? extends StorableKey> keys) {
+    public Map<StorableKey, Storable> removeAllPresent(Collection<? extends StorableKey> keys) {
         final ImmutableMap<StorableKey, Storable> allPresent = guavaCache.getAllPresent(keys);
         guavaCache.invalidateAll(keys);
         return allPresent;
