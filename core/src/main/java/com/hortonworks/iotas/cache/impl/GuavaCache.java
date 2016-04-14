@@ -15,6 +15,7 @@ import com.hortonworks.iotas.storage.exception.StorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -59,7 +60,7 @@ public class GuavaCache implements Cache<StorableKey, Storable> {
         return val;
     }
 
-    public Map<StorableKey, Storable> getAllPresent(Iterable<? extends StorableKey> keys) {
+    public Map<StorableKey, Storable> getAllPresent(Collection<? extends StorableKey> keys) {
         return guavaCache.getAllPresent(keys);
     }
 

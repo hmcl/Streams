@@ -4,6 +4,7 @@ package com.hortonworks.iotas.cache;
 import com.hortonworks.iotas.cache.stats.CacheStats;
 import com.hortonworks.iotas.storage.exception.StorageException;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Map;
 public interface Cache<K, V> {
     V get(K key) throws StorageException;
 
-    Map<K, V> getAllPresent(Iterable<? extends K> keys);
+    Map<K, V> getAllPresent(Collection<? extends K> keys);
 
     void put(K key, V val);
 
