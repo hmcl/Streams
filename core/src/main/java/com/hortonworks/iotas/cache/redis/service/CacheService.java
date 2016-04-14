@@ -31,6 +31,7 @@ import java.util.Map;
 
 public class CacheService<K,V> {
     protected final Cache<K,V> cache;
+    protected Map<String, Cache<K,V>> caches;
 
     public CacheService(CacheServiceFactory<K,V> factory) {
         this.cache = factory.createCache();
@@ -40,27 +41,11 @@ public class CacheService<K,V> {
         return cache;
     }
 
-    public V load(K key) {
-        return null;
+    public Cache<K,V> getCache(String namespace) {
+        return caches.get(namespace);
     }
 
-    public Map<K, V> loadAll(Collection<? extends K> keys) {
-        return null;
-    }
-
-    public void write(K key, V val) {
+    public void registerCache(String namespace, Cache<K,V> cache) {
 
     }
-
-    public void writeAll(Map<? extends K, ? extends V> entries){
-
-    }
-
-    public void delete(K key) {
-
-    }
-
-    public void deleteAll(Collection<? extends K> keys) {
-
-    }
- }
+}

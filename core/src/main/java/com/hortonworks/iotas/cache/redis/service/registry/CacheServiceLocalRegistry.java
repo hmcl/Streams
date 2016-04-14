@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentMap;
 public enum CacheServiceLocalRegistry implements CacheServiceRegistry {
     INSTANCE;
 
-    protected static final Logger LOG = LoggerFactory.getLogger(CacheServiceLocalRegistry.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CacheServiceLocalRegistry.class);
 
     private final ConcurrentMap<CacheServiceId, CacheService<?,?>> serviceIdToService;
 
