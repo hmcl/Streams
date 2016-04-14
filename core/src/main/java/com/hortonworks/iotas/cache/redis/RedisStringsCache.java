@@ -59,7 +59,7 @@ public class RedisStringsCache<K,V> implements Cache<K,V> {
     }
 
     @Override
-    public Map<K, V> getAllPresent(Iterable<? extends K> keys) {
+    public Map<K, V> getAllPresent(Collection<? extends K> keys) {
         final Map<K, V> existing = new HashMap<>();
         final List<K> nonExisting = new LinkedList<>();
 

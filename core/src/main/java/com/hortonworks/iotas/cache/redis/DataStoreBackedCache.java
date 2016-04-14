@@ -21,10 +21,8 @@ package com.hortonworks.iotas.cache.redis;
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.redis.datastore.writer.DataStoreWriter;
 import com.hortonworks.iotas.cache.redis.loader.CacheLoader;
-import com.hortonworks.iotas.cache.redis.service.CacheService;
 import com.hortonworks.iotas.cache.stats.CacheStats;
 import com.hortonworks.iotas.storage.exception.StorageException;
-import com.lambdaworks.redis.RedisConnection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +57,7 @@ public class DataStoreBackedCache<K,V> implements Cache<K,V> {
     }
 
     @Override
-    public Map<K, V> getAllPresent(Iterable<? extends K> keys) {
+    public Map<K, V> getAllPresent(Collection<? extends K> keys) {
         Map<K, V> allPresent = cache.getAllPresent(keys);
         if (allPresent == null || allPresent.isEmpty() || allPresent.size() < keys.s) {
 
