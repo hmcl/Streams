@@ -20,7 +20,6 @@ package com.hortonworks.iotas.cache;
 
 
 import com.hortonworks.iotas.cache.stats.CacheStats;
-import com.hortonworks.iotas.storage.exception.StorageException;
 
 import java.util.Collection;
 import java.util.Map;
@@ -29,7 +28,7 @@ import java.util.Map;
 public interface Cache<K, V> {
     V get(K key);
 
-    Map<K, V> getAllPresent(Collection<? extends K> keys);
+    Map<K, V> getAll(Collection<? extends K> keys);
 
     void put(K key, V val);
 
@@ -37,7 +36,7 @@ public interface Cache<K, V> {
 
     void remove(K key);
 
-    Map<K, V> removeAllPresent(Collection<? extends K> keys);
+    void removeAll(Collection<? extends K> keys);
 
     void clear();
 
