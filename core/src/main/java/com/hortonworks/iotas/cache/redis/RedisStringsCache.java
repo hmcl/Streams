@@ -19,20 +19,15 @@
 package com.hortonworks.iotas.cache.redis;
 
 import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.redis.service.CacheService;
 import com.hortonworks.iotas.cache.stats.CacheStats;
 import com.hortonworks.iotas.storage.exception.StorageException;
 import com.lambdaworks.redis.RedisConnection;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,16 +47,15 @@ public class RedisStringsCache<K,V> implements Cache<K,V> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Map<K, V> getAllPresent(Collection<? extends K> keys) {
+    public Map<K, V> getAll(Collection<? extends K> keys) {
         final K[] ks = keys.toArray(((K[])new Object[keys.size()]));
         final List<V> vals = redisConnection.mget(ks);
-
-        HashMap<K, V> present = new HashMap<>();
+        final HashMap<K, V> present = new HashMap<>();
 
         if (ks.length != vals.size()) {
             LOG.error("Number of keys [{}] does not match unexpected number of values [{}]. Returning empty map");
         } else {
-            for (int i = 0; i < vals.size(); i++) {
+            for (int i = 0; i < vals.size(); i++) { // values come in order from Redis
                 final V val = vals.get(i);
                 if (val != null) {
                     present.put(ks[i], val);
@@ -69,7 +63,6 @@ public class RedisStringsCache<K,V> implements Cache<K,V> {
                     LOG.debug("Key [{}] has null value. Skipping", ks[i]);
                 }
             }
-
         }
         LOG.debug("Entries existing in cache [{}]. Keys non existing in cache: [{}]", present, keys.removeAll(present.keySet()));
         return present;
@@ -92,25 +85,20 @@ public class RedisStringsCache<K,V> implements Cache<K,V> {
         redisConnection.del(key);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Map<K, V> removeAllPresent(Collection<? extends K> keys) {
-        return null;
+    public void removeAll(Collection<? extends K> keys) {
+        redisConnection.del(keys.toArray(((K[])new Object[keys.size()])));
     }
 
     @Override
     public void clear() {
-        Collection<? extends K> keys = new ArrayList<>();
-        removeAllPresent(keys);
-
-        Map<? extends Number, ? extends Number> mnn = null;
-        Map<Integer, Integer> mii = null;
-        mnn = mii;
-
+        redisConnection.flushdb();
     }
 
     @Override
     public long size() {
-        return 0;
+        return redisConnection.keys("*").size();
     }
 
     @Override

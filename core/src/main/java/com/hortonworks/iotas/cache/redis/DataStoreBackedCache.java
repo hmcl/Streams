@@ -27,7 +27,6 @@ import com.hortonworks.iotas.storage.exception.StorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -61,8 +60,8 @@ public class DataStoreBackedCache<K,V> implements Cache<K,V> {
     }
 
     @Override
-    public Map<K, V> getAllPresent(Collection<? extends K> keys) {  // TODO what if trying to load more keys than max number of keys that be kept in the cache ?
-        Map<K, V> present = cache.getAllPresent(keys);
+    public Map<K, V> getAll(Collection<? extends K> keys) {  // TODO what if trying to load more keys than max number of keys that be kept in the cache ?
+        Map<K, V> present = cache.getAll(keys);
         if (present == null || present.isEmpty()) {
             present = cacheLoader.loadAll(keys);
         } else if (present.size() < keys.size()) {
@@ -88,10 +87,9 @@ public class DataStoreBackedCache<K,V> implements Cache<K,V> {
     }
 
     @Override
-    public Map<K, V> removeAllPresent(Collection<? extends K> keys) {
-        final Map<K, V> removed = cache.removeAllPresent(keys);
+    public void removeAll(Collection<? extends K> keys) {
+        cache.removeAll(keys);
         dataStoreWriter.deleteAll(keys);
-        return removed;
     }
 
     @Override
