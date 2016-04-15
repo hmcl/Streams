@@ -24,11 +24,13 @@ import com.hortonworks.iotas.cache.stats.CacheStats;
 import com.hortonworks.iotas.storage.exception.StorageException;
 import com.lambdaworks.redis.RedisConnection;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,62 +39,61 @@ import java.util.Map;
 public class RedisStringsCache<K,V> implements Cache<K,V> {
     private static final Logger LOG = LoggerFactory.getLogger(RedisStringsCache.class);
 
-    private CacheService<K,V> cacheService;
     private RedisConnection<K,V> redisConnection;
 
-    public RedisStringsCache(CacheService<K, V> cacheService, RedisConnection<K, V> redisConnection) {
-        this.cacheService = cacheService;
-        this.redisConnection = redisConnection;
-    }
-
     public RedisStringsCache(RedisConnection<K, V> redisConnection) {
-        this(null, redisConnection);
+        this.redisConnection = redisConnection;
     }
 
     @Override
     public V get(K key) throws StorageException {
-        V val = redisConnection.get(key);
-        if (val == null) {
-            val = cacheService.load(key);
-        }
-        return val;
+        return redisConnection.get(key);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Map<K, V> getAllPresent(Collection<? extends K> keys) {
-        final Map<K, V> existing = new HashMap<>();
-        final List<K> nonExisting = new LinkedList<>();
+        final K[] ks = keys.toArray(((K[])new Object[keys.size()]));
+        final List<V> vals = redisConnection.mget(ks);
 
-        for (K key : keys) {
-            final V val = get(key);
-            if (val != null) {
-                existing.put(key, val);
-            } else {
-                nonExisting.add(key);
+        HashMap<K, V> present = new HashMap<>();
+
+        if (ks.length != vals.size()) {
+            LOG.error("Number of keys [{}] does not match unexpected number of values [{}]. Returning empty map");
+        } else {
+            for (int i = 0; i < vals.size(); i++) {
+                final V val = vals.get(i);
+                if (val != null) {
+                    present.put(ks[i], val);
+                } else {
+                    LOG.debug("Key [{}] has null value. Skipping", ks[i]);
+                }
             }
+
         }
-        LOG.debug("Entries existing in cache [{}]. Keys non existing in cache: [{}]", existing, nonExisting);
-        return existing;
+        LOG.debug("Entries existing in cache [{}]. Keys non existing in cache: [{}]", present, keys.removeAll(present.keySet()));
+        return present;
     }
 
     @Override
     public void put(K key, V val) {
         redisConnection.set(key, val);
-        LOG.debug("Set {}=>{}", key, val);
+        LOG.debug("Set (key,val) => ({},{})", key, val);
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> entries) {
-        redisConnection.mset(entries);
+        redisConnection.mset(new HashMap<>(entries));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void remove(K key) {
         redisConnection.del(key);
     }
 
     @Override
-    public Map<K, V> removeAllPresent(Iterable<? extends K> keys) {
+    public Map<K, V> removeAllPresent(Collection<? extends K> keys) {
         return null;
     }
 

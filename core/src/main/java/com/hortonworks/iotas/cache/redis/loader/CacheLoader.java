@@ -22,6 +22,7 @@ import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.redis.datastore.DataStore;
 
 import java.util.Collection;
+import java.util.Map;
 
 public abstract class CacheLoader<K,V> {
     protected Cache<K,V> cache;
@@ -38,5 +39,5 @@ public abstract class CacheLoader<K,V> {
         return val;
     }
 
-    public abstract void loadAll(Collection<? extends K> keys);
+    public abstract Map<K, V> loadAll(Collection<? extends K> keys);
 }

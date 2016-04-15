@@ -23,7 +23,10 @@ import java.util.Map;
 
 public interface DataStoreWriter<K,V> {
     void write(K key, V val);
+
     void writeAll(Map<? extends K, ? extends V> entries);
+
     void delete(K key);
+
     void deleteAll(Collection<? extends K> keys);
 }

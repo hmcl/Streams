@@ -29,10 +29,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class DataStoreBackedCache<K,V> implements Cache<K,V> {
     private static final Logger LOG = LoggerFactory.getLogger(DataStoreBackedCache.class);
@@ -41,7 +40,6 @@ public class DataStoreBackedCache<K,V> implements Cache<K,V> {
     private final DataStoreWriter<K, V> dataStoreWriter;
 
     public DataStoreBackedCache(Cache<K,V> cache, CacheLoader<K,V> cacheLoader, DataStoreWriter<K,V> dataStoreWriter) {
-
         this.cache = cache;
         this.cacheLoader = cacheLoader;
         this.dataStoreWriter = dataStoreWriter;
@@ -57,110 +55,58 @@ public class DataStoreBackedCache<K,V> implements Cache<K,V> {
     }
 
     @Override
-    public Map<K, V> getAllPresent(Collection<? extends K> keys) {
-        Map<K, V> allPresent = cache.getAllPresent(keys);
-        if (allPresent == null || allPresent.isEmpty() || allPresent.size() < keys.s) {
-
-        }
-
-
-        final Map<K, V> existing = new HashMap<>();
-        final List<K> nonExisting = new LinkedList<>();
-
-        cac
-
-        for (K key : keys) {
-            final V val = get(key);
-            if (val != null) {
-                existing.put(key, val);
-            } else {
-                nonExisting.add(key);
-            }
-        }
-        LOG.debug("Entries existing in cache [{}]. Keys non existing in cache: [{}]", existing, nonExisting);
-        return existing;
+    public void put(K key, V val) {
+        cache.put(key, val);
+        dataStoreWriter.write(key, val);
     }
 
     @Override
-    public void put(K key, V val) {
-        redisConnection.set(key, val);
-        LOG.debug("Set {}=>{}", key, val);
+    public Map<K, V> getAllPresent(Collection<? extends K> keys) {  // TODO what if trying to load more keys than max number of keys that be kept in the cache ?
+        Map<K, V> present = cache.getAllPresent(keys);
+        if (present == null || present.isEmpty()) {
+            present = cacheLoader.loadAll(keys);
+        } else if (present.size() < keys.size()) {
+            Set<K> notPresent = new HashSet<>(keys);
+            notPresent.removeAll(present.keySet());
+            Map<K, V> loaded = cacheLoader.loadAll(notPresent);     //TODO handle NPE
+            present.putAll(loaded);
+        }
+        LOG.debug("Entries existing in cache [{}]. Keys non existing in cache: [{}]", present, notPresent.removeAll(loaded));
+        return present;
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> entries) {
-        redisConnection.mset(entries);
+        cache.putAll(entries);
+        dataStoreWriter.writeAll(entries);
     }
 
     @Override
     public void remove(K key) {
-        redisConnection.del(key);
+        cache.remove(key);
+        dataStoreWriter.delete(key);
     }
 
     @Override
-    public Map<K, V> removeAllPresent(Iterable<? extends K> keys) {
-        return null;
+    public Map<K, V> removeAllPresent(Collection<? extends K> keys) {
+        final Map<K, V> removed = cache.removeAllPresent(keys);
+        dataStoreWriter.deleteAll(keys);
+        return removed;
     }
 
     @Override
     public void clear() {
-        Collection<? extends K> keys = new ArrayList<>();
-        removeAllPresent(keys);
-
-        Map<? extends Number, ? extends Number> mnn = null;
-        Map<Integer, Integer> mii = null;
-        mnn = mii;
-
+        cache.clear();
+        LOG.warn("Entries only removed from cache but not from DB");    //TODO Remove from cache
     }
 
     @Override
     public long size() {
-        return 0;
+        return cache.size();
     }
 
     @Override
     public CacheStats stats() {
         return null;
     }
-
-    public static class Builder<K,V> {
-        private static final long DEFAULT_MAX_BYTES = 10*1024*1024;     // 10 MBs
-
-        public Builder() { }
-
-        private long sizeBytes = DEFAULT_MAX_BYTES;
-        private BytesCalculator bytesCalculator;
-        private long maxSizeBytes;
-
-        public Builder setMaxSizeBytes(long maxSizeBytes) {
-            this.maxSizeBytes = maxSizeBytes;
-            return this;
-        }
-
-        public Builder setMaxSizeBytesConverter(BytesCalculator bytesCalculator) {
-            this.bytesCalculator = bytesCalculator;
-            return this;
-        }
-
-        public Cache<K,V> build() {
-            if (bytesCalculator != null) {
-                LOG.debug("Setting ");
-
-            }
-            return null;    //TODO
-        }
-     }
-
-
-
-
-    public interface BytesCalculator<T> {
-        /**
-         * @param object object that can be used to calculate the number of bytes that should be used to expire the cache
-         * @return bytes
-         */
-        long computeBytes(T object);
-    }
-
-
 }

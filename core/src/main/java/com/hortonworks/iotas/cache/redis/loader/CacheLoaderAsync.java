@@ -46,7 +46,7 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
         this.executorService = executorService;
     }
 
-    public void loadAll(final Collection<? extends K> keys) {
+    public Map<K, V> loadAll(final Collection<? extends K> keys) {
         try {
             executorService.invokeAll(buildCallables(keys));
         } catch (InterruptedException e) {
