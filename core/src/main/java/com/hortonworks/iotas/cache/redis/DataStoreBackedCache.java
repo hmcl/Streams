@@ -70,7 +70,7 @@ public class DataStoreBackedCache<K,V> implements Cache<K,V> {
             Map<K, V> loaded = cacheLoader.loadAll(notPresent);     //TODO handle NPE
             present.putAll(loaded);
         }
-        LOG.debug("Entries existing in cache [{}]. Keys non existing in cache: [{}]", present, notPresent.removeAll(loaded));
+//        LOG.debug("Entries existing in cache [{}]. Keys non existing in cache: [{}]", present, notPresent.removeAll(loaded));
         return present;
     }
 
