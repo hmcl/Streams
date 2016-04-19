@@ -2,10 +2,36 @@
   "caches": [
     {
       "cache": {
+        "name": "redis-cache-name",
         "config": {
           "instance": "redis / guava / hazelcast / memcached",
           "host": "localhost",
-          "port": "6379"
+          "port": "6379",
+          "load": "sync / async",
+          "write": "sync / async",
+          "read": "through"
+        },
+        "views": [
+          {
+            "view": {
+              "type": "hashes",
+              "key": "key-name"
+            }
+          },
+          {
+            "view": {
+              "type": "strings"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "cache": {
+        "config": {
+          "instance": "memcached",
+          "host": "127.0.0.1",
+          "port": "1234"
         },
         "entries": [
           {
@@ -30,9 +56,7 @@
     {
       "cache": {
         "config": {
-          "instance": "memcached",
-          "host": "127.0.0.1",
-          "port": "1234"
+          "instance": "guava"
         },
         "entries": [
           {
