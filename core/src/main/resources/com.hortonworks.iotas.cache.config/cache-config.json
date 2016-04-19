@@ -1,0 +1,58 @@
+{
+  "caches": [
+    {
+      "cache": {
+        "config": {
+          "instance": "redis / guava / hazelcast / memcached",
+          "host": "localhost",
+          "port": "6379"
+        },
+        "entries": [
+          {
+            "entry": {
+              "name": "bla",
+              "load": "sync / async",
+              "write": "sync / async",
+              "read": "through"
+            }
+          },
+          {
+            "entry": {
+              "name": "bla",
+              "load": "sync / async",
+              "write": "sync / async",
+              "read": "through"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "cache": {
+        "config": {
+          "instance": "memcached",
+          "host": "127.0.0.1",
+          "port": "1234"
+        },
+        "entries": [
+          {
+            "entry": {
+              "name": "bla",
+              "load": "sync / async",
+              "write": "sync / async",
+              "read": "through"
+            }
+          },
+          {
+            "entry": {
+              "name": "bla",
+              "load": "sync / async",
+              "write": "sync / async",
+              "read": "through"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

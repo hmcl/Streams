@@ -19,23 +19,39 @@
 package com.hortonworks.iotas.cache.redis.service;
 
 import com.hortonworks.iotas.cache.redis.RedisStringsCache;
+import com.hortonworks.iotas.cache.redis.datastore.DataStore;
+import com.hortonworks.iotas.cache.redis.datastore.writer.DataStoreWriter;
+import com.hortonworks.iotas.cache.redis.loader.CacheLoader;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
+import com.lambdaworks.redis.RedisConnectionPool;
 import com.lambdaworks.redis.codec.RedisCodec;
 
 public class RedisCacheService<K,V> extends CacheService<K, V> {
-    private RedisClient redisClient;
-    private RedisConnection<K,V> redisConnection;
+    public static String REDIS_STRINGS_CACHE = "REDIS_STRINGS_CACHE";
 
-    public RedisCacheService(RedisClient redisClient) {
-        this.redisClient = redisClient;
-        RedisCodec<? extends Object, ? extends Object> codec;
-        redisClient.connect(codec)
+    private RedisConnectionFactory connectionFactory;
+
+    public RedisCacheService(RedisConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
+
+    public static class Builder<K,V> {
+        private RedisClient redisClient;
+        private final CacheLoader<K, V> cacheLoader;
+        private final DataStoreWriter<K, V> dataStoreWriter;
+        private final DataStore<K, V> dataStore;
+
+        public Builder(RedisClient redisClient) {
+            this.redisClient = redisClient;
+        }
+
+
+
+
     }
 
     public static class Builder {
-        private RedisClient redisClient;
-
         public Builder(RedisClient redisClient) {
             this.redisClient = redisClient;
         }
@@ -43,14 +59,46 @@ public class RedisCacheService<K,V> extends CacheService<K, V> {
 
     private void registerHashesCache(String name) {
 
+
     }
 
-    public static String REDIS_STRINGS_CACHE = "REDIS_STRINGS_CACHE";
 
     public void registerStringsCache() {
         caches.putIfAbsent(REDIS_STRINGS_CACHE, new RedisStringsCache<K, V>(redisConnection));
     }
 
-    pr
+
+    public class RedisConnectionFactory  {
+        // Defaults for Lettuce Redis Client 3.4.2
+        private static final int MAX_IDLE = 5;
+        private static final int MAX_ACTIVE = 20;
+
+        private RedisClient redisClient;
+
+        public RedisConnectionFactory(RedisClient redisClient) {
+            this.redisClient = redisClient;
+        }
+
+        public RedisConnection<String, String> createStringsConnection() {
+            return redisClient.connect();
+        }
+
+        public RedisConnection<K, V> createConnection(RedisCodec<K, V> codec) {
+            return redisClient.connect(codec);
+        }
+
+        public RedisConnectionPool<RedisConnection<String, String>> createStringsConnectionPool() {
+            return redisClient.pool();
+        }
+
+        public RedisConnectionPool<RedisConnection<K, V>> createConnectionPool(RedisCodec<K, V> codec) {
+            return redisClient.pool(codec, MAX_IDLE, MAX_ACTIVE);
+        }
+
+        public RedisClient getRedisClient() {
+            return redisClient;
+        }
+    }
+
 
 }

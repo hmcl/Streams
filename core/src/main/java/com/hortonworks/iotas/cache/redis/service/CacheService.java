@@ -35,4 +35,12 @@ public class CacheService<K,V> {
     public void registerCache(String namespace, Cache<K,V> cache) {
         caches.put(namespace, cache);
     }
+
+    public void start() {
+
+    }
+
+    public void stop() {
+
+    }
 }
