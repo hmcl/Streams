@@ -19,6 +19,7 @@
 package com.hortonworks.iotas.cache.redis.test;
 
 import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.redis.DataStoreBackedCache;
 import com.hortonworks.iotas.cache.redis.datastore.DataStore;
 import com.hortonworks.iotas.cache.redis.service.CacheService;
 import com.hortonworks.iotas.cache.redis.service.CacheServiceFactory;
@@ -39,6 +40,14 @@ public class CacheClientMain {
     public void method() {
         CacheService<String, String> cacheService = cacheRegistry.getCacheService(getDefaultRedisId());
         Cache<String, String> cache = cacheService.getCache();
+        String val = cache.get("key");
+        cache.put("key", "val");
+        cache.putAll(new HashMap<String, String>(){{put("key", "val"); put("key1", "val1");}});
+    }
+
+    public void method1() {
+        CacheService<String, String> cacheService = cacheRegistry.getCacheService(getDefaultRedisId());
+        DataStoreBackedCache<String, String> cache = cacheService.getCache("");
         String val = cache.get("key");
         cache.put("key", "val");
         cache.putAll(new HashMap<String, String>(){{put("key", "val"); put("key1", "val1");}});

@@ -39,7 +39,7 @@ public enum CacheServiceLocalRegistry implements CacheServiceRegistry {
     }
 
     public <K,V> void register(CacheServiceId cacheServiceId, CacheService<K,V> cacheService) {
-        serviceIdToService.put(cacheServiceId, cacheService);
+        serviceIdToService.putIfAbsent(cacheServiceId, cacheService);
         LOG.info("Registered cache service [{}] with id [{}].", cacheService, cacheServiceId);
     }
 

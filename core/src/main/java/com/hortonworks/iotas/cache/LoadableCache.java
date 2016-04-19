@@ -16,32 +16,8 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.redis.loader;
+package com.hortonworks.iotas.cache;
 
-import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.redis.datastore.DataStore;
+public interface LoadableCache<K, V> extends Cache<K, V> {
 
-import java.util.Collection;
-import java.util.Map;
-
-public abstract class CacheLoader<K,V> {
-    protected Cache<K,V> cache;
-    protected DataStore<K, V> dataStore;
-
-    public CacheLoader(Cache<K, V> cache, DataStore<K,V> dataStore) {
-        this.cache = cache;
-        this.dataStore = dataStore;
-    }
-
-    public V load(K key) {
-        V val = dataStore.read(key);
-        cache.put(key, val);
-        return val;
-    }
-
-    public abstract Map<K, V> loadAll(Collection<? extends K> keys);
-
-    public DataStore<K, V> getDataStore() {
-        return dataStore;
-    }
 }

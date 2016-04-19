@@ -68,8 +68,8 @@ public abstract class DataStoreWriterAsync<K,V> implements DataStoreWriter<K,V> 
 
         @Override
         public void run() {
-            batch.
-            dataStore.write();
+//            batch.
+//            dataStore.write();
 
         }
     }

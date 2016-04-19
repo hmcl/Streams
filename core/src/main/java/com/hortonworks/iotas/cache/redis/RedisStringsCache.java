@@ -31,10 +31,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RedisStringsCache<K,V> implements Cache<K,V> {
+public class RedisStringsCache<K, V> implements Cache<K, V> {
     private static final Logger LOG = LoggerFactory.getLogger(RedisStringsCache.class);
 
-    private RedisConnection<K,V> redisConnection;
+    private RedisConnection<K, V> redisConnection;
 
     public RedisStringsCache(RedisConnection<K, V> redisConnection) {
         this.redisConnection = redisConnection;
@@ -48,7 +48,7 @@ public class RedisStringsCache<K,V> implements Cache<K,V> {
     @Override
     @SuppressWarnings("unchecked")
     public Map<K, V> getAll(Collection<? extends K> keys) {
-        final K[] ks = keys.toArray(((K[])new Object[keys.size()]));
+        final K[] ks = keys.toArray(((K[]) new Object[keys.size()]));
         final List<V> vals = redisConnection.mget(ks);
         final HashMap<K, V> present = new HashMap<>();
 
@@ -88,12 +88,12 @@ public class RedisStringsCache<K,V> implements Cache<K,V> {
     @SuppressWarnings("unchecked")
     @Override
     public void removeAll(Collection<? extends K> keys) {
-        redisConnection.del(keys.toArray(((K[])new Object[keys.size()])));
+        redisConnection.del(keys.toArray(((K[]) new Object[keys.size()])));
     }
 
     @Override
     public void clear() {
-        redisConnection.flushdb();
+//        redisConnection.flushdb();
     }
 
     @Override
@@ -106,10 +106,11 @@ public class RedisStringsCache<K,V> implements Cache<K,V> {
         return null;
     }
 
-    public static class Builder<K,V> {
-        private static final long DEFAULT_MAX_BYTES = 10*1024*1024;     // 10 MBs
+    public static class Builder<K, V> {
+        private static final long DEFAULT_MAX_BYTES = 10 * 1024 * 1024;     // 10 MBs
 
-        public Builder() { }
+        public Builder() {
+        }
 
         private long sizeBytes = DEFAULT_MAX_BYTES;
         private BytesCalculator bytesCalculator;
@@ -125,16 +126,14 @@ public class RedisStringsCache<K,V> implements Cache<K,V> {
             return this;
         }
 
-        public Cache<K,V> build() {
+        public Cache<K, V> build() {
             if (bytesCalculator != null) {
                 LOG.debug("Setting ");
 
             }
             return null;    //TODO
         }
-     }
-
-
+    }
 
 
     public interface BytesCalculator<T> {

@@ -73,6 +73,10 @@ public class RedisCacheTestMain {
         return connection;
     }
 
+    public static RedisConnection<String, String> getConnection1() {
+        return connection1;
+    }
+
     public static void readInput() {
 //        System.out.println("Type ENTER to stop");
         LOG.info("Type ENTER to stop");

@@ -19,33 +19,20 @@
 package com.hortonworks.iotas.cache.redis.service;
 
 import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.redis.datastore.DataStore;
-import com.hortonworks.iotas.cache.redis.datastore.DataStoreReader;
-import com.hortonworks.iotas.cache.redis.loader.CacheLoader;
+import com.hortonworks.iotas.cache.redis.DataStoreBackedCache;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class CacheService<K,V> {
-    protected final Cache<K,V> cache;
-    protected Map<String, Cache<K,V>> caches;
+    protected ConcurrentMap<String, Cache<K,V>> caches = new ConcurrentHashMap<>();
 
-    public CacheService(CacheServiceFactory<K,V> factory) {
-        this.cache = factory.createCache();
-    }
-
-    public Cache<K,V> getCache() {
-        return cache;
-    }
-
-    public Cache<K,V> getCache(String namespace) {
-        return caches.get(namespace);
+    public <T extends Cache<K,V>> T getCache(String namespace) {
+        return (T) caches.get(namespace);
     }
 
     public void registerCache(String namespace, Cache<K,V> cache) {
-
+        caches.put(namespace, cache);
     }
 }

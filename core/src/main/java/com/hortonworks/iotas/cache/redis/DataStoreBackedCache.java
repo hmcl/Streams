@@ -19,6 +19,7 @@
 package com.hortonworks.iotas.cache.redis;
 
 import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.redis.datastore.DataStore;
 import com.hortonworks.iotas.cache.redis.datastore.writer.DataStoreWriter;
 import com.hortonworks.iotas.cache.redis.loader.CacheLoader;
 import com.hortonworks.iotas.cache.stats.CacheStats;
@@ -31,24 +32,41 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 public class DataStoreBackedCache<K,V> implements Cache<K,V> {
     private static final Logger LOG = LoggerFactory.getLogger(DataStoreBackedCache.class);
     private final Cache<K, V> cache;
     private final CacheLoader<K, V> cacheLoader;
     private final DataStoreWriter<K, V> dataStoreWriter;
+    private final DataStore<K, V> dataStore;
 
-    public DataStoreBackedCache(Cache<K,V> cache, CacheLoader<K,V> cacheLoader, DataStoreWriter<K,V> dataStoreWriter) {
+    public DataStoreBackedCache(Cache<K,V> cache, CacheLoader<K,V> cacheLoader,
+                                DataStoreWriter<K,V> dataStoreWriter) {
         this.cache = cache;
         this.cacheLoader = cacheLoader;
+        this.dataStore = cacheLoader.getDataStore();
         this.dataStoreWriter = dataStoreWriter;
+    }
+
+    interface CacheLoaderListener<K,V> {
+        void onCacheLoaded(Future<Map<K,V>> loaded);
+        void onCacheLoadingException();
+    }
+
+    public void loadAll(Collection<? extends K> keys) {
+        cacheLoader.loadAll(keys);
+    }
+
+    public void loadAllAsync(Collection<? extends K> keys, CacheLoaderListener listener) {
+        cacheLoader.loadAll(keys);
     }
 
     @Override
     public V get(K key) throws StorageException {
         V val = cache.get(key);
         if (val == null) {
-            val = cacheLoader.load(key);
+            val = dataStore.read(key);
         }
         return val;
     }
@@ -63,11 +81,11 @@ public class DataStoreBackedCache<K,V> implements Cache<K,V> {
     public Map<K, V> getAll(Collection<? extends K> keys) {  // TODO what if trying to load more keys than max number of keys that be kept in the cache ?
         Map<K, V> present = cache.getAll(keys);
         if (present == null || present.isEmpty()) {
-            present = cacheLoader.loadAll(keys);
+            present = dataStore.readAll(keys);                  // in sync read through
         } else if (present.size() < keys.size()) {
             Set<K> notPresent = new HashSet<>(keys);
             notPresent.removeAll(present.keySet());
-            Map<K, V> loaded = cacheLoader.loadAll(notPresent);     //TODO handle NPE
+            Map<K, V> loaded = dataStore.readAll(notPresent);   // in sync read through
             present.putAll(loaded);
         }
 //        LOG.debug("Entries existing in cache [{}]. Keys non existing in cache: [{}]", present, notPresent.removeAll(loaded));
@@ -95,7 +113,7 @@ public class DataStoreBackedCache<K,V> implements Cache<K,V> {
     @Override
     public void clear() {
         cache.clear();
-        LOG.warn("Entries only removed from cache but not from DB");    //TODO Remove from cache
+        LOG.info("Entries only removed from cache but not from backing data store");    //TODO Remove from DB as well ?
     }
 
     @Override
