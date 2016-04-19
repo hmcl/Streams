@@ -2,24 +2,64 @@
   "caches": [
     {
       "cache": {
-        "name": "redis-cache-name",
+        "name": "redis-cache-1",
         "config": {
-          "instance": "redis / guava / hazelcast / memcached",
-          "host": "localhost",
-          "port": "6379",
-          "load": "sync / async",
-          "write": "sync / async",
-          "read": "through"
+          "connection": {
+            "type": "redis / guava / hazelcast / memcached",
+            "host": "localhost",
+            "port": "6379"
+          },
+          "data-store": {
+            "connection": {
+              "type": "mysql / phoenix / hbase",
+              "host": "localhost",
+              "port": "8888"
+            },
+            "load": "sync / async",
+            "write": "sync / async",
+            "read": "through"
+          },
+          "expiry-policy": {
+            "ttl": {
+              "count": 10,
+              "unit": "seconds"
+            },
+            "entries": 1000,
+            "size": {
+              "count": 10,
+              "unit": "megabytes"
+            }
+          }
         },
         "views": [
           {
             "view": {
+              "name": "hashes-view-1",
               "type": "hashes",
-              "key": "key-name"
+              "key": "hashes-key-1"
             }
           },
           {
             "view": {
+              "name": "hashes-view-2",
+              "type": "hashes",
+              "key": "hashes-key-2",
+              "expiry-policy": {
+                "ttl": {
+                  "count": 10,
+                  "unit": "seconds"
+                },
+                "entries": 1000,
+                "size": {
+                  "count": 10,
+                  "unit": "megabytes"
+                }
+              }
+            }
+          },
+          {
+            "view": {
+              "name": "strings-view",
               "type": "strings"
             }
           }
