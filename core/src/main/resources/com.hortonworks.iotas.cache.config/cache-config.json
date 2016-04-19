@@ -16,8 +16,8 @@
               "port": "8888"
             },
             "load": "sync / async",
-            "write": "sync / async",
-            "read": "through"
+            "read": "through",
+            "write": "sync / async"
           },
           "expiry-policy": {
             "ttl": {
@@ -61,6 +61,71 @@
             "view": {
               "name": "strings-view",
               "type": "strings"
+            }
+          }
+        ]
+      }
+    },{
+      "cache": {
+        "name": "guava-1",
+        "config": {
+          "data-store": {
+            "connection": {
+              "type": "phoenix",
+              "host": "localhost",
+              "port": "8888"
+            },
+            "load": "sync",
+            "read": "through",
+            "write": "async"
+          },
+          "expiry-policy": {
+            "ttl": {
+              "count": 100,
+              "unit": "milliseconds"
+            }
+          }
+        },
+        "views": [
+          {
+            "view": {
+              "name": "guava-view-1"
+            }
+          },
+          {
+            "view": {
+              "name": "guava-view-2",
+              "expiry-policy": {
+                "ttl": {
+                  "count": 10,
+                  "unit": "seconds"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "cache": {
+        "name": "guava-2",
+
+        },
+        "views": [
+          {
+            "view": {
+              "name": "guava-view-1"
+            }
+          },
+          {
+            "view": {
+              "name": "guava-view-2",
+              "expiry-policy": {
+                "ttl": {
+                  "count": 10,
+                  "unit": "seconds"
+                }
+              }
             }
           }
         ]
