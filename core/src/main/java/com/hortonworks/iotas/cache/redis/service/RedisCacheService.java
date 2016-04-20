@@ -27,34 +27,172 @@ import com.lambdaworks.redis.RedisConnection;
 import com.lambdaworks.redis.RedisConnectionPool;
 import com.lambdaworks.redis.codec.RedisCodec;
 
+import java.util.concurrent.TimeUnit;
+
 public class RedisCacheService<K,V> extends CacheService<K, V> {
     public static String REDIS_STRINGS_CACHE = "REDIS_STRINGS_CACHE";
 
+    private RedisClient redisClient;
+    private CacheLoader<K, V> cacheLoader;
+    private DataStoreWriter<K, V> dataStoreWriter;
+    private DataStore<K, V> dataStore;
+
     private RedisConnectionFactory connectionFactory;
 
-    public RedisCacheService(RedisConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
+    public RedisCacheService(Builder builder) {
+        super(builder.name, builder.type);
+        this.redisClient = builder.redisClient;
+        this.cacheLoader = builder.cacheLoader;
+        this.dataStoreWriter = builder.dataStoreWriter;
+        this.dataStore = builder.dataStore;
     }
+
+    public class CacheConfig {
+        String name;
+        Type type;
+        ConnectionConfig connectionConfig;
+        DataStoreConfig dataStoreConfig;
+
+
+    }
+
+    public class ConnectionConfig {
+        private String host;
+        private String port;
+
+        public ConnectionConfig(String host, String port) {
+            this.host = host;
+            this.port = port;
+        }
+    }
+
+    public class RedisConnectionConfig extends ConnectionConfig{
+        private Pool pool;
+
+        class Pool {
+            int min;
+            int max;
+
+            public Pool(int min, int max) {
+                this.min = min;
+                this.max = max;
+            }
+        }
+
+        public RedisConnectionConfig(String host, String port, Pool pool) {
+            super(host, port);
+            this.pool = pool;
+        }
+    }
+
+
+
+    enum DataStoreType {PHOENIX, MYSQL, H_BASE}
+    enum CacheLoadingType{SYNC, ASYNC}
+    enum ReadingType{THROUGH}
+    enum WritingType{SYNC, ASYNC}
+
+
+    public class DataStoreConfig {
+        String name;
+        DataStoreType type;
+        ConnectionConfig config;
+        CacheLoadingType loadingType;
+        ReadingType readingType;
+        WritingType writingType;
+    }
+
+    public class ExpiryPolicy {
+        class Ttl {
+            long count;
+            TimeUnit unit;
+
+            public Ttl(long count, TimeUnit unit) {
+                this.count = count;
+                this.unit = unit;
+            }
+        }
+
+        class Size {
+            long count;
+            BytesUnit unit;
+
+            public Size(long count, BytesUnit unit) {
+                this.count = count;
+                this.unit = unit;
+            }
+        }
+
+        private Ttl ttl;
+        private long entries;
+        private Size size;
+
+        public ExpiryPolicy(Ttl ttl, long entries, Size size) {
+            this.ttl = ttl;
+            this.entries = entries;
+            this.size = size;
+        }
+    }
+
+    public enum BytesUnit {
+        BYTES {
+        public long toBytes(long d) { return d; }
+        public long toKilobytes(long d) { return d/RATIO; }
+        public long toMegabytes(long d)  { return d/RATIO_POW_2; }
+        },
+        KILOBYTES {
+            public long toBytes(long d)  { return d*RATIO; }
+            public long toKilobytes(long d) { return d; }
+            public long toMegabytes(long d)  { return d/RATIO; }
+        },
+        MEGABYTES {
+            public long toBytes(long d)  { return d*RATIO_POW_2; }
+            public long toKilobytes(long d) { return d*RATIO; }
+            public long toMegabytes(long d)  { return d; }
+        };
+
+        private static final long RATIO = 1024;
+        private static final long RATIO_POW_2 = 1024*1024;
+
+        public long toBytes(long d)  {throw new AbstractMethodError(); }
+        public long toKilobytes(long d) {throw new AbstractMethodError(); }
+        public long toMegabytes(long d) {throw new AbstractMethodError(); }
+    }
+
+
+
 
     public static class Builder<K,V> {
-        private RedisClient redisClient;
-        private final CacheLoader<K, V> cacheLoader;
-        private final DataStoreWriter<K, V> dataStoreWriter;
-        private final DataStore<K, V> dataStore;
+        private final RedisClient redisClient;
+        private final String name;
+        private final Type type;
+        private CacheLoader<K, V> cacheLoader;
+        private DataStoreWriter<K, V> dataStoreWriter;
+        private DataStore<K, V> dataStore;
 
-        public Builder(RedisClient redisClient) {
+        public Builder(RedisClient redisClient, String name, Type type) {
             this.redisClient = redisClient;
+            this.name = name;
+            this.type = type;
+        }
+
+        public Builder setCacheLoader(CacheLoader<K, V> cacheLoader) {
+            this.cacheLoader = cacheLoader;
+            return this;
+        }
+
+        public Builder setDataStoreWriter(DataStoreWriter<K, V> dataStoreWriter) {
+            this.dataStoreWriter = dataStoreWriter;
+            return this;
+        }
+
+        public Builder setDataStore(DataStore<K, V> dataStore) {
+            this.dataStore = dataStore;
+            return this;
         }
 
 
 
-
-    }
-
-    public static class Builder {
-        public Builder(RedisClient redisClient) {
-            this.redisClient = redisClient;
-        }
     }
 
     private void registerHashesCache(String name) {

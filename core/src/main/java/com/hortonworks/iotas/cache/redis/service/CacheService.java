@@ -26,7 +26,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class CacheService<K,V> {
+    public enum Type {REDIS, GUAVA}
+
     protected ConcurrentMap<String, Cache<K,V>> caches = new ConcurrentHashMap<>();
+    protected String name;
+    private Type type;
+
+    public CacheService(String name, Type type) {
+        this.name = name;
+        this.type = type;
+    }
 
     public <T extends Cache<K,V>> T getCache(String namespace) {
         return (T) caches.get(namespace);
@@ -36,11 +45,20 @@ public class CacheService<K,V> {
         caches.put(namespace, cache);
     }
 
+    // TODO
     public void start() {
 
     }
 
     public void stop() {
 
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Type getType() {
+        return type;
     }
 }
