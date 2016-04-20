@@ -9,8 +9,8 @@
             "host": "localhost",
             "port": "6379",
             "pool": {
-              "min": 5,
-              "max": 20
+              "max-idle": 5,
+              "max-active": 20
             }
           },
           "data-store": {

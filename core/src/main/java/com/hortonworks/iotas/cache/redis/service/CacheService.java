@@ -19,20 +19,18 @@
 package com.hortonworks.iotas.cache.redis.service;
 
 import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.redis.DataStoreBackedCache;
+import com.hortonworks.iotas.cache.redis.config.Type;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class CacheService<K,V> {
-    public enum Type {REDIS, GUAVA}
 
     protected ConcurrentMap<String, Cache<K,V>> caches = new ConcurrentHashMap<>();
     protected String name;
-    private Type type;
+    private Type.Cache type;
 
-    public CacheService(String name, Type type) {
+    public CacheService(String name, Type.Cache type) {
         this.name = name;
         this.type = type;
     }
@@ -58,7 +56,7 @@ public class CacheService<K,V> {
         return name;
     }
 
-    public Type getType() {
+    public Type.Cache getType() {
         return type;
     }
 }

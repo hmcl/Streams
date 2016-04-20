@@ -24,12 +24,15 @@ import com.hortonworks.iotas.cache.redis.datastore.DataStore;
 import com.hortonworks.iotas.cache.redis.service.CacheService;
 import com.hortonworks.iotas.cache.redis.service.CacheServiceFactory;
 import com.hortonworks.iotas.cache.redis.service.CacheServiceId;
+import com.hortonworks.iotas.cache.redis.service.RedisCacheService;
 import com.hortonworks.iotas.cache.redis.service.registry.CacheServiceLocalRegistry;
+import com.hortonworks.iotas.cache.redis.service.registry.CacheServiceRegistry;
 
 import java.util.HashMap;
 
 public class CacheClientMain {
-    private static final CacheServiceLocalRegistry cacheRegistry = CacheServiceLocalRegistry.INSTANCE;
+    private static final CacheServiceRegistry cacheRegistry = CacheServiceLocalRegistry.INSTANCE;
+
     public static void main(String[] args) {
         CacheClientMain instance = new CacheClientMain();
         instance.<String, String>registerCache(new CacheServiceId("id1"));
@@ -46,7 +49,7 @@ public class CacheClientMain {
     }
 
     public void method1() {
-        CacheService<String, String> cacheService = cacheRegistry.getCacheService(getDefaultRedisId());
+        RedisCacheService cacheService = (RedisCacheService) cacheRegistry.<String, String>getCacheService(getDefaultRedisId());
         DataStoreBackedCache<String, String> cache = cacheService.getCache("");
         String val = cache.get("key");
         cache.put("key", "val");
@@ -62,16 +65,6 @@ public class CacheClientMain {
     }
 
     public <K, V> void registerCache(CacheServiceId id) {
-        cacheRegistry.register(id, new CacheService<>(new CacheServiceFactory<K, V>() {
-            @Override
-            public Cache<K, V> createCache() {
-                return null;
-            }
-
-            @Override
-            public DataStore<K, V> createDataStore() {
-                return null;
-            }
-        }));
+        cacheRegistry.register(id, new RedisCacheService<>(null));
     }
 }
