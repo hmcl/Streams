@@ -18,9 +18,31 @@
 
 package com.hortonworks.iotas.cache.redis.config;
 
+import java.util.List;
+
 public class CacheConfig {
-    String name;
-    Type.Type type;
-    ConnectionConfig connectionConfig;
-    DataStoreConfig dataStoreConfig;
+    private String id;
+    private Type.Cache cacheType;
+    private ConnectionConfig connectionConfig;
+    private DataStoreConfig dataStoreConfig;
+    private ExpiryPolicy expiryPolicy;
+
+
+    class View {
+        String id;
+        Type.Cache cacheType;
+        ExpiryPolicy expiryPolicy;
+    }
+
+    class RedisHashesView extends View {
+        String key;
+    }
+
+    class CachesConfig {
+        List<CacheConfig> cacheConfig;
+    }
+
+    class Config {
+
+    }
 }

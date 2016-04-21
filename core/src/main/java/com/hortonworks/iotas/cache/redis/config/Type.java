@@ -28,5 +28,4 @@ public interface Type {
     enum Reader{THROUGH}
 
     enum Writer{SYNC, ASYNC}
-
 }

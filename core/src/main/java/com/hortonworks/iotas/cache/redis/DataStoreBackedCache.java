@@ -41,11 +41,11 @@ public class DataStoreBackedCache<K,V> implements Cache<K,V> {
     private final DataStoreWriter<K, V> dataStoreWriter;
     private final DataStore<K, V> dataStore;
 
-    public DataStoreBackedCache(Cache<K,V> cache, CacheLoader<K,V> cacheLoader,
-                                DataStoreWriter<K,V> dataStoreWriter) {
+    public DataStoreBackedCache(Cache<K,V> cache, DataStore<K, V> dataStore,
+            CacheLoader<K,V> cacheLoader, DataStoreWriter<K, V> dataStoreWriter) {
         this.cache = cache;
+        this.dataStore = dataStore;
         this.cacheLoader = cacheLoader;
-        this.dataStore = cacheLoader.getDataStore();
         this.dataStoreWriter = dataStoreWriter;
     }
 
