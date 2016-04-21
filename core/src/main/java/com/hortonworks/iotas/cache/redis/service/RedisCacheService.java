@@ -18,65 +18,36 @@
 
 package com.hortonworks.iotas.cache.redis.service;
 
+import com.hortonworks.iotas.cache.redis.DataStoreBackedCache;
 import com.hortonworks.iotas.cache.redis.RedisHashesCache;
 import com.hortonworks.iotas.cache.redis.RedisStringsCache;
 import com.hortonworks.iotas.cache.redis.config.Type;
-import com.hortonworks.iotas.cache.redis.datastore.DataStore;
-import com.hortonworks.iotas.cache.redis.datastore.writer.DataStoreWriter;
-import com.hortonworks.iotas.cache.redis.loader.CacheLoader;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
 import com.lambdaworks.redis.RedisConnectionPool;
 import com.lambdaworks.redis.codec.RedisCodec;
-import com.lambdaworks.redis.codec.Utf8StringCodec;
 
 public class RedisCacheService<K,V> extends CacheService<K, V> {
     public static String REDIS_STRINGS_CACHE = "REDIS_STRINGS_CACHE";
 
     private RedisClient redisClient;
-    private CacheLoader<K, V> cacheLoader;
-    private DataStoreWriter<K, V> dataStoreWriter;
-    private DataStore<K, V> dataStore;
+
     private RedisConnectionFactory redisConnectionFactory;
 
     private RedisConnectionFactory connectionFactory;
 
-    public RedisCacheService(Builder builder) {
-        super(builder.name, builder.type);
+    private RedisCacheService(Builder builder) {
+        super(builder);
         this.redisClient = builder.redisClient;
-        this.cacheLoader = builder.cacheLoader;
-        this.dataStoreWriter = builder.dataStoreWriter;
-        this.dataStore = builder.dataStore;
     }
 
 
-    public static class Builder<K,V> {
+    public static class Builder<K,V> extends CacheService.Builder<K,V> {
         private final RedisClient redisClient;
-        private final String name;
-        private final Type.Cache cacheType;
-        private CacheLoader<K, V> cacheLoader;
-        private DataStoreWriter<K, V> dataStoreWriter;
-        private DataStore<K, V> dataStore;
 
-        public Builder(RedisClient redisClient, String name, Type.Cache cacheType) {
+        public Builder(String id, Type.Cache cacheType, RedisClient redisClient, Factory<RedisConnection<K,V>> factory) {
+            super(id, cacheType);
             this.redisClient = redisClient;
-            this.name = name;
-            this.cacheType= cacheType;
-        }
-
-        public Builder setCacheLoader(CacheLoader<K, V> cacheLoader) {
-            this.cacheLoader = cacheLoader;
-            return this;
-        }
-
-        public Builder setDataStoreWriter(DataStoreWriter<K, V> dataStoreWriter) {
-            this.dataStoreWriter = dataStoreWriter;
-            return this;
-        }
-
-        public Builder setDataStore(DataStore<K, V> dataStore) {
-            this.dataStore = dataStore;
-            return this;
         }
 
         public RedisCacheService build() {
@@ -85,7 +56,15 @@ public class RedisCacheService<K,V> extends CacheService<K, V> {
     }
 
     private void registerHashesCache(String key) {
-        caches.putIfAbsent(key, new RedisHashesCache<K, V>(redisConnectionFactory.createConnection()))
+        caches.putIfAbsent(key, createRedisHashesCash());
+    }
+
+    private RedisHashesCache<K, V> createRedisHashesCash() {
+        return new RedisHashesCache<K, V>(redisConnectionFactory.createConnection());
+    }
+
+    private RedisHashesCache<K, V> createDataStoreBackedRedisHashesCash() {
+        return new DataStoreBackedCache<>(createRedisHashesCash());
     }
 
 
@@ -98,10 +77,26 @@ public class RedisCacheService<K,V> extends CacheService<K, V> {
     }
 
 
-    public class RedisConnectionFactory<K,V>  {
+    public interface IRedisConnectionFactory<K,V>  {
+        public RedisConnection<K, V> create();
+    }
+
+    public interface Factory<T> {
+        T create();
+    }
+
+
+    public class RedisConnectionFactory<K,V> implements Factory<RedisConnection<K,V>> {
         // Defaults for Lettuce Redis Client 3.4.2
         private static final int MAX_IDLE = 5;
         private static final int MAX_ACTIVE = 20;
+
+        @Override
+        public RedisConnection<K, V> create() {
+            return null;
+        }
+
+
 
         private RedisClient redisClient;
         private RedisCodec<K, V> codec;

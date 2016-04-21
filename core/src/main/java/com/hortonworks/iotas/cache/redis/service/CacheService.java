@@ -20,19 +20,67 @@ package com.hortonworks.iotas.cache.redis.service;
 
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.redis.config.Type;
+import com.hortonworks.iotas.cache.redis.datastore.DataStore;
+import com.hortonworks.iotas.cache.redis.datastore.writer.DataStoreWriter;
+import com.hortonworks.iotas.cache.redis.loader.CacheLoader;
 
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class CacheService<K,V> {
-
     protected ConcurrentMap<String, Cache<K,V>> caches = new ConcurrentHashMap<>();
-    protected String name;
-    private Type.Cache type;
 
-    public CacheService(String name, Type.Cache type) {
-        this.name = name;
-        this.type = type;
+    private String id;
+    private Type.Cache cacheType;
+
+    private CacheLoader<K, V> cacheLoader;
+    private DataStoreWriter<K, V> dataStoreWriter;
+    private DataStore<K, V> dataStore;
+
+    public CacheService(String id, Type.Cache cacheType) {
+        this.id = id;
+        this.cacheType = cacheType;
+    }
+
+    protected CacheService(Builder builder) {
+        this.id = builder.id;
+        this.cacheType = builder.cacheType;
+        this.cacheLoader = builder.cacheLoader;
+        this.dataStoreWriter = builder.dataStoreWriter;
+        this.dataStore = builder.dataStore;
+    }
+
+    public static class Builder<K,V> {
+        private final String id;
+        private final Type.Cache cacheType;
+        private CacheLoader<K, V> cacheLoader;
+        private DataStoreWriter<K, V> dataStoreWriter;
+        private DataStore<K, V> dataStore;
+
+        public Builder(String id, Type.Cache cacheType) {
+            this.id = id;
+            this.cacheType= cacheType;
+        }
+
+        public Builder setCacheLoader(CacheLoader<K, V> cacheLoader) {
+            this.cacheLoader = cacheLoader;
+            return this;
+        }
+
+        public Builder setDataStoreWriter(DataStoreWriter<K, V> dataStoreWriter) {
+            this.dataStoreWriter = dataStoreWriter;
+            return this;
+        }
+
+        public Builder setDataStore(DataStore<K, V> dataStore) {
+            this.dataStore = dataStore;
+            return this;
+        }
+
+        public CacheService build() {
+            return new CacheService(this);
+        }
     }
 
     public <T extends Cache<K,V>> T getCache(String namespace) {
@@ -43,20 +91,31 @@ public class CacheService<K,V> {
         caches.put(namespace, cache);
     }
 
-    // TODO
-    public void start() {
-
+    public String getServiceId() {
+        return id;
     }
 
-    public void stop() {
-
+    public Type.Cache getCacheType() {
+        return cacheType;
     }
 
-    public String getName() {
-        return name;
+    public CacheLoader<K, V> getCacheLoader() {
+        return cacheLoader;
     }
 
-    public Type.Cache getType() {
-        return type;
+    public DataStoreWriter<K, V> getDataStoreWriter() {
+        return dataStoreWriter;
+    }
+
+    public DataStore<K, V> getDataStore() {
+        return dataStore;
+    }
+
+    public Set<String> getCacheId() {
+        return caches.keySet();
+    }
+
+    public boolean isDataStoreBacked() {
+        return dataStore != null || dataStoreWriter != null || cacheLoader != null;
     }
 }
