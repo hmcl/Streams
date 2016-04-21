@@ -2,7 +2,7 @@
   "caches": [
     {
       "cache": {
-        "name": "redis-cache-1",
+        "id": "redis-cache-1",
         "type": "redis / guava / hazelcast / memcached",
         "config": {
           "connection": {
@@ -14,7 +14,7 @@
             }
           },
           "data-store": {
-            "name": "data-store-redis-1",
+            "id": "data-store-redis-1",
             "type": "mysql / phoenix / hbase",
             "connection": {
               "host": "localhost",
@@ -39,14 +39,14 @@
         "views": [
           {
             "view": {
-              "name": "hashes-view-1",
+              "id": "hashes-view-1",
               "type": "hashes",
               "key": "hashes-key-1"
             }
           },
           {
             "view": {
-              "name": "hashes-view-2",
+              "id": "hashes-view-2",
               "type": "hashes",
               "key": "hashes-key-2",
               "expiry-policy": {
@@ -64,7 +64,7 @@
           },
           {
             "view": {
-              "name": "strings-view",
+              "id": "strings-view",
               "type": "strings"
             }
           }
@@ -73,11 +73,11 @@
     },
     {
       "cache": {
-        "name": "guava-1",
+        "id": "guava-1",
         "type": "guava",
         "config": {
           "data-store": {
-            "name": "data-store-guava-1",
+            "id": "data-store-guava-1",
             "type": "phoenix",
             "connection": {
               "host": "127.0.0.1",
@@ -97,12 +97,12 @@
         "views": [
           {
             "view": {
-              "name": "guava-1-view-1"
+              "id": "guava-1-view-1"
             }
           },
           {
             "view": {
-              "name": "guava-1-view-2",
+              "id": "guava-1-view-2",
               "expiry-policy": {
                 "ttl": {
                   "count": 10,
@@ -116,17 +116,17 @@
     },
     {
       "cache": {
-        "name": "guava-2",
+        "id": "guava-2",
         "type": "guava",
         "views": [
           {
             "view": {
-              "name": "guava-2-view-1"
+              "id": "guava-2-view-1"
             }
           },
           {
             "view": {
-              "name": "guava-2-view-2",
+              "id": "guava-2-view-2",
               "expiry-policy": {
                 "entries": 1000
               }
@@ -137,7 +137,7 @@
     },
     {
       "cache": {
-        "name": "memcached-cache-1",
+        "id": "memcached-cache-1",
         "type": "memcached",
         "config": {
           "connection": {
@@ -155,12 +155,12 @@
         "views": [
           {
             "view": {
-              "name": "memcached-view-1"
+              "id": "memcached-view-1"
             }
           },
           {
             "view": {
-              "name": "memcached-view-2",
+              "id": "memcached-view-2",
               "expiry-policy": {
                 "ttl": {
                   "count": 5,
