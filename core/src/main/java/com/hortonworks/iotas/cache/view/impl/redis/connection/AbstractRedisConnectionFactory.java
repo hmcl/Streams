@@ -20,9 +20,10 @@ package com.hortonworks.iotas.cache.view.impl.redis.connection;
 
 import com.hortonworks.iotas.cache.view.Factory;
 import com.lambdaworks.redis.RedisClient;
+import com.lambdaworks.redis.RedisConnection;
 import com.lambdaworks.redis.codec.RedisCodec;
 
-public abstract class AbstractRedisConnectionFactory<K,V,T> implements Factory<T> {
+public abstract class AbstractRedisConnectionFactory<K,V> implements Factory<RedisConnection<K, V>> {
     protected RedisClient redisClient;
     protected RedisCodec<K, V> codec;
 

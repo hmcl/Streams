@@ -23,7 +23,7 @@ import com.lambdaworks.redis.RedisConnection;
 import com.lambdaworks.redis.RedisConnectionPool;
 import com.lambdaworks.redis.codec.RedisCodec;
 
-public class RedisConnectionPoolFactory<K,V> extends AbstractRedisConnectionFactory<K,V, RedisConnectionPool<RedisConnection<K, V>>> {
+public class RedisConnectionPoolFactory<K,V> extends AbstractRedisConnectionFactory<K,V> {
     // Defaults for Lettuce Redis Client 3.4.2
     private static final int MAX_IDLE = 5;
     private static final int MAX_ACTIVE = 20;
@@ -32,7 +32,7 @@ public class RedisConnectionPoolFactory<K,V> extends AbstractRedisConnectionFact
         super(redisClient, codec);
     }
 
-    public RedisConnectionPool<RedisConnection<K, V>> create() {
-        return redisClient.pool(codec, MAX_IDLE, MAX_ACTIVE);
+    public RedisConnection<K, V> create() {
+        return redisClient.pool(codec, MAX_IDLE, MAX_ACTIVE).allocateConnection();
     }
 }
