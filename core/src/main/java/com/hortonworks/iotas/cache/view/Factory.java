@@ -16,16 +16,8 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.service;
+package com.hortonworks.iotas.cache.view;
 
-import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.view.datastore.DataStore;
-
-public interface CacheServiceFactory<K,V> {
-
-    Cache<K,V> createCache();
-
-    DataStore<K,V> createDataStore();
-
-
- }
+public interface Factory<T> {
+    T create();
+}

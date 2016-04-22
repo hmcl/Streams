@@ -43,7 +43,7 @@ public class CacheService<K,V> {
         this.cacheType = cacheType;
     }
 
-    protected CacheService(Builder builder) {
+    protected CacheService(Builder<K,V> builder) {
         this.id = builder.id;
         this.cacheType = builder.cacheType;
         this.cacheLoader = builder.cacheLoader;
@@ -63,23 +63,23 @@ public class CacheService<K,V> {
             this.cacheType= cacheType;
         }
 
-        public Builder setCacheLoader(CacheLoader<K, V> cacheLoader) {
+        public Builder<K,V> setCacheLoader(CacheLoader<K, V> cacheLoader) {
             this.cacheLoader = cacheLoader;
             return this;
         }
 
-        public Builder setDataStoreWriter(DataStoreWriter<K, V> dataStoreWriter) {
+        public Builder<K,V> setDataStoreWriter(DataStoreWriter<K, V> dataStoreWriter) {
             this.dataStoreWriter = dataStoreWriter;
             return this;
         }
 
-        public Builder setDataStore(DataStore<K, V> dataStore) {
+        public Builder<K,V> setDataStore(DataStore<K, V> dataStore) {
             this.dataStore = dataStore;
             return this;
         }
 
-        public CacheService build() {
-            return new CacheService(this);
+        public CacheService<K,V> build() {
+            return new CacheService<>(this);
         }
     }
 
@@ -117,5 +117,6 @@ public class CacheService<K,V> {
 
     public boolean isDataStoreBacked() {
         return dataStore != null || dataStoreWriter != null || cacheLoader != null;
+
     }
 }

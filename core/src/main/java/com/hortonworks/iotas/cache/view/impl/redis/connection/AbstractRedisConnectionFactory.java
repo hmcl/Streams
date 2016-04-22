@@ -16,8 +16,26 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.impl.guava;
+package com.hortonworks.iotas.cache.view.impl.redis.connection;
 
-public class GuavaCache<K,V> {
+import com.hortonworks.iotas.cache.view.Factory;
+import com.lambdaworks.redis.RedisClient;
+import com.lambdaworks.redis.codec.RedisCodec;
 
+public abstract class AbstractRedisConnectionFactory<K,V,T> implements Factory<T> {
+    protected RedisClient redisClient;
+    protected RedisCodec<K, V> codec;
+
+    public AbstractRedisConnectionFactory(RedisClient redisClient, RedisCodec<K, V> codec) {
+        this.redisClient = redisClient;
+        this.codec = codec;
+    }
+
+    public RedisClient getRedisClient() {
+        return redisClient;
+    }
+
+    public RedisCodec<K, V> getCodec() {
+        return codec;
+    }
 }

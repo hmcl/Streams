@@ -18,9 +18,11 @@
 
 package com.hortonworks.iotas.cache.view.service;
 
+import com.hortonworks.iotas.cache.view.Factory;
 import com.hortonworks.iotas.cache.view.config.Type;
 import com.hortonworks.iotas.cache.view.impl.redis.RedisHashesCache;
 import com.hortonworks.iotas.cache.view.impl.redis.RedisStringsCache;
+import com.hortonworks.iotas.cache.view.impl.redis.connection.AbstractRedisConnectionFactory;
 import com.hortonworks.iotas.cache.view.redis.DataStoreBackedCache;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
@@ -30,27 +32,25 @@ import com.lambdaworks.redis.codec.RedisCodec;
 public class RedisCacheService<K,V> extends CacheService<K, V> {
     public static String REDIS_STRINGS_CACHE = "REDIS_STRINGS_CACHE";
 
-    private RedisClient redisClient;
-
     private Factory<RedisConnection<K,V>> connFactory;
 
 
-    private RedisCacheService(Builder builder) {
+    private RedisCacheService(Builder<K,V> builder) {
         super(builder);
-        this.redisClient = builder.redisClient;
+        this.connFactory = builder.connFactory;
     }
 
 
     public static class Builder<K,V> extends CacheService.Builder<K,V> {
-        private final RedisClient redisClient;
+        private Factory<RedisConnection<K,V>> connFactory;
 
-        public Builder(String id, Type.Cache cacheType, RedisClient redisClient, Factory<RedisConnection<K,V>> factory) {
+        public Builder(String id, Type.Cache cacheType, Factory<RedisConnection<K,V>> connFactory) {
             super(id, cacheType);
-            this.redisClient = redisClient;
+            this.connFactory = connFactory;
         }
 
-        public RedisCacheService build() {
-            return new RedisCacheService(this);
+        public RedisCacheService<K,V> build() {
+            return new RedisCacheService<>(this);
         }
     }
 
@@ -62,15 +62,6 @@ public class RedisCacheService<K,V> extends CacheService<K, V> {
         }
     }
 
-    private RedisHashesCache<K, V> createRedisHashesCache(K key) {
-        return new RedisHashesCache<>(connFactory.create(), key);
-    }
-
-    private DataStoreBackedCache<K, V> createDataStoreBackedRedisHashesCache(K key) {
-        return new DataStoreBackedCache<>(createRedisHashesCache(key), getCacheLoader(), getDataStoreWriter());
-    }
-
-
     public void registerStringsCache() {
         if (isDataStoreBacked()) {
             caches.putIfAbsent(REDIS_STRINGS_CACHE, createDataStoreBackedRedisStringsCache());
@@ -79,64 +70,28 @@ public class RedisCacheService<K,V> extends CacheService<K, V> {
         }
     }
 
+    public void registerDelegateCache(String name) {
+        //TODO
+    }
+
+    private RedisHashesCache<K, V> createRedisHashesCache(K key) {
+        return new RedisHashesCache<>(connFactory.create(), key);
+    }
+
+    public Factory<RedisConnection<K, V>> getConnFactory() {
+        return connFactory;
+    }
+
+    private DataStoreBackedCache<K, V> createDataStoreBackedRedisHashesCache(K key) {
+        return new DataStoreBackedCache<>(createRedisHashesCache(key), getDataStore(), getCacheLoader(), getDataStoreWriter());
+    }
+
     private RedisStringsCache<K, V> createRedisStringsCache() {
         return new RedisStringsCache<>(connFactory.create());
     }
 
     private DataStoreBackedCache<K, V> createDataStoreBackedRedisStringsCache() {
-        return new DataStoreBackedCache<>(createRedisStringsCache(), getCacheLoader(), getDataStoreWriter());
+        return new DataStoreBackedCache<>(createRedisStringsCache(), getDataStore(), getCacheLoader(), getDataStoreWriter());
     }
 
-
-    public void registerDelegateCache(String name) {
-        caches.putIfAbsent(name, new RedisStringsCache<K, V>(connFactory.create()));
-    }
-
-
-    public interface Factory<T> {
-        T create();
-    }
-
-    public abstract class AbstractRedisConnectionFactory<K,V,T> implements Factory<T> {
-        protected RedisClient redisClient;
-        protected RedisCodec<K, V> codec;
-
-        public AbstractRedisConnectionFactory(RedisClient redisClient, RedisCodec<K, V> codec) {
-            this.redisClient = redisClient;
-            this.codec = codec;
-        }
-
-        public RedisClient getRedisClient() {
-            return redisClient;
-        }
-
-        public RedisCodec<K, V> getCodec() {
-            return codec;
-        }
-    }
-
-    public class RedisConnectionFactory<K,V> extends AbstractRedisConnectionFactory<K,V, RedisConnection<K, V> > {
-        public RedisConnectionFactory(RedisClient redisClient, RedisCodec<K, V> codec) {
-            super(redisClient, codec);
-        }
-
-        @Override
-        public RedisConnection<K, V> create() {
-            return redisClient.connect(codec);
-        }
-    }
-
-    public class RedisConnectionPoolFactory<K,V> extends AbstractRedisConnectionFactory<K,V, RedisConnectionPool<RedisConnection<K, V>>> {
-        // Defaults for Lettuce Redis Client 3.4.2
-        private static final int MAX_IDLE = 5;
-        private static final int MAX_ACTIVE = 20;
-
-        public RedisConnectionPoolFactory(RedisClient redisClient, RedisCodec<K, V> codec) {
-            super(redisClient, codec);
-        }
-
-        public RedisConnectionPool<RedisConnection<K, V>> create() {
-            return redisClient.pool(codec, MAX_IDLE, MAX_ACTIVE);
-        }
-    }
 }

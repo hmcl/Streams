@@ -16,8 +16,21 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.impl.guava;
+package com.hortonworks.iotas.cache.view.service;
 
-public class GuavaCache<K,V> {
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.view.Factory;
+import com.hortonworks.iotas.cache.view.datastore.DataStore;
+
+public class CacheServiceJsonFactory<K,V> implements Factory<CacheService<K,V>> {
+    @Override
+    public CacheService<K, V> create() {
+//        return new CacheService.Builder<K,V>(null,null).setCacheLoader(null).build();
+
+        return new CacheService.Builder<K, V>(null, null).setCacheLoader(null).build();
+//        return new CacheService<>(null, null);
+    }
+
+    class Bar {}
 
 }
