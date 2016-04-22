@@ -18,8 +18,10 @@
 
 package com.hortonworks.iotas.cache.view.impl.redis;
 
+import com.hortonworks.iotas.cache.AbstractCache;
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.stats.CacheStats;
+import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
 import com.hortonworks.iotas.storage.exception.StorageException;
 import com.lambdaworks.redis.RedisConnection;
 
@@ -31,12 +33,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RedisStringsCache<K, V> implements Cache<K, V> {
+public class RedisStringsCache<K, V> extends AbstractCache<K, V> implements Cache<K, V> {
     private static final Logger LOG = LoggerFactory.getLogger(RedisStringsCache.class);
 
     private RedisConnection<K, V> redisConnection;
 
     public RedisStringsCache(RedisConnection<K, V> redisConnection) {
+        this(redisConnection, null);
+    }
+
+    public RedisStringsCache(RedisConnection<K, V> redisConnection, ExpiryPolicy expiryPolicy) {
+        super(expiryPolicy);
         this.redisConnection = redisConnection;
     }
 

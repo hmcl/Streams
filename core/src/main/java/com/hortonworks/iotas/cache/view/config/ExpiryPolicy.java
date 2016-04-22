@@ -21,6 +21,10 @@ package com.hortonworks.iotas.cache.view.config;
 import java.util.concurrent.TimeUnit;
 
 public class ExpiryPolicy {
+    private Ttl ttl;
+    private long entries;
+    private Size size;
+
     class Ttl {
         long count;
         TimeUnit unit;
@@ -41,13 +45,33 @@ public class ExpiryPolicy {
         }
     }
 
-    private Ttl ttl;
-    private long entries;
-    private Size size;
-
     public ExpiryPolicy(Ttl ttl, long entries, Size size) {
         this.ttl = ttl;
         this.entries = entries;
         this.size = size;
+    }
+
+    public Ttl getTtl() {
+        return ttl;
+    }
+
+    public long getEntries() {
+        return entries;
+    }
+
+    public Size getSize() {
+        return size;
+    }
+
+    public boolean isTtl() {
+        return ttl != null;
+    }
+
+    public boolean isEntries() {
+        return entries != 0;
+    }
+
+    public boolean isSize() {
+        return size != null;
     }
 }

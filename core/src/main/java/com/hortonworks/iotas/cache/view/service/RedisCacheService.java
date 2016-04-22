@@ -22,16 +22,10 @@ import com.hortonworks.iotas.cache.view.Factory;
 import com.hortonworks.iotas.cache.view.config.Type;
 import com.hortonworks.iotas.cache.view.impl.redis.RedisHashesCache;
 import com.hortonworks.iotas.cache.view.impl.redis.RedisStringsCache;
-import com.hortonworks.iotas.cache.view.impl.redis.connection.AbstractRedisConnectionFactory;
 import com.hortonworks.iotas.cache.view.redis.DataStoreBackedCache;
-import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
-import com.lambdaworks.redis.RedisConnectionPool;
-import com.lambdaworks.redis.codec.RedisCodec;
 
 public class RedisCacheService<K,V> extends CacheService<K, V> {
-    public static String REDIS_STRINGS_CACHE = "REDIS_STRINGS_CACHE";
-
     private Factory<RedisConnection<K,V>> connFactory;
 
 
@@ -54,7 +48,7 @@ public class RedisCacheService<K,V> extends CacheService<K, V> {
         }
     }
 
-    private void registerHashesCache(String id, K key) {
+    public void registerHashesCache(String id, K key) {
         if (isDataStoreBacked()) {
             caches.putIfAbsent(id, createDataStoreBackedRedisHashesCache(key));
         } else {
@@ -62,24 +56,24 @@ public class RedisCacheService<K,V> extends CacheService<K, V> {
         }
     }
 
-    public void registerStringsCache() {
+    public void registerStringsCache(String id) {
         if (isDataStoreBacked()) {
-            caches.putIfAbsent(REDIS_STRINGS_CACHE, createDataStoreBackedRedisStringsCache());
+            caches.putIfAbsent(id, createDataStoreBackedRedisStringsCache());
         } else {
-            caches.putIfAbsent(REDIS_STRINGS_CACHE, createRedisStringsCache());
+            caches.putIfAbsent(id, createRedisStringsCache());
         }
     }
 
-    public void registerDelegateCache(String name) {
+    public void registerDelegateCache(String id) {
         //TODO
-    }
-
-    private RedisHashesCache<K, V> createRedisHashesCache(K key) {
-        return new RedisHashesCache<>(connFactory.create(), key);
     }
 
     public Factory<RedisConnection<K, V>> getConnFactory() {
         return connFactory;
+    }
+
+    private RedisHashesCache<K, V> createRedisHashesCache(K key) {
+        return new RedisHashesCache<>(connFactory.create(), key);
     }
 
     private DataStoreBackedCache<K, V> createDataStoreBackedRedisHashesCache(K key) {

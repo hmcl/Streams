@@ -19,6 +19,7 @@
 package com.hortonworks.iotas.cache.view.service;
 
 import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
 import com.hortonworks.iotas.cache.view.config.Type;
 import com.hortonworks.iotas.cache.view.datastore.DataStore;
 import com.hortonworks.iotas.cache.view.datastore.writer.DataStoreWriter;
@@ -37,6 +38,7 @@ public class CacheService<K,V> {
     private CacheLoader<K, V> cacheLoader;
     private DataStoreWriter<K, V> dataStoreWriter;
     private DataStore<K, V> dataStore;
+    private ExpiryPolicy expiryPolicy;  // ExpiryPolicy used by all the caches registered, if not overridden for a particular cache
 
     public CacheService(String id, Type.Cache cacheType) {
         this.id = id;
@@ -49,11 +51,13 @@ public class CacheService<K,V> {
         this.cacheLoader = builder.cacheLoader;
         this.dataStoreWriter = builder.dataStoreWriter;
         this.dataStore = builder.dataStore;
+        this.expiryPolicy= builder.expiryPolicy;
     }
 
     public static class Builder<K,V> {
         private final String id;
         private final Type.Cache cacheType;
+        private ExpiryPolicy expiryPolicy;
         private CacheLoader<K, V> cacheLoader;
         private DataStoreWriter<K, V> dataStoreWriter;
         private DataStore<K, V> dataStore;
@@ -75,6 +79,14 @@ public class CacheService<K,V> {
 
         public Builder<K,V> setDataStore(DataStore<K, V> dataStore) {
             this.dataStore = dataStore;
+            return this;
+        }
+
+        /**
+         * Sets the {@link ExpiryPolicy} used by all the caches registered, if not overridden for a particular cache
+         */
+        public Builder<K,V> setExpiryPolicy(ExpiryPolicy expiryPolicy) {
+            this.expiryPolicy = expiryPolicy;
             return this;
         }
 
@@ -115,8 +127,14 @@ public class CacheService<K,V> {
         return caches.keySet();
     }
 
+    public ExpiryPolicy getExpiryPolicy() {
+        return expiryPolicy;
+    }
+
+    /**
+     * @return true if the {@link Cache} is backed by a {@link DataStore}, false otherwise
+     */
     public boolean isDataStoreBacked() {
         return dataStore != null || dataStoreWriter != null || cacheLoader != null;
-
     }
 }
