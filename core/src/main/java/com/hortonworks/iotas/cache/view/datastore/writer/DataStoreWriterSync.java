@@ -7,16 +7,14 @@ import java.util.Collection;
 import java.util.Map;
 
 public abstract class DataStoreWriterSync<K,V> implements DataStoreWriter<K,V> {
-    protected Cache<K,V> cache;
     protected DataStore<K, V> dataStore;
 
-    public DataStoreWriterSync(Cache<K, V> cache, DataStore<K,V> dataStore) {
-        this.cache = cache;
+    public DataStoreWriterSync(DataStore<K,V> dataStore) {
         this.dataStore = dataStore;
     }
 
     public void write(K key, V val) {   //TODO val missing
-        dataStore.write(key, cache.get(key));
+        dataStore.write(key, val);
     }
 
     public void writeAll(Map<? extends K, ? extends V> entries) {

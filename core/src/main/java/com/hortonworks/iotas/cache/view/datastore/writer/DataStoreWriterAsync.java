@@ -21,52 +21,76 @@ package com.hortonworks.iotas.cache.view.datastore.writer;
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.view.datastore.DataStore;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public abstract class DataStoreWriterAsync<K,V> implements DataStoreWriter<K,V> {
-    protected Cache<K,V> cache;
-    protected DataStore<K, V> dataStore;
-    private ScheduledExecutorService executorService;
-    private BlockingQueue<Map<? extends K, ? extends V>> batch;
+public abstract class DataStoreWriterAsync<K, V> implements DataStoreWriter<K, V> {
+    private static final int DEFAULT_NUM_THREADS = 5;
 
-    public DataStoreWriterAsync(Cache<K, V> cache, DataStore<K,V> dataStore, ScheduledExecutorService executorService) {
-        this.cache = cache;
-        this.dataStore = dataStore;
-        this.executorService = executorService;
-        this.executorService = Executors.newScheduledThreadPool(10);
-        this.executorService.scheduleAtFixedRate(new Writer(), 100, 2000, TimeUnit.MILLISECONDS);
-        batch = new LinkedBlockingQueue<>();
+    private final DataStore<K, V> dataStore;
+    private ExecutorService executorService;
+
+    public DataStoreWriterAsync(DataStore<K, V> dataStore) {
+        this(dataStore, Executors.newFixedThreadPool(DEFAULT_NUM_THREADS));
     }
 
-    public void write(K key, V val) {   //TODO val missing
-        dataStore.write(key, cache.get(key));
+    public DataStoreWriterAsync(DataStore<K, V> dataStore, ExecutorService executorService) {
+        this.dataStore = dataStore;
+        this.executorService = executorService;
+    }
+
+    public void write(final K key, final V val) {   //TODO val missing
+        writeAll(new HashMap<K, V>() {{
+            put(key, val);
+        }});
     }
 
     public void writeAll(Map<? extends K, ? extends V> entries) {
-        dataStore.writeAll(entries);
+        executorService.submit(new DataStoreWriteRunnable(entries));
     }
 
-    public void delete(K key) {
-        dataStore.delete(key);
+    public void delete(final K key) {
+        deleteAll(new ArrayList<K>() {{
+            add(key);
+        }});
     }
 
-    public void deleteAll(Collection<? extends K> keys){
-        dataStore.deleteAll(keys);
+    public void deleteAll(Collection<? extends K> keys) {
+        executorService.submit(new DataStoreDeleteRunnable(keys));
     }
 
-    private class Writer implements Runnable {
+    private class DataStoreWriteRunnable implements Runnable {
+        private Map<? extends K, ? extends V> entries;
+
+        public DataStoreWriteRunnable(Map<? extends K, ? extends V> entries) {
+            this.entries = entries;
+        }
 
         @Override
         public void run() {
-//            batch.
-//            dataStore.write();
+            dataStore.writeAll(entries);
+        }
+    }
 
+    private class DataStoreDeleteRunnable implements Runnable {
+        private Collection<? extends K> keys;
+
+        public DataStoreDeleteRunnable(Collection<? extends K> keys) {
+            this.keys = keys;
+        }
+
+        @Override
+        public void run() {
+            dataStore.deleteAll(keys);
         }
     }
 }
