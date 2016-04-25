@@ -16,10 +16,11 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.redis;
+package com.hortonworks.iotas.cache.view;
 
 import com.hortonworks.iotas.cache.AbstractCache;
 import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.LoadableCache;
 import com.hortonworks.iotas.cache.stats.CacheStats;
 import com.hortonworks.iotas.cache.view.datastore.DataStore;
 import com.hortonworks.iotas.cache.view.datastore.writer.DataStoreWriter;
@@ -35,8 +36,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class DataStoreBackedCache<K,V> extends AbstractCache<K,V> implements Cache<K,V> {
+public class DataStoreBackedCache<K,V> extends AbstractCache<K,V> implements LoadableCache<K,V> {
     private static final Logger LOG = LoggerFactory.getLogger(DataStoreBackedCache.class);
+
     private final Cache<K, V> cache;
     private final CacheLoader<K, V> cacheLoader;
     private final DataStoreWriter<K, V> dataStoreWriter;

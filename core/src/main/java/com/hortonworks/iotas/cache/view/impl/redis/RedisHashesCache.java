@@ -18,8 +18,10 @@
 
 package com.hortonworks.iotas.cache.view.impl.redis;
 
+import com.hortonworks.iotas.cache.AbstractCache;
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.stats.CacheStats;
+import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
 import com.hortonworks.iotas.storage.exception.StorageException;
 import com.lambdaworks.redis.RedisConnection;
 
@@ -31,13 +33,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
-public class RedisHashesCache<K, V> implements Cache<K, V> {
+public class RedisHashesCache<K, V> extends AbstractCache<K, V> implements Cache<K, V> {
     private static final Logger LOG = LoggerFactory.getLogger(RedisHashesCache.class);
 
     private RedisConnection<K, V> redisConnection;
     private K key;
 
     public RedisHashesCache(RedisConnection<K, V> redisConnection, K key) {
+        this(redisConnection, key, null);
+    }
+
+    public RedisHashesCache(RedisConnection<K, V> redisConnection, K key, ExpiryPolicy expiryPolicy) {
+        super(expiryPolicy);
         this.redisConnection = redisConnection;
         this.key = key;
     }

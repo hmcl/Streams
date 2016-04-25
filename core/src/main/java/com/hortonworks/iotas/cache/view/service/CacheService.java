@@ -35,10 +35,10 @@ public class CacheService<K,V> {
     private String id;
     private Type.Cache cacheType;
 
-    private CacheLoader<K, V> cacheLoader;
-    private DataStoreWriter<K, V> dataStoreWriter;
-    private DataStore<K, V> dataStore;
-    private ExpiryPolicy expiryPolicy;  // ExpiryPolicy used by all the caches registered, if not overridden for a particular cache
+    protected CacheLoader<K, V> cacheLoader;
+    protected DataStoreWriter<K, V> dataStoreWriter;
+    protected DataStore<K, V> dataStore;
+    protected ExpiryPolicy expiryPolicy;  // ExpiryPolicy used by all the caches registered, if not overridden for a particular cache
 
     public CacheService(String id, Type.Cache cacheType) {
         this.id = id;

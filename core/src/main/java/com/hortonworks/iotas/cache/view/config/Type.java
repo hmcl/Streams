@@ -21,11 +21,11 @@ package com.hortonworks.iotas.cache.view.config;
 public interface Type {
     enum Cache {REDIS, GUAVA}
 
-    enum DataStore{PHOENIX, MYSQL, H_BASE}
+    enum DataStore {PHOENIX, MYSQL, H_BASE}
 
     enum Loading {SYNC, ASYNC}
 
-    enum Reader{THROUGH}
+    enum Reader {THROUGH}
 
-    enum Writer{SYNC, ASYNC}
+    enum Writer {SYNC, ASYNC}
 }

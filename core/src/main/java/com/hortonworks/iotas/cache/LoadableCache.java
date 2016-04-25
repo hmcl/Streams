@@ -18,6 +18,10 @@
 
 package com.hortonworks.iotas.cache;
 
-public interface LoadableCache<K, V> extends Cache<K, V> {
+import com.hortonworks.iotas.cache.view.loader.CacheLoaderCallback;
 
+import java.util.Collection;
+
+public interface LoadableCache<K, V> extends Cache<K, V> {
+    void loadAll(Collection<? extends K> keys, CacheLoaderCallback<K,V> callback);
 }

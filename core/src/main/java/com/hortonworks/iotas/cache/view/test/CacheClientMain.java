@@ -19,7 +19,7 @@
 package com.hortonworks.iotas.cache.view.test;
 
 import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.view.redis.DataStoreBackedCache;
+import com.hortonworks.iotas.cache.view.DataStoreBackedCache;
 import com.hortonworks.iotas.cache.view.service.CacheService;
 import com.hortonworks.iotas.cache.view.service.CacheServiceId;
 import com.hortonworks.iotas.cache.view.service.RedisCacheService;
