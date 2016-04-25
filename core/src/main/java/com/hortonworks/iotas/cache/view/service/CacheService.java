@@ -22,7 +22,7 @@ import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
 import com.hortonworks.iotas.cache.view.config.Type;
 import com.hortonworks.iotas.cache.view.datastore.DataStore;
-import com.hortonworks.iotas.cache.view.datastore.writer.DataStoreWriter;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
 import com.hortonworks.iotas.cache.view.loader.CacheLoader;
 
 import java.util.Set;

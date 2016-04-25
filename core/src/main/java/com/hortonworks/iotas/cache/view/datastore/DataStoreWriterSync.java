@@ -16,17 +16,31 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.datastore.writer;
+package com.hortonworks.iotas.cache.view.datastore;
 
 import java.util.Collection;
 import java.util.Map;
 
-public interface DataStoreWriter<K,V> {
-    void write(K key, V val);
+public abstract class DataStoreWriterSync<K,V> implements DataStoreWriter<K,V> {
+    protected DataStore<K, V> dataStore;
 
-    void writeAll(Map<? extends K, ? extends V> entries);
+    public DataStoreWriterSync(DataStore<K,V> dataStore) {
+        this.dataStore = dataStore;
+    }
 
-    void delete(K key);
+    public void write(K key, V val) {   //TODO val missing
+        dataStore.write(key, val);
+    }
 
-    void deleteAll(Collection<? extends K> keys);
+    public void writeAll(Map<? extends K, ? extends V> entries) {
+        dataStore.writeAll(entries);
+    }
+
+    public void delete(K key) {
+        dataStore.delete(key);
+    }
+
+    public void deleteAll(Collection<? extends K> keys){
+        dataStore.deleteAll(keys);
+    }
 }

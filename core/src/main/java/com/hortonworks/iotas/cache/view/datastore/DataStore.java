@@ -1,7 +1,5 @@
 package com.hortonworks.iotas.cache.view.datastore;
 
-import com.hortonworks.iotas.cache.view.datastore.writer.DataStoreWriter;
-
 import java.util.Collection;
 import java.util.Map;
 

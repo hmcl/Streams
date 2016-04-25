@@ -23,7 +23,7 @@ import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.LoadableCache;
 import com.hortonworks.iotas.cache.stats.CacheStats;
 import com.hortonworks.iotas.cache.view.datastore.DataStore;
-import com.hortonworks.iotas.cache.view.datastore.writer.DataStoreWriter;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
 import com.hortonworks.iotas.cache.view.loader.CacheLoader;
 import com.hortonworks.iotas.cache.view.loader.CacheLoaderCallback;
 import com.hortonworks.iotas.storage.exception.StorageException;

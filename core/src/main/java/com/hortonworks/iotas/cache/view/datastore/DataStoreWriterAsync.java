@@ -16,22 +16,14 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.datastore.writer;
-
-import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.view.datastore.DataStore;
+package com.hortonworks.iotas.cache.view.datastore;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public abstract class DataStoreWriterAsync<K, V> implements DataStoreWriter<K, V> {
     private static final int DEFAULT_NUM_THREADS = 5;
