@@ -25,26 +25,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 public class CacheLoaderSync<K,V> extends CacheLoader<K,V> {
-    private static final Logger LOG = LoggerFactory.getLogger(CacheLoaderSync.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(CacheLoaderSync.class);
 
     public CacheLoaderSync(Cache<K, V> cache, DataStore<K,V> dataStore) {
         super(cache, dataStore);
     }
 
-    public void loadAll(Collection<? extends K> keys, CacheLoaderListener<K,V> listener) {
+    public void loadAll(Collection<? extends K> keys, CacheLoaderCallback<K,V> callback) {
         Map<K, V> entries;
         try {
             entries = dataStore.readAll(keys);
             cache.putAll(entries);
-            listener.onCacheLoaded(entries);
+            callback.onCacheLoaded(entries);
         } catch (Exception e) {
-            final String msg = String.format("Exception occurred while loading keys [%s]", keys);
-            listener.onCacheLoadingException(new Exception(msg, e));
-            LOG.error(msg, e);
+            handleException(keys, callback, e, LOG);
         }
     }
 }

@@ -21,8 +21,10 @@ package com.hortonworks.iotas.cache.view.loader;
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.view.datastore.DataStore;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
-import java.util.Map;
 
 public abstract class CacheLoader<K,V> {
     protected Cache<K,V> cache;
@@ -33,5 +35,11 @@ public abstract class CacheLoader<K,V> {
         this.dataStore = dataStore;
     }
 
-    public abstract Map<K, V> loadAll(Collection<? extends K> keys);
+    public abstract void loadAll(Collection<? extends K> keys, CacheLoaderCallback<K,V> callback);
+
+    protected void handleException(Collection<? extends K> keys, CacheLoaderCallback<K, V> callback, Exception e, Logger LOG) {
+        final String msg = String.format("Exception occurred while loading keys [%s]", keys);
+        callback.onCacheLoadingFailure(new Exception(msg, e));
+        LOG.error(msg, e);
+    }
 }

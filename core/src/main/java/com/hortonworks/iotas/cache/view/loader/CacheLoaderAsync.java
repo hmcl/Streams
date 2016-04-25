@@ -18,6 +18,7 @@
 
 package com.hortonworks.iotas.cache.view.loader;
 
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -44,67 +45,82 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
     private static final int DEFAULT_NUM_THREADS = 5;
     private static final Logger LOG = LoggerFactory.getLogger(CacheLoaderAsync.class);
 
-    private final ExecutorService executorService;
+    private ListeningExecutorService executorService;
 
     public CacheLoaderAsync(Cache<K, V> cache, DataStore<K,V> dataStore) {
-        this(cache, dataStore, Executors.newFixedThreadPool(DEFAULT_NUM_THREADS));
+        this(cache, dataStore, null);
     }
 
     public CacheLoaderAsync(Cache<K, V> cache, DataStore<K,V> dataStore, ExecutorService executorService) {
         super(cache, dataStore);
-        this.executorService = executorService;
+        setExecutorService(executorService);
     }
 
-    public Map<K, V> loadAll(final Collection<? extends K> keys, CacheLoaderListener<K,V> listener) {
-        K key = getKey();
+    private void setExecutorService(ExecutorService executorService) {
+        if (executorService != null) {
+            this.executorService = MoreExecutors.listeningDecorator(executorService);
+        } else {
+            this.executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(DEFAULT_NUM_THREADS));
+        }
+    }
+
+    public void loadAll(final Collection<? extends K> keys, CacheLoaderCallback<K,V> callback) {
         try {
-            List<Future<Map<K, V>>> futures = executorService.invokeAll(buildCallables(keys));
-            listener.onCacheLoaded(getLoaded(futures));
-        } catch (InterruptedException e) {
-            listener.onCacheLoadingException(e);
-            LOG.error("Failed to load keys [" + keys + "]", e);
+            ListenableFuture myCall = executorService.submit(new DataStoreCallable(keys));
+            Futures.addCallback(myCall, new CacheLoaderAsyncFutureCallback(keys, callback));
+
+        } catch (Exception e) {
+            handleException(keys, callback, e, LOG);
         }
     }
 
-    private Map<K, V> getLoaded(List<Future<Map<K, V>>> futures) throws ExecutionException, InterruptedException {
-        Map<K,V> loaded = new HashMap<>();
-        for (Future<Map<K, V>> future : futures) {
-            if (future.isDone()) {
-                future.get();
-            }
+    private class DataStoreCallable implements Callable<Map<K,V>> {
+        private Collection<? extends K> keys;
+
+        public DataStoreCallable(Collection<? extends K> keys) {
+            this.keys = keys;
         }
-    }
 
-    K getKey() {
-        return null;
-    }
-
-    private Collection<? extends Callable<Map<K,V>>> buildCallables(final Collection<? extends K> keys) {
-        Collection<? extends Callable<Map<K,V>>> callables = new ArrayList<>(keys.size());
-        for (final K key : keys) {
-            callables.add(new Callable<Map<K, V>>() {
-                @Override
-                public Map<K, V> call() throws Exception {
-                    cache.putAll(key, dataStore.readAll(keys));
-
-                }
-            })
-        }
-        executorService.
-    }
-
-    private class Task implements Callable<Map<K,V>> {
         @Override
         public Map<K, V> call() throws Exception {
-            return null;
+            final Map<K, V> result = dataStore.readAll(keys);
+            LOG.debug("Call to data store for keys [{}] returned [{}]", keys, result);
+            return result;
         }
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
+    public class CacheLoaderAsyncFutureCallback implements FutureCallback<Map<K,V>> {
+        private final Collection<? extends K> keys;
+        private CacheLoaderCallback<K,V> callback;
 
-    ListeningExecutorService service = MoreExecutors.listeningDecorator(executorService);
-    ListenableFuture myCall = service.submit(new MyCallable(i));
-    Futures.addCallback(myCall, new MyFutureCallback(i));
+        public CacheLoaderAsyncFutureCallback(Collection<? extends K> keys, CacheLoaderCallback<K, V> callback) {
+            this.keys = keys;
+            this.callback = callback;
+        }
+
+        @Override
+        public void onSuccess(Map<K, V> read) {
+            LOG.debug("Raw result of call to data store for keys [{}] returned [{}]", keys, read);
+            Map<K,V> loaded = new HashMap<>();
+
+            if (read != null) {
+                for (Map.Entry<K, V> re : read.entrySet()) {
+                    if (re.getKey() != null) {
+                        loaded.put(re.getKey(), re.getValue());
+                    } else {
+                        LOG.trace("Not loading into cache entry with null value [{}]", re);
+                    }
+                }
+            }
+
+            cache.putAll(loaded);
+            LOG.debug("Loaded cache [{]}", loaded);
+            callback.onCacheLoaded(loaded);
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+            callback.onCacheLoadingFailure(t);
+        }
+    }
 }

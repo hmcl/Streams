@@ -24,7 +24,7 @@ import com.hortonworks.iotas.cache.stats.CacheStats;
 import com.hortonworks.iotas.cache.view.datastore.DataStore;
 import com.hortonworks.iotas.cache.view.datastore.writer.DataStoreWriter;
 import com.hortonworks.iotas.cache.view.loader.CacheLoader;
-import com.hortonworks.iotas.cache.view.loader.CacheLoaderListener;
+import com.hortonworks.iotas.cache.view.loader.CacheLoaderCallback;
 import com.hortonworks.iotas.storage.exception.StorageException;
 
 import org.slf4j.Logger;
@@ -53,12 +53,8 @@ public class DataStoreBackedCache<K,V> extends AbstractCache<K,V> implements Cac
         this.dataStoreWriter = dataStoreWriter;
     }
 
-    public void loadAll(Collection<? extends K> keys, CacheLoaderListener<K,V> listener) {
-        cacheLoader.loadAll(keys);
-    }
-
-    public void loadAllAsync(Collection<? extends K> keys, CacheLoaderListener listener) {
-        cacheLoader.loadAll(keys);
+    public void loadAll(Collection<? extends K> keys, CacheLoaderCallback<K,V> callback) {
+        cacheLoader.loadAll(keys, callback);
     }
 
     @Override
@@ -122,7 +118,7 @@ public class DataStoreBackedCache<K,V> extends AbstractCache<K,V> implements Cac
     @Override
     public void clear() {
         cache.clear();
-        LOG.info("Entries only removed from cache but not from backing data store");    //TODO: Do we want to remove from DB as well ?
+        LOG.info("Cache cleared. Entries only removed from cache but not from backing data store");    //TODO: Do we want to remove from DB as well ?
     }
 
     @Override
