@@ -18,6 +18,11 @@
 
 package com.hortonworks.iotas.cache.view.loader;
 
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.view.datastore.DataStore;
 
@@ -26,10 +31,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
     private static final int DEFAULT_NUM_THREADS = 5;
@@ -46,21 +55,37 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
         this.executorService = executorService;
     }
 
-    public Map<K, V> loadAll(final Collection<? extends K> keys) {
+    public Map<K, V> loadAll(final Collection<? extends K> keys, CacheLoaderListener<K,V> listener) {
+        K key = getKey();
         try {
-            executorService.invokeAll(buildCallables(keys));
+            List<Future<Map<K, V>>> futures = executorService.invokeAll(buildCallables(keys));
+            listener.onCacheLoaded(getLoaded(futures));
         } catch (InterruptedException e) {
+            listener.onCacheLoadingException(e);
             LOG.error("Failed to load keys [" + keys + "]", e);
         }
     }
 
-    private Collection<? extends Callable<Map<K,V>>> buildCallables(Collection<? extends K> keys) {
+    private Map<K, V> getLoaded(List<Future<Map<K, V>>> futures) throws ExecutionException, InterruptedException {
+        Map<K,V> loaded = new HashMap<>();
+        for (Future<Map<K, V>> future : futures) {
+            if (future.isDone()) {
+                future.get();
+            }
+        }
+    }
+
+    K getKey() {
+        return null;
+    }
+
+    private Collection<? extends Callable<Map<K,V>>> buildCallables(final Collection<? extends K> keys) {
         Collection<? extends Callable<Map<K,V>>> callables = new ArrayList<>(keys.size());
         for (final K key : keys) {
             callables.add(new Callable<Map<K, V>>() {
                 @Override
                 public Map<K, V> call() throws Exception {
-                    cache.put(key, dataStore.readAll());
+                    cache.putAll(key, dataStore.readAll(keys));
 
                 }
             })
@@ -75,5 +100,11 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
         }
     }
 
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
+    ListeningExecutorService service = MoreExecutors.listeningDecorator(executorService);
+    ListenableFuture myCall = service.submit(new MyCallable(i));
+    Futures.addCallback(myCall, new MyFutureCallback(i));
 }

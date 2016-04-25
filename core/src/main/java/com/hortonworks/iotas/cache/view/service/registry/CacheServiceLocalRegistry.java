@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/* Local {@link CacheServiceRegistry} thread safe singleton */
 public enum CacheServiceLocalRegistry implements CacheServiceRegistry {
     INSTANCE;
 

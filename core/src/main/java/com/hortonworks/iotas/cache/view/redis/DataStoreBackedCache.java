@@ -24,9 +24,8 @@ import com.hortonworks.iotas.cache.stats.CacheStats;
 import com.hortonworks.iotas.cache.view.datastore.DataStore;
 import com.hortonworks.iotas.cache.view.datastore.writer.DataStoreWriter;
 import com.hortonworks.iotas.cache.view.loader.CacheLoader;
+import com.hortonworks.iotas.cache.view.loader.CacheLoaderListener;
 import com.hortonworks.iotas.storage.exception.StorageException;
-import com.sun.javaws.exceptions.InvalidArgumentException;
-import com.sun.org.apache.bcel.internal.generic.DASTORE;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Future;
 
 public class DataStoreBackedCache<K,V> extends AbstractCache<K,V> implements Cache<K,V> {
     private static final Logger LOG = LoggerFactory.getLogger(DataStoreBackedCache.class);
@@ -55,12 +53,7 @@ public class DataStoreBackedCache<K,V> extends AbstractCache<K,V> implements Cac
         this.dataStoreWriter = dataStoreWriter;
     }
 
-    interface CacheLoaderListener<K,V> {
-        void onCacheLoaded(Future<Map<K,V>> loaded);
-        void onCacheLoadingException();
-    }
-
-    public void loadAll(Collection<? extends K> keys) {
+    public void loadAll(Collection<? extends K> keys, CacheLoaderListener<K,V> listener) {
         cacheLoader.loadAll(keys);
     }
 

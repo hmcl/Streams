@@ -33,15 +33,5 @@ public abstract class CacheLoader<K,V> {
         this.dataStore = dataStore;
     }
 
-    public V load(K key) {
-        V val = dataStore.read(key);
-        cache.put(key, val);
-        return val;
-    }
-
     public abstract Map<K, V> loadAll(Collection<? extends K> keys);
-
-    public DataStore<K, V> getDataStore() {
-        return dataStore;
-    }
 }

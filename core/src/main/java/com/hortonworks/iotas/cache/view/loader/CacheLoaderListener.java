@@ -18,6 +18,11 @@
 
 package com.hortonworks.iotas.cache.view.loader;
 
-public interface CacheLoaderFactory<K,V> {
-    public CacheLoader<K,V> createCacheLoader();
+import java.util.Map;
+import java.util.concurrent.Future;
+
+public interface CacheLoaderListener<K,V> {
+    void onCacheLoaded(Map<K, V> loaded);
+
+    void onCacheLoadingException(Exception e);
 }
