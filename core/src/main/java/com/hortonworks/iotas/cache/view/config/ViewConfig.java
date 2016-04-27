@@ -18,6 +18,8 @@
 
 package com.hortonworks.iotas.cache.view.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ViewConfig {
     private String id;
     private ExpiryPolicy expiryPolicy;
@@ -30,10 +32,12 @@ public class ViewConfig {
         this.id = id;
     }
 
+    @JsonProperty("expiry-policy")
     public ExpiryPolicy getExpiryPolicy() {
         return expiryPolicy;
     }
 
+    @JsonProperty("expiry-policy")
     public void setExpiryPolicy(ExpiryPolicy expiryPolicy) {
         this.expiryPolicy = expiryPolicy;
     }
@@ -42,10 +46,12 @@ public class ViewConfig {
         private TypeConfig.RedisDatatype redisDatatype;
         private String key;
 
+        @JsonProperty("type")
         public TypeConfig.RedisDatatype getRedisDatatype() {
             return redisDatatype;
         }
 
+        @JsonProperty("type")
         public void setRedisDatatype(TypeConfig.RedisDatatype redisDatatype) {
             this.redisDatatype = redisDatatype;
         }

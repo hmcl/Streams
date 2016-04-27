@@ -22,13 +22,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class CachesConfig {
-    private List<CacheConfig> cachesConfig;
+    private List<CacheConfig> caches;
 
-    public List<CacheConfig> getCachesConfig() {
-        return Collections.unmodifiableList(cachesConfig);
+    public List<CacheConfig> getCaches() {
+        return Collections.unmodifiableList(caches);
     }
 
-    public void setCachesConfig(List<CacheConfig> cachesConfig) {
-        this.cachesConfig = cachesConfig;
+    public void setCaches(List<CacheConfig> caches) {
+        this.caches = caches;
     }
 }

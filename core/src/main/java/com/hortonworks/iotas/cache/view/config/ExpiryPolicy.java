@@ -18,6 +18,8 @@
 
 package com.hortonworks.iotas.cache.view.config;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.util.concurrent.TimeUnit;
 
 public class ExpiryPolicy {
@@ -26,22 +28,47 @@ public class ExpiryPolicy {
     private Size size;
 
     class Ttl {
-        long count;
-        TimeUnit unit;
+        private long count;
+        private TimeUnit unit;
+        private long ttlNanos;
 
         public Ttl(long count, TimeUnit unit) {
             this.count = count;
             this.unit = unit;
+            this.ttlNanos = unit.toNanos(count);
+        }
+
+        public long getCount() {
+            return count;
+        }
+
+        public void setCount(long count) {
+            this.count = count;
+        }
+
+        public TimeUnit getUnit() {
+            return unit;
+        }
+
+        public void setUnit(TimeUnit unit) {
+            this.unit = unit;
+        }
+
+        public long getTtlNanos() {
+            return ttlNanos;
         }
     }
 
     class Size {
-        long count;
-        BytesUnit unit;
+        private long count;
+        private long bytes;
+        private BytesUnit unit;
 
+        @JsonCreator
         public Size(long count, BytesUnit unit) {
             this.count = count;
             this.unit = unit;
+            this.bytes = unit.toBytes(count);
         }
     }
 
@@ -55,12 +82,24 @@ public class ExpiryPolicy {
         return ttl;
     }
 
+    public void setTtl(Ttl ttl) {
+        this.ttl = ttl;
+    }
+
     public long getEntries() {
         return entries;
     }
 
+    public void setEntries(long entries) {
+        this.entries = entries;
+    }
+
     public Size getSize() {
         return size;
+    }
+
+    public void setSize(Size size) {
+        this.size = size;
     }
 
     public boolean isTtl() {

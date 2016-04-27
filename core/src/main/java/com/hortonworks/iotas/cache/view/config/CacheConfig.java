@@ -18,13 +18,15 @@
 
 package com.hortonworks.iotas.cache.view.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class CacheConfig {
     private String id;
     private TypeConfig.Cache cacheType;
     private ConnectionConfig connectionConfig;
-    private DataStoreConfig dataStoreConfig;
+    private DataStoreConfig dataStore;
     private ExpiryPolicy expiryPolicy;
     List<ViewConfig> viewsConfig;
 
@@ -36,42 +38,52 @@ public class CacheConfig {
         this.id = id;
     }
 
+    @JsonProperty("type")
     public TypeConfig.Cache getCacheType() {
         return cacheType;
     }
 
+    @JsonProperty("type")
     public void setCacheType(TypeConfig.Cache cacheType) {
         this.cacheType = cacheType;
     }
 
+    @JsonProperty("connection")
     public ConnectionConfig getConnectionConfig() {
         return connectionConfig;
     }
 
+    @JsonProperty("connection")
     public void setConnectionConfig(ConnectionConfig connectionConfig) {
         this.connectionConfig = connectionConfig;
     }
 
-    public DataStoreConfig getDataStoreConfig() {
-        return dataStoreConfig;
+    @JsonProperty("data-store")
+    public DataStoreConfig getDataStore() {
+        return dataStore;
     }
 
-    public void setDataStoreConfig(DataStoreConfig dataStoreConfig) {
-        this.dataStoreConfig = dataStoreConfig;
+    @JsonProperty("data-store")
+    public void setDataStore(DataStoreConfig dataStore) {
+        this.dataStore = dataStore;
     }
 
+    @JsonProperty("expiry-policy")
     public ExpiryPolicy getExpiryPolicy() {
         return expiryPolicy;
     }
 
+    @JsonProperty("expiry-policy")
     public void setExpiryPolicy(ExpiryPolicy expiryPolicy) {
         this.expiryPolicy = expiryPolicy;
     }
 
+    @JsonProperty("views")
     public List<ViewConfig> getViewsConfig() {
         return viewsConfig;
     }
 
+    @JsonProperty("views")
     public void setViewsConfig(List<ViewConfig> viewsConfig) {
         this.viewsConfig = viewsConfig;
     }

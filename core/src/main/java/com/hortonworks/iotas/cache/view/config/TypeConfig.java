@@ -19,15 +19,15 @@
 package com.hortonworks.iotas.cache.view.config;
 
 public interface TypeConfig {
-    enum Cache {REDIS, GUAVA}
+    enum Cache {REDIS, GUAVA, MEMCACHED}
 
     enum RedisDatatype {STRINGS, HASHES}
 
-    enum DataStore {PHOENIX, MYSQL, H_BASE}
+    enum DataStore {PHOENIX, MYSQL, HBASE}
 
-    enum Loading {SYNC, ASYNC}
+    enum CacheLoader {SYNC, ASYNC}
 
-    enum Reader {THROUGH}
+    enum CacheReader {THROUGH}
 
-    enum Writer {SYNC, ASYNC}
+    enum CacheWriter {SYNC, ASYNC}
 }
