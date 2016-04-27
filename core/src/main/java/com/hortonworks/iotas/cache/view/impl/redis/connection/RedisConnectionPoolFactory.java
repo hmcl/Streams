@@ -28,8 +28,17 @@ public class RedisConnectionPoolFactory<K,V> extends AbstractRedisConnectionFact
     private static final int MAX_IDLE = 5;
     private static final int MAX_ACTIVE = 20;
 
-    public RedisConnectionPoolFactory(RedisClient redisClient, RedisCodec<K, V> codec) {
+    private final int maxIdle;
+    private final int maxActive;
+
+    public RedisConnectionPoolFactory(RedisClient redisClient, RedisCodec<K, V> codec, int maxIdle, int maxActive) {
         super(redisClient, codec);
+        this.maxIdle = maxIdle;
+        this.maxActive = maxActive;
+    }
+
+    public RedisConnectionPoolFactory(RedisClient redisClient, RedisCodec<K, V> codec) {
+        this(redisClient, codec, MAX_IDLE, MAX_ACTIVE);
     }
 
     public RedisConnection<K, V> create() {

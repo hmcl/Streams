@@ -39,6 +39,7 @@ public enum CacheServiceLocalRegistry implements CacheServiceRegistry {
         serviceIdToService = new ConcurrentHashMap<>();
     }
 
+    // TODO: Handle attempting to put an object with an already existing id
     public <K,V> void register(CacheServiceId cacheServiceId, CacheService<K,V> cacheService) {
         serviceIdToService.putIfAbsent(cacheServiceId, cacheService);
         LOG.info("Registered cache service [{}] with id [{}].", cacheService, cacheServiceId);

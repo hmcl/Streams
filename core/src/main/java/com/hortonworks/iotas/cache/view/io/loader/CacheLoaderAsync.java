@@ -44,20 +44,12 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
     private ListeningExecutorService executorService;
 
     public CacheLoaderAsync(Cache<K, V> cache, DataStoreReader<K,V> dataStoreReader) {
-        this(cache, dataStoreReader, null);
+        this(cache, dataStoreReader, Executors.newFixedThreadPool(DEFAULT_NUM_THREADS));
     }
 
     public CacheLoaderAsync(Cache<K, V> cache, DataStoreReader<K,V> dataStoreReader, ExecutorService executorService) {
         super(cache, dataStoreReader);
-        setExecutorService(executorService);
-    }
-
-    private void setExecutorService(ExecutorService executorService) {
-        if (executorService != null) {
-            this.executorService = MoreExecutors.listeningDecorator(executorService);
-        } else {
-            this.executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(DEFAULT_NUM_THREADS));
-        }
+        this.executorService = MoreExecutors.listeningDecorator(executorService);
     }
 
     public void loadAll(final Collection<? extends K> keys, CacheLoaderCallback<K,V> callback) {
@@ -110,7 +102,7 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
             }
 
             cache.putAll(loaded);
-            LOG.debug("Loaded cache [{]}", loaded);
+            LOG.debug("Loaded cache [{}]", loaded);
             callback.onCacheLoaded(loaded);
         }
 
