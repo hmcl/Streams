@@ -18,9 +18,8 @@
 
 package com.hortonworks.iotas.cache.view.config;
 
-class ViewConfig {
+public class ViewConfig {
     private String id;
-    private TypeConfig.Cache cacheType;
     private ExpiryPolicy expiryPolicy;
 
     public String getId() {
@@ -29,14 +28,6 @@ class ViewConfig {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public TypeConfig.Cache getCacheType() {
-        return cacheType;
-    }
-
-    public void setCacheType(TypeConfig.Cache cacheType) {
-        this.cacheType = cacheType;
     }
 
     public ExpiryPolicy getExpiryPolicy() {
@@ -48,7 +39,8 @@ class ViewConfig {
     }
 
     public class RedisViewConfig extends ViewConfig {
-        TypeConfig.RedisDatatype redisDatatype;
+        private TypeConfig.RedisDatatype redisDatatype;
+        private String key;
 
         public TypeConfig.RedisDatatype getRedisDatatype() {
             return redisDatatype;
@@ -56,6 +48,14 @@ class ViewConfig {
 
         public void setRedisDatatype(TypeConfig.RedisDatatype redisDatatype) {
             this.redisDatatype = redisDatatype;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
         }
     }
 }

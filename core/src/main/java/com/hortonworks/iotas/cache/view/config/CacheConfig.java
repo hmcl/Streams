@@ -28,6 +28,51 @@ public class CacheConfig {
     private ExpiryPolicy expiryPolicy;
     List<ViewConfig> viewsConfig;
 
+    public String getId() {
+        return id;
+    }
 
+    public void setId(String id) {
+        this.id = id;
+    }
 
+    public TypeConfig.Cache getCacheType() {
+        return cacheType;
+    }
+
+    public void setCacheType(TypeConfig.Cache cacheType) {
+        this.cacheType = cacheType;
+    }
+
+    public ConnectionConfig getConnectionConfig() {
+        return connectionConfig;
+    }
+
+    public void setConnectionConfig(ConnectionConfig connectionConfig) {
+        this.connectionConfig = connectionConfig;
+    }
+
+    public DataStoreConfig getDataStoreConfig() {
+        return dataStoreConfig;
+    }
+
+    public void setDataStoreConfig(DataStoreConfig dataStoreConfig) {
+        this.dataStoreConfig = dataStoreConfig;
+    }
+
+    public ExpiryPolicy getExpiryPolicy() {
+        return expiryPolicy;
+    }
+
+    public void setExpiryPolicy(ExpiryPolicy expiryPolicy) {
+        this.expiryPolicy = expiryPolicy;
+    }
+
+    public List<ViewConfig> getViewsConfig() {
+        return viewsConfig;
+    }
+
+    public void setViewsConfig(List<ViewConfig> viewsConfig) {
+        this.viewsConfig = viewsConfig;
+    }
 }
