@@ -77,7 +77,6 @@ public abstract class CacheWriterAsync<K, V> implements CacheWriter<K, V> {
             } else {
                 dataStoreWriter.write(key, val);
             }
-
         }
     }
 

@@ -23,20 +23,17 @@ import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
 import com.hortonworks.iotas.cache.view.config.TypeConfig;
 import com.hortonworks.iotas.cache.view.impl.redis.RedisHashesCache;
 import com.hortonworks.iotas.cache.view.impl.redis.RedisStringsCache;
-import com.hortonworks.iotas.cache.view.DataStoreBackedCache;
 import com.lambdaworks.redis.RedisConnection;
 
-public class RedisCacheService<K,V> extends CacheService<K, V> {
+public class RedisCacheService<K,V> extends DataStoreBackedCacheService<K, V> {
     private Factory<RedisConnection<K,V>> connFactory;
-
 
     private RedisCacheService(Builder<K,V> builder) {
         super(builder);
         this.connFactory = builder.connFactory;
     }
 
-
-    public static class Builder<K,V> extends CacheService.Builder<K,V> {
+    public static class Builder<K,V> extends DataStoreBackedCacheService.Builder<K,V> {
         private Factory<RedisConnection<K,V>> connFactory;
 
         public Builder(String id, TypeConfig.Cache cacheType, Factory<RedisConnection<K,V>> connFactory) {
@@ -54,11 +51,7 @@ public class RedisCacheService<K,V> extends CacheService<K, V> {
     }
 
     public void registerHashesCache(String id, K key, ExpiryPolicy expiryPolicy) {
-        if (isDataStoreBacked()) {
-            caches.putIfAbsent(id, createDataStoreBackedRedisHashesCache(key, expiryPolicy));
-        } else {
-            caches.putIfAbsent(id, createRedisHashesCache(key, expiryPolicy));
-        }
+        registerCache(id, createRedisHashesCache(key, expiryPolicy));
     }
 
     public void registerStringsCache(String id) {
@@ -66,11 +59,7 @@ public class RedisCacheService<K,V> extends CacheService<K, V> {
     }
 
     public void registerStringsCache(String id, ExpiryPolicy expiryPolicy) {
-        if (isDataStoreBacked()) {
-            caches.putIfAbsent(id, createDataStoreBackedRedisStringsCache(expiryPolicy));
-        } else {
-            caches.putIfAbsent(id, createRedisStringsCache(expiryPolicy));
-        }
+        registerCache(id, createRedisStringsCache(expiryPolicy));
     }
 
     public void registerDelegateCache(String id) {
@@ -85,15 +74,7 @@ public class RedisCacheService<K,V> extends CacheService<K, V> {
         return new RedisHashesCache<>(connFactory.create(), key, expiryPolicy);
     }
 
-    private DataStoreBackedCache<K, V> createDataStoreBackedRedisHashesCache(K key, ExpiryPolicy expiryPolicy) {
-        return new DataStoreBackedCache<>(createRedisHashesCache(key, expiryPolicy), cacheLoader, dataStoreReader, cacheWriter);
-    }
-
     private RedisStringsCache<K, V> createRedisStringsCache(ExpiryPolicy expiryPolicy) {
         return new RedisStringsCache<>(connFactory.create(), expiryPolicy);
-    }
-
-    private DataStoreBackedCache<K, V> createDataStoreBackedRedisStringsCache(ExpiryPolicy expiryPolicy) {
-        return new DataStoreBackedCache<>(createRedisStringsCache(expiryPolicy), cacheLoader, dataStoreReader, cacheWriter);
     }
 }
