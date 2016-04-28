@@ -27,15 +27,15 @@ public class ExpiryPolicy {
     private long entries;
     private Size size;
 
-    class Ttl {
+    public class Ttl {
         private long count;
         private TimeUnit unit;
-        private long ttlNanos;
+        private final long ttlSeconds;
 
         public Ttl(long count, TimeUnit unit) {
             this.count = count;
             this.unit = unit;
-            this.ttlNanos = unit.toNanos(count);
+            this.ttlSeconds= unit.toSeconds(count);
         }
 
         public long getCount() {
@@ -54,12 +54,12 @@ public class ExpiryPolicy {
             this.unit = unit;
         }
 
-        public long getTtlNanos() {
-            return ttlNanos;
+        public long getTtlSeconds() {
+            return ttlSeconds;
         }
     }
 
-    class Size {
+    public class Size {
         private long count;
         private long bytes;
         private BytesUnit unit;
@@ -69,6 +69,18 @@ public class ExpiryPolicy {
             this.count = count;
             this.unit = unit;
             this.bytes = unit.toBytes(count);
+        }
+
+        public long getCount() {
+            return count;
+        }
+
+        public long getBytes() {
+            return bytes;
+        }
+
+        public BytesUnit getUnit() {
+            return unit;
         }
     }
 
