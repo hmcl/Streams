@@ -25,7 +25,7 @@ public class CacheServiceJsonFactory<K,V> implements Factory<CacheService<K,V>> 
     public CacheService<K, V> create() {
 //        return new CacheService.Builder<K,V>(null,null).setCacheLoader(null).build();
 
-        return new CacheService.Builder<K, V>(null, null).setCacheLoader(null).build();
+        return new CacheService.Builder<K, V>(null, null).setExpiryPolicy(null).build();
 //        return new CacheService<>(null, null);
     }
 

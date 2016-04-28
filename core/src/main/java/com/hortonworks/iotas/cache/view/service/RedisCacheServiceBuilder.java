@@ -24,6 +24,7 @@ import com.hortonworks.iotas.cache.view.config.ConnectionConfig;
 import com.hortonworks.iotas.cache.view.config.DataStoreConfig;
 import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
 import com.hortonworks.iotas.cache.view.config.TypeConfig;
+import com.hortonworks.iotas.cache.view.config.ViewConfig;
 import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
 import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
 import com.hortonworks.iotas.cache.view.datastore.phoenix.PhoenixDataStore;
@@ -40,6 +41,7 @@ import com.lambdaworks.redis.RedisConnection;
 import com.lambdaworks.redis.codec.RedisCodec;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class RedisCacheServiceBuilder {
@@ -59,6 +61,29 @@ public class RedisCacheServiceBuilder {
                 .setDataStoreReader(getDataStoreReader())
                 .setExpiryPolicy(getExpiryPolicy())
                 .build();
+    }
+
+    private void buildCaches() {
+        List<ViewConfig> viewsConfig = cacheConfig.getViewsConfig();
+        for (ViewConfig viewConfig : viewsConfig) {
+            buildCache(viewConfig);
+        }
+    }
+
+    private void buildCache(ViewConfig viewConfig) {
+        final ExpiryPolicy expiryPolicy = viewConfig.getExpiryPolicy();
+        final String id = viewConfig.getId();
+        final TypeConfig.RedisDatatype redisDatatype = ((ViewConfig.RedisViewConfig) viewConfig).getRedisDatatype();
+
+        switch (redisDatatype) {
+            case STRINGS:
+                redisCacheService.registerHashesCache(id, expiryPolicy);
+                break;
+            case HASHES:
+                String key = ((ViewConfig.RedisViewConfig) viewConfig).getKey();
+                redisCacheService.registerHashesCache(id, key, expiryPolicy);
+                break;
+        }
     }
 
     private ExpiryPolicy getExpiryPolicy() {

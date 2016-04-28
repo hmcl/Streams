@@ -47,7 +47,7 @@ public class RedisCacheService<K,V> extends DataStoreBackedCacheService<K, V> {
     }
 
     public void registerHashesCache(String id, K key) {
-        registerHashesCache(id, key, expiryPolicy);
+        registerHashesCache(id, key, super.expiryPolicy);
     }
 
     public void registerHashesCache(String id, K key, ExpiryPolicy expiryPolicy) {
@@ -55,7 +55,7 @@ public class RedisCacheService<K,V> extends DataStoreBackedCacheService<K, V> {
     }
 
     public void registerStringsCache(String id) {
-        registerStringsCache(id, expiryPolicy);
+        registerStringsCache(id, super.expiryPolicy);
     }
 
     public void registerStringsCache(String id, ExpiryPolicy expiryPolicy) {
@@ -71,10 +71,12 @@ public class RedisCacheService<K,V> extends DataStoreBackedCacheService<K, V> {
     }
 
     private RedisHashesCache<K, V> createRedisHashesCache(K key, ExpiryPolicy expiryPolicy) {
-        return new RedisHashesCache<>(connFactory.create(), key, expiryPolicy);
+        final ExpiryPolicy ep = expiryPolicy != null ? expiryPolicy : super.expiryPolicy;
+        return new RedisHashesCache<>(connFactory.create(), key, ep);
     }
 
     private RedisStringsCache<K, V> createRedisStringsCache(ExpiryPolicy expiryPolicy) {
-        return new RedisStringsCache<>(connFactory.create(), expiryPolicy);
+        final ExpiryPolicy ep = expiryPolicy != null ? expiryPolicy : super.expiryPolicy;
+        return new RedisStringsCache<>(connFactory.create(), ep);
     }
 }
