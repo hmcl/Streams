@@ -47,20 +47,47 @@ import java.util.Map;
 public class RedisCacheServiceBuilder {
     private CacheConfig cacheConfig;
     private RedisCacheService redisCacheService;
+    private CacheService cacheService;
 
     public RedisCacheServiceBuilder(CacheConfig cacheConfig) {
         this.cacheConfig = cacheConfig;
     }
 
+    public void register() {
+
+    }
+
     private void buildCacheLevelConfig() {
-        String cacheServiceId = cacheConfig.getId();
-        TypeConfig.Cache cacheType = cacheConfig.getCacheType();
-        redisCacheService = (RedisCacheService) new RedisCacheService.Builder<>(cacheServiceId, cacheType, getRedisConnectionFactory())
+        redisCacheService = getRedisCacheService();
+    }
+
+    private RedisCacheService getRedisCacheService() {
+        final String cacheServiceId = cacheConfig.getId();
+        final TypeConfig.Cache cacheType = cacheConfig.getCacheType();
+        return (RedisCacheService) new RedisCacheService.Builder<>(cacheServiceId, cacheType, getRedisConnectionFactory())
                 .setCacheLoaderFactory(getCacheLoaderFactory())
                 .setCacheWriter(getCacheWriter(getDataStoreWriter()))
                 .setDataStoreReader(getDataStoreReader())
                 .setExpiryPolicy(getExpiryPolicy())
                 .build();
+    }
+
+    private <T extends CacheService> T getCacheService()  {
+        switch (cacheConfig.getCacheType()) {
+            case REDIS:
+                return (T) getRedisCacheService();
+                break;
+            case GUAVA:
+                return (T) getGuavaCacheService();
+                break;
+            case MEMCACHED:
+                break;
+            default:
+        }
+    }
+
+    private CacheService getGuavaCacheService() {
+        return null;//TODO
     }
 
     private void buildCaches() {
