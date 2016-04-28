@@ -33,10 +33,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
-public class RedisHashesCache<K, V> extends AbstractCache<K, V> implements Cache<K, V> {
-    private static final Logger LOG = LoggerFactory.getLogger(RedisHashesCache.class);
+public class RedisHashesCache<K, V> extends RedisAbstractCache<K, V> implements Cache<K, V> {
+    private static   final Logger LOG = LoggerFactory.getLogger(RedisHashesCache.class);
 
-    private RedisConnection<K, V> redisConnection;
     private K key;
 
     public RedisHashesCache(RedisConnection<K, V> redisConnection, K key) {
@@ -44,8 +43,7 @@ public class RedisHashesCache<K, V> extends AbstractCache<K, V> implements Cache
     }
 
     public RedisHashesCache(RedisConnection<K, V> redisConnection, K key, ExpiryPolicy expiryPolicy) {
-        super(expiryPolicy);
-        this.redisConnection = redisConnection;
+        super(redisConnection, expiryPolicy);
         this.key = key;
     }
 

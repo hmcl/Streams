@@ -33,18 +33,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RedisStringsCache<K, V> extends AbstractCache<K, V> implements Cache<K, V> {
+public class RedisStringsCache<K, V> extends RedisAbstractCache<K, V> implements Cache<K, V> {
     private static final Logger LOG = LoggerFactory.getLogger(RedisStringsCache.class);
-
-    private RedisConnection<K, V> redisConnection;
 
     public RedisStringsCache(RedisConnection<K, V> redisConnection) {
         this(redisConnection, null);
     }
 
     public RedisStringsCache(RedisConnection<K, V> redisConnection, ExpiryPolicy expiryPolicy) {
-        super(expiryPolicy);
-        this.redisConnection = redisConnection;
+        super(redisConnection, expiryPolicy);
     }
 
     @Override
