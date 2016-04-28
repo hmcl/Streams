@@ -16,33 +16,13 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.io.writer;
+package com.hortonworks.iotas.cache.view.io.loader;
 
-import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.view.StaticFactory;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
 
-import java.util.Collection;
-import java.util.Map;
+public interface CacheLoaderFactory<K,V> {
+    CacheLoader<K,V> create(Cache<K, V> cache, DataStoreReader<K, V> dataStoreReader);
 
-public class CacheWriterSync<K,V> implements CacheWriter<K,V> {
-    protected DataStoreWriter<K, V> dataStoreWriter;
-
-    public CacheWriterSync(DataStoreWriter<K,V> dataStoreWriter) {
-        this.dataStoreWriter = dataStoreWriter;
-    }
-
-    public void write(K key, V val) {
-        dataStoreWriter.write(key, val);
-    }
-
-    public void writeAll(Map<? extends K, ? extends V> entries) {
-        dataStoreWriter.writeAll(entries);
-    }
-
-    public void delete(K key) {
-        dataStoreWriter.delete(key);
-    }
-
-    public void deleteAll(Collection<? extends K> keys){
-        dataStoreWriter.deleteAll(keys);
-    }
 }

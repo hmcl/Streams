@@ -20,31 +20,32 @@ package com.hortonworks.iotas.cache.view.service;
 
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.view.DataStoreBackedCache;
-import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
 import com.hortonworks.iotas.cache.view.config.TypeConfig;
 import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
 import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
 import com.hortonworks.iotas.cache.view.io.loader.CacheLoader;
+import com.hortonworks.iotas.cache.view.io.loader.CacheLoaderFactory;
 import com.hortonworks.iotas.cache.view.io.writer.CacheWriter;
 
-public class DataStoreBackedCacheService<K,V> extends CacheService<K,V> {
-    protected CacheLoader<K, V> cacheLoader;            // used to load cache sync or async
-    protected CacheWriter<K, V> cacheWriter;            // used to write to db sync or async
-    protected DataStoreReader<K, V> dataStoreReader;    // used for read through
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-    public DataStoreBackedCacheService(String id, TypeConfig.Cache cacheType) {
-        super(id, cacheType);
-    }
+public class DataStoreBackedCacheService<K,V> extends CacheService<K,V> {
+    protected CacheLoaderFactory<K, V> cacheLoaderFactory;              // used to load cache sync or async
+    protected CacheWriter<K, V> cacheWriter;                            // used to write to db sync or async
+    protected DataStoreReader<K, V> dataStoreReader;                    // used for read through
+
+    protected ConcurrentMap<String, CacheLoader<K,V>> cacheLoaders = new ConcurrentHashMap<>();
 
     protected DataStoreBackedCacheService(Builder<K, V> builder) {
         super(builder);
-        this.cacheLoader = builder.cacheLoader;
+        this.cacheLoaderFactory = builder.cacheLoaderFactory;
         this.cacheWriter = builder.cacheWriter;
         this.dataStoreReader = builder.dataStoreReader;
     }
 
     public static class Builder<K,V> extends CacheService.Builder<K,V> {
-        private CacheLoader<K, V> cacheLoader;
+        private CacheLoaderFactory<K, V> cacheLoaderFactory;
         private CacheWriter<K, V> cacheWriter;
         private DataStoreReader<K, V> dataStoreReader;
 
@@ -52,8 +53,8 @@ public class DataStoreBackedCacheService<K,V> extends CacheService<K,V> {
             super(id, cacheType);
         }
 
-        public Builder<K,V> setCacheLoader(CacheLoader<K, V> cacheLoader) {
-            this.cacheLoader = cacheLoader;
+        public Builder<K,V> setCacheLoaderFactory(CacheLoaderFactory<K, V> cacheLoaderFactory) {
+            this.cacheLoaderFactory = cacheLoaderFactory;
             return this;
         }
 
@@ -74,18 +75,22 @@ public class DataStoreBackedCacheService<K,V> extends CacheService<K,V> {
 
     public void registerCache(String id, Cache<K,V> cache) {
         if (isDataStoreBacked()) {
-            caches.putIfAbsent(this.id, createDataStoreBackedCache(cache));
+            caches.putIfAbsent(this.id, createDataStoreBackedCache(id, cache));
         } else {
             super.registerCache(id, cache);
         }
     }
 
-    private DataStoreBackedCache<K, V> createDataStoreBackedCache(Cache<K,V> cache) {
+    private DataStoreBackedCache<K, V> createDataStoreBackedCache(String id, Cache<K, V> cache) {
+        final CacheLoader<K, V> cacheLoader = cacheLoaderFactory == null ? null : cacheLoaderFactory.create(cache, dataStoreReader);
+        if (cacheLoader != null) {
+            cacheLoaders.putIfAbsent(id, cacheLoader);
+        }
         return new DataStoreBackedCache<>(cache, cacheLoader, dataStoreReader, cacheWriter);
     }
 
     public CacheLoader<K, V> getCacheLoader(String cacheId) {
-        return cacheLoader;
+        return cacheLoaders.get(cacheId);
     }
 
     public DataStoreWriter<K, V> getCacheWriter() {
@@ -100,6 +105,6 @@ public class DataStoreBackedCacheService<K,V> extends CacheService<K,V> {
      * @return true if the {@link Cache} is backed by a {@link DataStoreReader}, false otherwise
      */
     public boolean isDataStoreBacked() {
-        return dataStoreReader != null || cacheWriter != null || cacheLoader != null;
+        return dataStoreReader != null || cacheWriter != null || cacheLoaderFactory != null;
     }
 }

@@ -26,22 +26,34 @@ import java.util.Collection;
 import java.util.Map;
 
 //TODO Remove abstract and create Phoenix Implementation
-public abstract class PhoenixDataStore<K,V> extends AbstractDataStore<K,V>
+public class PhoenixDataStore<K,V> extends AbstractDataStore<K,V>
         implements DataStoreReader<K,V>, DataStoreWriter<K,V> {
 
     public PhoenixDataStore(String nameSpace) {
         super(nameSpace);
     }
 
-    public abstract V read(K key);
+    public V read(K key) {
+        return null;
+    }
 
-    public abstract Map<K, V> readAll(Collection<? extends K> keys);
+    public Map<K, V> readAll(Collection<? extends K> keys){
+        return null;
+    }
 
-    public abstract void write(K key, V val);
+    public void write(K key, V val){
 
-    public abstract void writeAll(Map<? extends K, ? extends V> entries);
+    }
 
-    public abstract void delete(K key);
+    public void writeAll(Map<? extends K, ? extends V> entries){
 
-    public abstract void deleteAll(Collection<? extends K> keys);
+    }
+
+    public void delete(K key){
+
+    }
+
+    public void deleteAll(Collection<? extends K> keys){
+
+    }
 }

@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public abstract class CacheWriterAsync<K, V> implements CacheWriter<K, V> {
+public class CacheWriterAsync<K, V> implements CacheWriter<K, V> {
     private static final int DEFAULT_NUM_THREADS = 5;
 
     private final DataStoreWriter<K, V> dataStoreWriter;

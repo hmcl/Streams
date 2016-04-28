@@ -57,7 +57,9 @@ public class DataStoreBackedCache<K,V> extends AbstractCache<K,V> implements Loa
     }
 
     public void loadAll(Collection<? extends K> keys, CacheLoaderCallback<K,V> callback) {
-        cacheLoader.loadAll(keys, callback);
+        if (cacheLoader != null) {
+            cacheLoader.loadAll(keys, callback);
+        }
     }
 
     @Override
