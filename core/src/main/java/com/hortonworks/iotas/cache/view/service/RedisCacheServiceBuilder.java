@@ -24,7 +24,6 @@ import com.hortonworks.iotas.cache.view.config.ConnectionConfig;
 import com.hortonworks.iotas.cache.view.config.DataStoreConfig;
 import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
 import com.hortonworks.iotas.cache.view.config.TypeConfig;
-import com.hortonworks.iotas.cache.view.config.ViewConfig;
 import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
 import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
 import com.hortonworks.iotas.cache.view.datastore.phoenix.PhoenixDataStore;
@@ -37,7 +36,6 @@ import com.hortonworks.iotas.cache.view.io.writer.CacheWriter;
 import com.hortonworks.iotas.cache.view.io.writer.CacheWriterAsync;
 import com.hortonworks.iotas.cache.view.io.writer.CacheWriterSync;
 import com.hortonworks.iotas.cache.view.service.registry.CacheServiceLocalRegistry;
-import com.hortonworks.iotas.cache.view.service.registry.CacheServiceRegistry;
 import com.hortonworks.iotas.util.ReflectionHelper;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
@@ -45,13 +43,9 @@ import com.lambdaworks.redis.codec.RedisCodec;
 import com.lambdaworks.redis.codec.Utf8StringCodec;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 public class RedisCacheServiceBuilder {
     private CacheConfig cacheConfig;
-    private RedisCacheService redisCacheService;
-    private CacheService cacheService;
 
     public RedisCacheServiceBuilder(CacheConfig cacheConfig) {
         this.cacheConfig = cacheConfig;
