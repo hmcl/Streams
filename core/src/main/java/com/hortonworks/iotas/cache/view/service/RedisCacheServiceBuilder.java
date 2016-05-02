@@ -38,9 +38,11 @@ import com.hortonworks.iotas.cache.view.io.writer.CacheWriterAsync;
 import com.hortonworks.iotas.cache.view.io.writer.CacheWriterSync;
 import com.hortonworks.iotas.cache.view.service.registry.CacheServiceLocalRegistry;
 import com.hortonworks.iotas.cache.view.service.registry.CacheServiceRegistry;
+import com.hortonworks.iotas.util.ReflectionHelper;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
 import com.lambdaworks.redis.codec.RedisCodec;
+import com.lambdaworks.redis.codec.Utf8StringCodec;
 
 import java.util.Arrays;
 import java.util.List;
@@ -59,71 +61,49 @@ public class RedisCacheServiceBuilder {
         CacheServiceLocalRegistry.INSTANCE.register(new CacheServiceId(cacheConfig.getId()), getCacheService());
     }
 
-    private void buildCacheLevelConfig() {
-        redisCacheService = getRedisCacheService();
+    private <T extends CacheService> T getCacheService()  {
+        TypeConfig.Cache cacheType = cacheConfig.getCacheType();
+        switch (cacheType) {
+            case REDIS:
+                return (T) getRedisCacheService();
+            case GUAVA:
+                return (T) getGuavaCacheService();
+            case MEMCACHED:
+            default:
+                throw new IllegalStateException("Invalid cache option. " + cacheType
+                        + ". Valid options are " + Arrays.toString(TypeConfig.Cache.values()));
+        }
     }
+
 
     private RedisCacheService getRedisCacheService() {
         final String cacheServiceId = cacheConfig.getId();
         final TypeConfig.Cache cacheType = cacheConfig.getCacheType();
         return (RedisCacheService) new RedisCacheService.Builder(cacheServiceId, cacheType, getRedisConnectionFactory())
                 .setCacheLoaderFactory(getCacheLoaderFactory())
-                .setCacheWriter(getCacheWriter(getDataStoreWriter()))
-                .setDataStoreReader(getDataStoreReader())
+                .setCacheWriter(getCacheWriter(getDataStoreWriter(getNamespace())))
+                .setDataStoreReader(getDataStoreReader(getNamespace()))
                 .setExpiryPolicy(getExpiryPolicy())
                 .build();
     }
 
-    private <T extends CacheService> T getCacheService()  {
-        switch (cacheConfig.getCacheType()) {
-            case REDIS:
-                return (T) getRedisCacheService();
-                break;
-            case GUAVA:
-                return (T) getGuavaCacheService();
-                break;
-            case MEMCACHED:
-                break;
-            default:
-        }
-    }
-
     private CacheService getGuavaCacheService() {
-        return null;//TODO
-    }
-
-    private void buildCaches() {
-        List<ViewConfig> viewsConfig = cacheConfig.getViewsConfig();
-        for (ViewConfig viewConfig : viewsConfig) {
-            buildCache(viewConfig);
-        }
-    }
-
-    private void buildCache(ViewConfig viewConfig) {
-        final ExpiryPolicy expiryPolicy = viewConfig.getExpiryPolicy();
-        final String id = viewConfig.getId();
-        final TypeConfig.RedisDatatype redisDatatype = ((ViewConfig.RedisViewConfig) viewConfig).getRedisDatatype();
-
-        switch (redisDatatype) {
-            case STRINGS:
-                redisCacheService.registerHashesCache(id, expiryPolicy);
-                break;
-            case HASHES:
-                String key = ((ViewConfig.RedisViewConfig) viewConfig).getKey();
-                redisCacheService.registerHashesCache(id, key, expiryPolicy);
-                break;
-        }
+        throw new UnsupportedOperationException("Must implement Guava Cache Service");
     }
 
     private ExpiryPolicy getExpiryPolicy() {
         return cacheConfig.getExpiryPolicy();
     }
 
-    private DataStoreWriter getDataStoreWriter() {
+    private String getNamespace() {
+        return cacheConfig.getDataStore().getNamespace();
+    }
+
+    private DataStoreWriter getDataStoreWriter(String namespace) {
         final TypeConfig.DataStore dataStoreType = cacheConfig.getDataStore().getDataStoreType();
         switch (dataStoreType) {
             case PHOENIX:
-                return new PhoenixDataStore<>("namespace");
+                return new PhoenixDataStore<>(namespace);
             case MYSQL:
                 return null;
             case HBASE:
@@ -134,11 +114,11 @@ public class RedisCacheServiceBuilder {
         }
     }
 
-    private DataStoreReader<Object, Object> getDataStoreReader() {
+    private DataStoreReader<Object, Object> getDataStoreReader(String namespace) {
         final TypeConfig.DataStore dataStoreType = cacheConfig.getDataStore().getDataStoreType();
         switch (dataStoreType) {
             case PHOENIX:
-                return new PhoenixDataStore<>("namespace");
+                return new PhoenixDataStore<>(namespace);
             case MYSQL:
                 return null;
             case HBASE:
@@ -192,37 +172,21 @@ public class RedisCacheServiceBuilder {
         return null;
     }
 
-    //TODO only working for strings now
-    private RedisCodec<Object, Object> getRedisCodec() {
-        //TODO
-        return null;
+    private RedisCodec getRedisCodec() {
+        final String codec = cacheConfig.getCacheEntry().getCodec();
+        if (codec != null) {
+            return new Utf8StringCodec();
+        } else {
+            try {
+                return ReflectionHelper.newInstance(codec);
+            } catch (Exception e) {
+                throw new RuntimeException("Exception occurred creating codec", e);
+            }
+        }
     }
 
     private String getRedisUri() {
         ConnectionConfig.RedisConnectionConfig rcc = (ConnectionConfig.RedisConnectionConfig) cacheConfig.getConnectionConfig();
         return "redis://" +  rcc.getHost() + ":" + rcc.getPort();
     }
-
-
-
-    class Registry {
-        Map<String, Service> map;
-
-        <K,V> Service<K,V> getService(String key) {
-            return map.get(key);
-        }
-    }
-
-    class Service<K,V> {
-        K getKey() {
-            return null;
-        }
-
-        V getVal() {
-            return null;
-        }
-    }
-
-
-
 }
