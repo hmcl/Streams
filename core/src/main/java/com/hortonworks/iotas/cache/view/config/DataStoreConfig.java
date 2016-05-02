@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class DataStoreConfig {
     private String id;
     private TypeConfig.DataStore dataStoreType;
+    private String namespace;
     private ConnectionConfig connectionConfig;
     private TypeConfig.CacheLoader cacheLoaderType;
     private TypeConfig.CacheReader cacheReader;
@@ -57,6 +58,14 @@ public class DataStoreConfig {
     @JsonProperty("type")
     public void setDataStoreType(TypeConfig.DataStore dataStoreType) {
         this.dataStoreType = dataStoreType;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     @JsonProperty("connection")

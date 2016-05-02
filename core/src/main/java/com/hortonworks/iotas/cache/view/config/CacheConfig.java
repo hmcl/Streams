@@ -25,10 +25,12 @@ import java.util.List;
 public class CacheConfig {
     private String id;
     private TypeConfig.Cache cacheType;
+    private CacheEntry cacheEntry;
     private ConnectionConfig connectionConfig;
     private DataStoreConfig dataStore;
     private ExpiryPolicy expiryPolicy;
     List<ViewConfig> viewsConfig;
+
 
     public String getId() {
         return id;
@@ -46,6 +48,16 @@ public class CacheConfig {
     @JsonProperty("type")
     public void setCacheType(TypeConfig.Cache cacheType) {
         this.cacheType = cacheType;
+    }
+
+    @JsonProperty("entry")
+    public CacheEntry getCacheEntry() {
+        return cacheEntry;
+    }
+
+    @JsonProperty("entry")
+    public void setCacheEntry(CacheEntry cacheEntry) {
+        this.cacheEntry = cacheEntry;
     }
 
     @JsonProperty("connection")
