@@ -36,6 +36,8 @@ import com.hortonworks.iotas.cache.view.io.loader.CacheLoaderSyncFactory;
 import com.hortonworks.iotas.cache.view.io.writer.CacheWriter;
 import com.hortonworks.iotas.cache.view.io.writer.CacheWriterAsync;
 import com.hortonworks.iotas.cache.view.io.writer.CacheWriterSync;
+import com.hortonworks.iotas.cache.view.service.registry.CacheServiceLocalRegistry;
+import com.hortonworks.iotas.cache.view.service.registry.CacheServiceRegistry;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
 import com.lambdaworks.redis.codec.RedisCodec;
@@ -54,7 +56,7 @@ public class RedisCacheServiceBuilder {
     }
 
     public void register() {
-
+        CacheServiceLocalRegistry.INSTANCE.register(new CacheServiceId(cacheConfig.getId()), getCacheService());
     }
 
     private void buildCacheLevelConfig() {
@@ -64,7 +66,7 @@ public class RedisCacheServiceBuilder {
     private RedisCacheService getRedisCacheService() {
         final String cacheServiceId = cacheConfig.getId();
         final TypeConfig.Cache cacheType = cacheConfig.getCacheType();
-        return (RedisCacheService) new RedisCacheService.Builder<>(cacheServiceId, cacheType, getRedisConnectionFactory())
+        return (RedisCacheService) new RedisCacheService.Builder(cacheServiceId, cacheType, getRedisConnectionFactory())
                 .setCacheLoaderFactory(getCacheLoaderFactory())
                 .setCacheWriter(getCacheWriter(getDataStoreWriter()))
                 .setDataStoreReader(getDataStoreReader())
@@ -117,7 +119,7 @@ public class RedisCacheServiceBuilder {
         return cacheConfig.getExpiryPolicy();
     }
 
-    private DataStoreWriter<Object, Object> getDataStoreWriter() {
+    private DataStoreWriter getDataStoreWriter() {
         final TypeConfig.DataStore dataStoreType = cacheConfig.getDataStore().getDataStoreType();
         switch (dataStoreType) {
             case PHOENIX:
@@ -147,20 +149,20 @@ public class RedisCacheServiceBuilder {
         }
     }
 
-    private CacheWriter<Object,Object> getCacheWriter(DataStoreWriter<Object, Object> dataStoreWriter) {
+    private CacheWriter getCacheWriter(DataStoreWriter dataStoreWriter) {
         final TypeConfig.CacheWriter cacheWriterType = cacheConfig.getDataStore().getCacheWriterType();
         switch (cacheWriterType) {
             case SYNC:
-                return new CacheWriterSync<>(dataStoreWriter);
+                return new CacheWriterSync(dataStoreWriter);
             case ASYNC:
-                return new CacheWriterAsync<>(dataStoreWriter);
+                return new CacheWriterAsync(dataStoreWriter);
             default:
                 throw new IllegalStateException("Invalid CacheWriter option. " + cacheWriterType
                         + ". Valid options are " + Arrays.toString(TypeConfig.CacheWriter.values()));
         }
     }
 
-    private CacheLoaderFactory<Object, Object> getCacheLoaderFactory() {
+    private CacheLoaderFactory getCacheLoaderFactory() {
         final DataStoreConfig dataStore = cacheConfig.getDataStore();
         if (dataStore != null) {
             final TypeConfig.CacheLoader cacheLoaderType = dataStore.getCacheLoaderType();
@@ -177,14 +179,14 @@ public class RedisCacheServiceBuilder {
         return null;
     }
 
-    private Factory<RedisConnection<Object, Object>> getRedisConnectionFactory() {
+    private Factory<RedisConnection> getRedisConnectionFactory() {
         final ConnectionConfig.RedisConnectionConfig connectionConfig = (ConnectionConfig.RedisConnectionConfig) cacheConfig.getConnectionConfig();
 
         if (connectionConfig != null) {
             if (connectionConfig.getPool() != null) {
-                return new RedisConnectionPoolFactory<>(RedisClient.create(getRedisUri()), getRedisCodec());
+                return new RedisConnectionPoolFactory(RedisClient.create(getRedisUri()), getRedisCodec());
             } else {
-                return new RedisConnectionFactory<>(RedisClient.create(getRedisUri()), getRedisCodec());
+                return new RedisConnectionFactory(RedisClient.create(getRedisUri()), getRedisCodec());
             }
         }
         return null;

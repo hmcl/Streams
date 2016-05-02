@@ -19,11 +19,16 @@
 package com.hortonworks.iotas.cache.view.service;
 
 import com.hortonworks.iotas.cache.view.Factory;
+import com.hortonworks.iotas.cache.view.config.CacheConfig;
 import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
 import com.hortonworks.iotas.cache.view.config.TypeConfig;
+import com.hortonworks.iotas.cache.view.config.ViewConfig;
 import com.hortonworks.iotas.cache.view.impl.redis.RedisHashesCache;
 import com.hortonworks.iotas.cache.view.impl.redis.RedisStringsCache;
 import com.lambdaworks.redis.RedisConnection;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class RedisCacheService<K,V> extends DataStoreBackedCacheService<K, V> {
     private Factory<RedisConnection<K,V>> connFactory;
@@ -43,6 +48,38 @@ public class RedisCacheService<K,V> extends DataStoreBackedCacheService<K, V> {
 
         public RedisCacheService<K,V> build() {
             return new RedisCacheService<>(this);
+        }
+
+        public RedisCacheService<K,V> build(CacheConfig cacheConfig) {
+            RedisCacheService<K, V> cacheService = new RedisCacheService<>(this);
+            registerCaches(cacheService, cacheConfig);
+            return cacheService;
+        }
+
+        private void registerCaches(RedisCacheService<K, V> cacheService, CacheConfig cacheConfig) {
+            List<ViewConfig> viewsConfig = cacheConfig.getViewsConfig();
+            for (ViewConfig viewConfig : viewsConfig) {
+                registerCache(cacheService, viewConfig);
+            }
+        }
+
+        private void registerCache(RedisCacheService<K, V> cacheService, ViewConfig viewConfig) {
+            final ExpiryPolicy expiryPolicy = viewConfig.getExpiryPolicy();
+            final String id = viewConfig.getId();
+            final TypeConfig.RedisDatatype redisDatatype = ((ViewConfig.RedisViewConfig) viewConfig).getRedisDatatype();
+
+            switch (redisDatatype) {
+                case STRINGS:
+                    cacheService.registerStringsCache(id, expiryPolicy);
+                    break;
+                case HASHES:
+                    String key = ((ViewConfig.RedisViewConfig) viewConfig).getKey();
+                    cacheService.registerHashesCache(id, (K) key, expiryPolicy);
+                    break;
+                default:
+                    throw new IllegalStateException("Unsupported Redis type: " + redisDatatype
+                            + ". Valid options are " + Arrays.toString(TypeConfig.RedisDatatype.values()));
+            }
         }
     }
 
