@@ -18,16 +18,135 @@
 
 package com.hortonworks.iotas.cache.view.config;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public interface TypeConfig {
-    enum Cache {REDIS, GUAVA, MEMCACHED}
+    enum Cache {
+        REDIS("redis"),
+        GUAVA("guava"),
+        MEMCACHED("memcached");
 
-    enum RedisDatatype {STRINGS, HASHES}
+        private String val;
 
-    enum DataStore {PHOENIX, MYSQL, HBASE}
+        Cache(String val) {
+            this.val = val;
+        }
 
-    enum CacheLoader {SYNC, ASYNC}
+        @JsonCreator
+        public static Cache create(String val) {
+            return val == null ? null : Cache.valueOf(val.toUpperCase());
+        }
 
-    enum CacheReader {THROUGH}
+        @JsonValue
+        public String getVal() {
+            return val;
+        }
+    }
 
-    enum CacheWriter {SYNC, ASYNC}
+    enum RedisDatatype {
+        STRINGS("strings"),
+        HASHES("hashes");
+
+        private String val;
+
+        RedisDatatype(String val) {
+            this.val = val;
+        }
+
+        @JsonCreator
+        public static RedisDatatype create(String val) {
+            return val == null ? null : RedisDatatype.valueOf(val.toUpperCase());
+        }
+
+        @JsonValue
+        public String getVal() {
+            return val;
+        }
+
+    }
+
+    enum DataStore {
+        PHOENIX("phoenix"),
+        MYSQL("mysql"),
+        HBASE("hbase");
+
+        private String val;
+
+        DataStore(String val) {
+            this.val = val;
+        }
+
+        @JsonCreator
+        public static DataStore create(String val) {
+            return val == null ? null : DataStore.valueOf(val.toUpperCase());
+        }
+
+        @JsonValue
+        public String getVal() {
+            return val;
+        }
+    }
+
+    enum CacheLoader {
+        SYNC("sync"),
+        ASYNC("async");
+
+        private String val;
+
+        CacheLoader(String val) {
+            this.val = val;
+        }
+
+        @JsonCreator
+        public static CacheLoader create(String val) {
+            return val == null ? null : CacheLoader.valueOf(val.toUpperCase());
+        }
+
+        @JsonValue
+        public String getVal() {
+            return val;
+        }
+    }
+
+    enum CacheReader {
+        THROUGH("through");
+
+        private String val;
+
+        CacheReader(String val) {
+            this.val = val;
+        }
+
+        @JsonCreator
+        public static CacheReader create(String val) {
+            return val == null ? null : CacheReader.valueOf(val.toUpperCase());
+        }
+
+        @JsonValue
+        public String getVal() {
+            return val;
+        }
+    }
+
+    enum CacheWriter {
+        SYNC("sync"),
+        ASYNC("async");
+
+        private String val;
+
+        CacheWriter(String val) {
+            this.val = val;
+        }
+
+        @JsonCreator
+        public static CacheWriter create(String val) {
+            return val == null ? null : CacheWriter.valueOf(val.toUpperCase());
+        }
+
+        @JsonValue
+        public String getVal() {
+            return val;
+        }
+    }
 }

@@ -19,6 +19,7 @@
 package com.hortonworks.iotas.cache.view.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.concurrent.TimeUnit;
 
@@ -59,13 +60,14 @@ public class ExpiryPolicy {
         }
     }
 
-    public class Size {
+    public static class Size {
         private long count;
         private long bytes;
         private BytesUnit unit;
 
         @JsonCreator
-        public Size(long count, BytesUnit unit) {
+        public Size(@JsonProperty("count") long count,
+                    @JsonProperty("unit") BytesUnit unit) {
             this.count = count;
             this.unit = unit;
             this.bytes = unit.toBytes(count);

@@ -29,13 +29,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.file.Files;
 
 public class ParseYamlTestConfigTest {
     final ObjectMapper objMapYaml = new ObjectMapper(new YAMLFactory());
 
     @Test
     public void testParseYaml() throws Exception {
-        CachesConfig cachesConfig = objMapYaml.readValues(new File("cache/cache-config.yaml"), CachesConfig.class);
+        CachesConfig cachesConfig = objMapYaml.readValue(load("cache/cache-config.yaml"), CachesConfig.class);
+//        CachesConfig cachesConfig = objMapYaml.readValue(new File("cache/cache-config.yaml"), CachesConfig.class);
         System.out.println(cachesConfig);
     }
 

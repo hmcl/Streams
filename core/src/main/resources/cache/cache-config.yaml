@@ -1,7 +1,6 @@
 ---
 caches:
-  -
-    cache:
+  - # cache:
       id: "redis-cache-1"
       type: "redis"
       entry:
