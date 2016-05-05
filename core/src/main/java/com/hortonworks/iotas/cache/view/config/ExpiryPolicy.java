@@ -28,12 +28,17 @@ public class ExpiryPolicy {
     private long entries;
     private Size size;
 
-    public class Ttl {
+    public ExpiryPolicy() {
+    }
+
+    public static class Ttl {
         private long count;
         private TimeUnit unit;
-        private final long ttlSeconds;
+        private long ttlSeconds;
 
-        public Ttl(long count, TimeUnit unit) {
+        @JsonCreator
+        public Ttl(@JsonProperty("count") long count,
+                   @JsonProperty("unit") TimeUnit unit) {
             this.count = count;
             this.unit = unit;
             this.ttlSeconds= unit.toSeconds(count);
