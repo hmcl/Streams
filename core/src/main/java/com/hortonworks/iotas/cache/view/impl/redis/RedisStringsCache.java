@@ -18,7 +18,6 @@
 
 package com.hortonworks.iotas.cache.view.impl.redis;
 
-import com.hortonworks.iotas.cache.AbstractCache;
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.stats.CacheStats;
 import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
@@ -79,8 +78,9 @@ public class RedisStringsCache<K, V> extends RedisAbstractCache<K, V> implements
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void putAll(Map<? extends K, ? extends V> entries) {
-        redisConnection.mset(new HashMap<>(entries));
+        redisConnection.mset((Map<K, V>) entries);  // cast is safe here
     }
 
     @SuppressWarnings("unchecked")

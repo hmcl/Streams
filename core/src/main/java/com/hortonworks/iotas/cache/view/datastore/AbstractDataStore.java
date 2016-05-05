@@ -31,16 +31,4 @@ public abstract class AbstractDataStore<K,V> implements DataStoreReader<K,V>, Da
     public String getNameSpace() {
         return nameSpace;
     }
-
-    public abstract V read(K key);
-
-    public abstract Map<K, V> readAll(Collection<? extends K> keys);
-
-    public abstract void write(K key, V val);
-
-    public abstract void writeAll(Map<? extends K, ? extends V> entries);
-
-    public abstract void delete(K key);
-
-    public abstract void deleteAll(Collection<? extends K> keys);
 }
