@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ViewConfig {
     private String id;
     private ExpiryPolicy expiryPolicy;
+    private TypeConfig.RedisDatatype redisDatatype;
+    private String key;
 
     public String getId() {
         return id;
@@ -40,6 +42,24 @@ public class ViewConfig {
     @JsonProperty("expiry-policy")
     public void setExpiryPolicy(ExpiryPolicy expiryPolicy) {
         this.expiryPolicy = expiryPolicy;
+    }
+
+    @JsonProperty("type")
+    public TypeConfig.RedisDatatype getRedisDatatype() {
+        return redisDatatype;
+    }
+
+    @JsonProperty("type")
+    public void setRedisDatatype(TypeConfig.RedisDatatype redisDatatype) {
+        this.redisDatatype = redisDatatype;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public class RedisViewConfig extends ViewConfig {

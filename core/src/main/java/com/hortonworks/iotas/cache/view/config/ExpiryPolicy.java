@@ -21,8 +21,6 @@ package com.hortonworks.iotas.cache.view.config;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.concurrent.TimeUnit;
-
 public class ExpiryPolicy {
     private Ttl ttl;
     private long entries;

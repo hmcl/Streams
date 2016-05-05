@@ -18,17 +18,22 @@
 
 package com.hortonworks.iotas.cache.view.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public enum BytesUnit {
+    @JsonProperty("bytes")
     BYTES {
     public long toBytes(long d) { return d; }
     public long toKilobytes(long d) { return d/RATIO; }
     public long toMegabytes(long d)  { return d/RATIO_POW_2; }
     },
+    @JsonProperty("kilobytes")
     KILOBYTES {
         public long toBytes(long d)  { return d*RATIO; }
         public long toKilobytes(long d) { return d; }
         public long toMegabytes(long d)  { return d/RATIO; }
     },
+    @JsonProperty("megabytes")
     MEGABYTES {
         public long toBytes(long d)  { return d*RATIO_POW_2; }
         public long toKilobytes(long d) { return d*RATIO; }

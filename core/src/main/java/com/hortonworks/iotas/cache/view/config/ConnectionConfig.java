@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ConnectionConfig {
     private String host;
     private String port;
+    private RedisConnectionConfig.Pool pool;
 
     public ConnectionConfig() {
     }
@@ -46,6 +47,14 @@ public class ConnectionConfig {
 
     public void setPort(String port) {
         this.port = port;
+    }
+
+    public RedisConnectionConfig.Pool getPool() {
+        return pool;
+    }
+
+    public void setPool(RedisConnectionConfig.Pool pool) {
+        this.pool = pool;
     }
 
     public static class RedisConnectionConfig extends ConnectionConfig {

@@ -18,6 +18,8 @@
 
 package com.hortonworks.iotas.cache.view.config;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -30,21 +32,53 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Files;
+import java.util.concurrent.TimeUnit;
 
 public class ParseYamlTestConfigTest {
     final ObjectMapper objMapYaml = new ObjectMapper(new YAMLFactory());
 
     @Test
     public void testParseYaml() throws Exception {
-        CachesConfig cachesConfig = objMapYaml.readValue(load("cache/cache-config.yaml"), CachesConfig.class);
+        CachesConfig cachesConfig = objMapYaml
+//                .addMixIn(TimeUnit.class, TimeUnitMixIn.class)
+                .readValue(load("cache/cache-config.yaml"), CachesConfig.class);
 //        CachesConfig cachesConfig = objMapYaml.readValue(new File("cache/cache-config.yaml"), CachesConfig.class);
         System.out.println(cachesConfig);
+        System.out.println(objMapYaml.writerWithDefaultPrettyPrinter().writeValueAsString(cachesConfig));
     }
 
 
     private Reader load(String fileName) throws IOException {
         return new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(fileName));
     }
+
+    /*enum MyTimeUnit {
+        SECONDS("seconds"),
+        MILLISECONDS("milliseconds");
+
+        TimeUnit tu;
+
+        private final String val;
+
+
+        MyTimeUnit(String val) {
+            this.val = val;
+            tu  = TimeUnit.valueOf(val);
+        }
+
+        public void convert()
+
+        @JsonCreator
+        public static MyTimeUnit create(String val) {
+            return val == null ? null : MyTimeUnit.valueOf(val.toUpperCase());
+        }
+
+        @JsonValue
+        public String getVal() {
+            return val;
+        }
+
+    }*/
 
 
 }
