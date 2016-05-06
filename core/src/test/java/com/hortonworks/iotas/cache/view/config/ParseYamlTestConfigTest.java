@@ -25,17 +25,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 
 public class ParseYamlTestConfigTest {
-    final ObjectMapper objMapYaml = new ObjectMapper(new YAMLFactory());
+    private static final ObjectMapper objMapYaml = new ObjectMapper(new YAMLFactory());
+    private static CachesConfig cachesConfig;
+
+    @BeforeClass
+    public static void setup() throws IOException {
+        cachesConfig = objMapYaml.readValue(load("cache/cache-config.yaml"), CachesConfig.class);
+    }
+
+
 
     @Test
     public void testParseYaml() throws Exception {
@@ -47,9 +58,20 @@ public class ParseYamlTestConfigTest {
         System.out.println(objMapYaml.writerWithDefaultPrettyPrinter().writeValueAsString(cachesConfig));
     }
 
+    @Test
+    public void testParseYaml1() throws Exception {
+        CachesConfig cachesConfig = CachesConfigYamlFactory.INSTANCE.create(loadAsStream("cache/cache-config.yaml"));
+        System.out.println(cachesConfig);
+        System.out.println(objMapYaml.writerWithDefaultPrettyPrinter().writeValueAsString(cachesConfig));
+    }
 
-    private Reader load(String fileName) throws IOException {
-        return new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(fileName));
+
+    private static Reader load(String fileName) throws IOException {
+        return new InputStreamReader(loadAsStream(fileName));
+    }
+
+    private static InputStream loadAsStream(String fileName) {
+        return ParseYamlTestConfigTest.class.getClassLoader().getResourceAsStream(fileName);
     }
 
     /*enum MyTimeUnit {

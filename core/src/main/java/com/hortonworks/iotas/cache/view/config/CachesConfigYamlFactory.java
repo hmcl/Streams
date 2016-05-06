@@ -16,19 +16,27 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.service;
+package com.hortonworks.iotas.cache.view.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hortonworks.iotas.cache.view.Factory;
+import com.hortonworks.iotas.cache.view.StaticFactory;
 
-public class CacheServiceJsonFactory<K,V> implements Factory<CacheService<K,V>> {
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+public enum CachesConfigYamlFactory implements StaticFactory<CachesConfig, InputStream> {
+    INSTANCE;
+
     @Override
-    public CacheService<K, V> create() {
-//        return new CacheService.Builder<K,V>(null,null).setCacheLoader(null).build();
-
-        return new CacheService.Builder<K, V>(null, null).setExpiryPolicy(null).build();
-//        return new CacheService<>(null, null);
+    public CachesConfig create(InputStream yaml) {
+        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+        try {
+            return objectMapper.readValue(yaml, CachesConfig.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading cache view config from YAML file");
+        }
     }
-
-    class Bar {}
-
 }
