@@ -16,25 +16,25 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.impl.redis.connection;
+package com.hortonworks.iotas.exception;
 
-import com.lambdaworks.redis.RedisClient;
-import com.lambdaworks.redis.RedisConnection;
-import com.lambdaworks.redis.RedisURI;
-import com.lambdaworks.redis.codec.RedisCodec;
-
-public class RedisConnectionFactory<K,V> extends AbstractRedisConnectionFactory<K,V> {
-
-    public RedisConnectionFactory(RedisURI redisURI, RedisCodec<K, V> codec) {
-        this(RedisClient.create(redisURI), codec);
+public class InvalidCacheViewConfigException extends RuntimeException {
+    public InvalidCacheViewConfigException() {
     }
 
-    public RedisConnectionFactory(RedisClient redisClient, RedisCodec<K, V> codec) {
-        super(redisClient, codec);
+    public InvalidCacheViewConfigException(String message) {
+        super(message);
     }
 
-    @Override
-    public RedisConnection<K, V> create() {
-        return redisClient.connect(codec);
+    public InvalidCacheViewConfigException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public InvalidCacheViewConfigException(Throwable cause) {
+        super(cause);
+    }
+
+    public InvalidCacheViewConfigException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

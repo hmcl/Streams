@@ -27,6 +27,7 @@ import com.hortonworks.iotas.cache.view.config.TypeConfig;
 import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
 import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
 import com.hortonworks.iotas.cache.view.datastore.phoenix.PhoenixDataStore;
+import com.hortonworks.iotas.cache.view.impl.redis.connection.AbstractRedisConnectionFactory;
 import com.hortonworks.iotas.cache.view.impl.redis.connection.RedisConnectionFactory;
 import com.hortonworks.iotas.cache.view.impl.redis.connection.RedisConnectionPoolFactory;
 import com.hortonworks.iotas.cache.view.io.loader.CacheLoaderAsyncFactory;
@@ -36,52 +37,58 @@ import com.hortonworks.iotas.cache.view.io.writer.CacheWriter;
 import com.hortonworks.iotas.cache.view.io.writer.CacheWriterAsync;
 import com.hortonworks.iotas.cache.view.io.writer.CacheWriterSync;
 import com.hortonworks.iotas.cache.view.service.registry.CacheServiceLocalRegistry;
+import com.hortonworks.iotas.exception.InvalidCacheViewConfigException;
+import com.hortonworks.iotas.exception.MissingCacheViewConfigException;
 import com.hortonworks.iotas.util.ReflectionHelper;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
+import com.lambdaworks.redis.RedisURI;
 import com.lambdaworks.redis.codec.RedisCodec;
 import com.lambdaworks.redis.codec.Utf8StringCodec;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 
-public class RedisCacheServiceBuilder {
+public class CacheServiceFactory<T extends CacheService> implements Factory<T>{
+    private static final Logger LOG = LoggerFactory.getLogger(CacheServiceFactory.class);
+
     private CacheConfig cacheConfig;
 
-    public RedisCacheServiceBuilder(CacheConfig cacheConfig) {
+    public CacheServiceFactory(CacheConfig cacheConfig) {
         this.cacheConfig = cacheConfig;
     }
 
     public void register() {
-        CacheServiceLocalRegistry.INSTANCE.register(new CacheServiceId(cacheConfig.getId()), getCacheService());
+        CacheServiceLocalRegistry.INSTANCE.register(new CacheServiceId(cacheConfig.getId()), create());
     }
 
-    private <T extends CacheService> T getCacheService()  {
+    public T create() {
         TypeConfig.Cache cacheType = cacheConfig.getCacheType();
         switch (cacheType) {
             case REDIS:
-                return (T) getRedisCacheService();
+                return (T) createRedisCacheService();
             case GUAVA:
-                return (T) getGuavaCacheService();
-            case MEMCACHED:
+                return (T) createGuavaCacheService();
             default:
-                throw new IllegalStateException("Invalid cache option. " + cacheType
+                throw new UnsupportedOperationException("Invalid cache option. " + cacheType
                         + ". Valid options are " + Arrays.toString(TypeConfig.Cache.values()));
         }
     }
 
-
-    private RedisCacheService getRedisCacheService() {
+    private RedisCacheService createRedisCacheService() {
         final String cacheServiceId = cacheConfig.getId();
         final TypeConfig.Cache cacheType = cacheConfig.getCacheType();
-        return (RedisCacheService) new RedisCacheService.Builder(cacheServiceId, cacheType, getRedisConnectionFactory())
-                .setCacheLoaderFactory(getCacheLoaderFactory())
-                .setCacheWriter(getCacheWriter(getDataStoreWriter(getNamespace())))
-                .setDataStoreReader(getDataStoreReader(getNamespace()))
+        return (RedisCacheService) new RedisCacheService.Builder(cacheServiceId, cacheType, createRedisConnectionFactory())
+                .setCacheLoaderFactory(createCacheLoaderFactory())
+                .setCacheWriter(createCacheWriter(createDataStoreWriter(getNamespace())))
+                .setDataStoreReader(createDataStoreReader(getNamespace()))
                 .setExpiryPolicy(getExpiryPolicy())
                 .build();
     }
 
-    private CacheService getGuavaCacheService() {
+    private CacheService createGuavaCacheService() {
         throw new UnsupportedOperationException("Must implement Guava Cache Service");
     }
 
@@ -93,37 +100,37 @@ public class RedisCacheServiceBuilder {
         return cacheConfig.getDataStore().getNamespace();
     }
 
-    private DataStoreWriter getDataStoreWriter(String namespace) {
+    private DataStoreWriter createDataStoreWriter(String namespace) {
         final TypeConfig.DataStore dataStoreType = cacheConfig.getDataStore().getDataStoreType();
         switch (dataStoreType) {
             case PHOENIX:
                 return new PhoenixDataStore<>(namespace);
             case MYSQL:
-                return null;
+                throw new UnsupportedOperationException("MySQL DataStore not supported");
             case HBASE:
-                return null;
+                throw new UnsupportedOperationException("HBASE DataStore not supported");
             default:
-                throw new IllegalStateException("Invalid DataStore option. " + dataStoreType
+                throw new InvalidCacheViewConfigException("Invalid DataStore option. " + dataStoreType
                         + ". Valid options are " + Arrays.toString(TypeConfig.DataStore.values()));
         }
     }
 
-    private DataStoreReader<Object, Object> getDataStoreReader(String namespace) {
+    private DataStoreReader<Object, Object> createDataStoreReader(String namespace) {
         final TypeConfig.DataStore dataStoreType = cacheConfig.getDataStore().getDataStoreType();
         switch (dataStoreType) {
             case PHOENIX:
                 return new PhoenixDataStore<>(namespace);
             case MYSQL:
-                return null;
+                throw new UnsupportedOperationException("MySQL DataStore not supported");
             case HBASE:
-                return null;
+                throw new UnsupportedOperationException("HBASE DataStore not supported");
             default:
-                throw new IllegalStateException("Invalid DataStore option. " + dataStoreType
+                throw new InvalidCacheViewConfigException("Invalid DataStore option. " + dataStoreType
                         + ". Valid options are " + Arrays.toString(TypeConfig.DataStore.values()));
         }
     }
 
-    private CacheWriter getCacheWriter(DataStoreWriter dataStoreWriter) {
+    private CacheWriter createCacheWriter(DataStoreWriter dataStoreWriter) {
         final TypeConfig.CacheWriter cacheWriterType = cacheConfig.getDataStore().getCacheWriterType();
         switch (cacheWriterType) {
             case SYNC:
@@ -131,12 +138,12 @@ public class RedisCacheServiceBuilder {
             case ASYNC:
                 return new CacheWriterAsync(dataStoreWriter);
             default:
-                throw new IllegalStateException("Invalid CacheWriter option. " + cacheWriterType
+                throw new InvalidCacheViewConfigException("Invalid CacheWriter option. " + cacheWriterType
                         + ". Valid options are " + Arrays.toString(TypeConfig.CacheWriter.values()));
         }
     }
 
-    private CacheLoaderFactory getCacheLoaderFactory() {
+    private CacheLoaderFactory createCacheLoaderFactory() {
         final DataStoreConfig dataStore = cacheConfig.getDataStore();
         if (dataStore != null) {
             final TypeConfig.CacheLoader cacheLoaderType = dataStore.getCacheLoaderType();
@@ -146,41 +153,42 @@ public class RedisCacheServiceBuilder {
                 case ASYNC:
                     return new CacheLoaderAsyncFactory<>();
                 default:
-                    throw new IllegalStateException("Invalid CacheLoader option. " + cacheLoaderType
+                    throw new InvalidCacheViewConfigException("Invalid CacheLoader option. " + cacheLoaderType
                             + ". Valid options are " + Arrays.toString(TypeConfig.CacheLoader.values()));
             }
         }
         return null;
     }
 
-    private Factory<RedisConnection> getRedisConnectionFactory() {
-        final ConnectionConfig.RedisConnectionConfig connectionConfig = (ConnectionConfig.RedisConnectionConfig) cacheConfig.getConnectionConfig();
+    private Factory<RedisConnection> createRedisConnectionFactory() {
+        final ConnectionConfig.RedisConnectionConfig redisConnectionConfig = (ConnectionConfig.RedisConnectionConfig) cacheConfig.getConnectionConfig();
 
-        if (connectionConfig != null) {
-            if (connectionConfig.getPool() != null) {
-                return new RedisConnectionPoolFactory(RedisClient.create(getRedisUri()), getRedisCodec());
+        if (redisConnectionConfig != null) {
+            final RedisURI redisURI = AbstractRedisConnectionFactory.createRedisUri(redisConnectionConfig);
+            final ConnectionConfig.RedisConnectionConfig.Pool pool = redisConnectionConfig.getPool();
+            if (pool != null) {
+                return new RedisConnectionPoolFactory(redisURI, createRedisCodec(), pool.getMaxIdle(), pool.getMaxActive());
             } else {
-                return new RedisConnectionFactory(RedisClient.create(getRedisUri()), getRedisCodec());
+                return new RedisConnectionFactory(redisURI, createRedisCodec());
             }
+        } else {
+            throw new MissingCacheViewConfigException("Must specify host and port configuration for Redis connection");
         }
-        return null;
     }
 
-    private RedisCodec getRedisCodec() {
+    private RedisCodec createRedisCodec() {
         final String codec = cacheConfig.getCacheEntry().getCodec();
-        if (codec != null) {
-            return new Utf8StringCodec();
+        if (codec == null) {
+            return new Utf8StringCodec();   // By default uses Strings Codec - TODO: Is this good ?
         } else {
             try {
                 return ReflectionHelper.newInstance(codec);
-            } catch (Exception e) {
-                throw new RuntimeException("Exception occurred creating codec", e);
+            } catch (ClassCastException e) {
+                throw new InvalidCacheViewConfigException("Codec must be the fqn of of a class that implements "
+                        +  RedisCodec.class.getName(), e);
+            }catch (Exception e) {
+                throw new InvalidCacheViewConfigException("Exception occurred while creating codec", e);
             }
         }
-    }
-
-    private String getRedisUri() {
-        ConnectionConfig.RedisConnectionConfig rcc = (ConnectionConfig.RedisConnectionConfig) cacheConfig.getConnectionConfig();
-        return "redis://" +  rcc.getHost() + ":" + rcc.getPort();
     }
 }

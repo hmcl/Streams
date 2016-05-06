@@ -32,13 +32,11 @@ caches:
           count: 10
           unit: "megabytes"
       views:
-        -
-          # view:
+        - # view:
             id: "hashes-view-1"
             type: "hashes"
             key: "hashes-key-1"
-        -
-          # view:
+        - # view:
             id: "hashes-view-2"
             type: "hashes"
             key: "hashes-key-2"
@@ -50,7 +48,6 @@ caches:
               size:
                 count: 10
                 unit: "megabytes"
-        -
-          # view:
+        - # view:
             id: "strings-view"
             type: "strings"

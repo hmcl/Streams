@@ -26,8 +26,6 @@ public interface TypeConfig {
         REDIS,
         @JsonProperty("guava")
         GUAVA,
-        @JsonProperty("memcached")
-        MEMCACHED;
     }
 
     enum RedisDatatype {

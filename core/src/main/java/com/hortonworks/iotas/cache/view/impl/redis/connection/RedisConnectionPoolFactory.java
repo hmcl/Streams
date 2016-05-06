@@ -18,18 +18,25 @@
 
 package com.hortonworks.iotas.cache.view.impl.redis.connection;
 
+import com.hortonworks.iotas.cache.view.config.CacheConfig;
+import com.hortonworks.iotas.cache.view.config.ConnectionConfig;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
 import com.lambdaworks.redis.RedisConnectionPool;
+import com.lambdaworks.redis.RedisURI;
 import com.lambdaworks.redis.codec.RedisCodec;
 
 public class RedisConnectionPoolFactory<K,V> extends AbstractRedisConnectionFactory<K,V> {
-    // Defaults for Lettuce Redis Client 3.4.2
+    // Defaults for Lettuce Redis Client 3.4.3
     private static final int MAX_IDLE = 5;
     private static final int MAX_ACTIVE = 20;
 
     private final int maxIdle;
     private final int maxActive;
+
+    public RedisConnectionPoolFactory(RedisURI redisURI, RedisCodec<K, V> codec, int maxIdle, int maxActive) {
+        this(RedisClient.create(redisURI), codec, maxIdle, maxActive);
+    }
 
     public RedisConnectionPoolFactory(RedisClient redisClient, RedisCodec<K, V> codec, int maxIdle, int maxActive) {
         super(redisClient, codec);
@@ -37,11 +44,15 @@ public class RedisConnectionPoolFactory<K,V> extends AbstractRedisConnectionFact
         this.maxActive = maxActive;
     }
 
+    public RedisConnectionPoolFactory(RedisURI redisURI, RedisCodec<K, V> codec) {
+        this(RedisClient.create(redisURI), codec);
+    }
+
     public RedisConnectionPoolFactory(RedisClient redisClient, RedisCodec<K, V> codec) {
         this(redisClient, codec, MAX_IDLE, MAX_ACTIVE);
     }
 
     public RedisConnection<K, V> create() {
-        return redisClient.pool(codec, MAX_IDLE, MAX_ACTIVE).allocateConnection();
+        return redisClient.pool(codec, maxIdle, maxActive).allocateConnection();
     }
 }
