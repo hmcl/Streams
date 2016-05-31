@@ -25,6 +25,8 @@ import org.slf4j.Logger;
 
 import java.util.Collection;
 
+/** Loads cache synchronously or asynchronously depending on implementation, and calls
+ * {@link CacheLoaderCallback} when cache loading is complete */
 public abstract class CacheLoader<K,V> {
     protected Cache<K,V> cache;
     protected DataStoreReader<K, V> dataStoreReader;
@@ -36,7 +38,7 @@ public abstract class CacheLoader<K,V> {
 
     public abstract void loadAll(Collection<? extends K> keys, CacheLoaderCallback<K,V> callback);
 
-    protected void handleException(Collection<? extends K> keys, CacheLoaderCallback<K, V> callback, Exception e, Logger LOG) {
+    protected void handleException(Collection<? extends K> keys, CacheLoaderCallback<K, V> callback, Exception e, final Logger LOG) {
         final String msg = String.format("Exception occurred while loading keys [%s]", keys);
         callback.onCacheLoadingFailure(new Exception(msg, e));
         LOG.error(msg, e);

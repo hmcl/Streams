@@ -21,7 +21,7 @@ package com.hortonworks.iotas.cache.view.io.writer;
 import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
 
 /**
- * Marker interface
+ * Marker interface that
  * @param <K>   Type of the key
  * @param <V>   Type of the value
  */

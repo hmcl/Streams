@@ -20,8 +20,11 @@ package com.hortonworks.iotas.cache.view.datastore;
 
 import java.util.Collection;
 import java.util.Map;
-/** Implementations contain the logic to write/delete entries (data) to/from the underlying data store
- *  All the methods that receive a collection keys/entries should be optimized for bulk operations */
+/** Write/delete entries (data) to/from the underlying data store.
+ *  Methods that receive a collection keys/entries should be optimized for bulk operations
+ *  @param <K>   Type of the key
+ *  @param <V>   Type of the value
+ **/
 public interface DataStoreWriter<K,V> {
 
     /** Write one key/val pair */

@@ -20,6 +20,7 @@ package com.hortonworks.iotas.cache.view.io.loader;
 
 import java.util.Map;
 
+/** Gets called when {@link CacheLoader} implementation completes loading all keys */
 public interface CacheLoaderCallback<K,V> {
     void onCacheLoaded(Map<K, V> loaded);
 

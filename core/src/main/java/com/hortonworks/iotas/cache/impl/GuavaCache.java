@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -45,7 +47,9 @@ public class GuavaCache implements Cache<StorableKey, Storable> {
     public Storable get(StorableKey key) {
         Storable val = null;
         try {
-            val = guavaCache.get(key);
+            if (key != null) {
+                val = guavaCache.get(key);
+            }
         } catch (UncheckedExecutionException e) {
             // we need to handle the NonexistentStorableKeyException like this because
             // the method com.google.common.cache.LocalCache.LoadingValueReference.loadFuture() (line #3544 as of guava 18)
@@ -62,7 +66,12 @@ public class GuavaCache implements Cache<StorableKey, Storable> {
     }
 
     public Map<StorableKey, Storable> getAll(Collection<? extends StorableKey> keys) {
-        return guavaCache.getAllPresent(keys);
+        Map<StorableKey, Storable> result = null;
+
+        if (keys != null) {
+            result = guavaCache.getAllPresent(keys);
+        }
+        return result;
     }
 
     public void put(StorableKey key, Storable val) {
@@ -70,7 +79,9 @@ public class GuavaCache implements Cache<StorableKey, Storable> {
     }
 
     public void putAll(Map<? extends StorableKey, ? extends Storable> map) {
-        guavaCache.putAll(map);
+        if (map != null) {
+            guavaCache.putAll(map);
+        }
     }
 
     public void remove(StorableKey key) {

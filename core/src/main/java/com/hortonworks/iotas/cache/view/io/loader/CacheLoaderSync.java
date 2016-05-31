@@ -35,7 +35,7 @@ public class CacheLoaderSync<K,V> extends CacheLoader<K,V> {
     }
 
     public void loadAll(Collection<? extends K> keys, CacheLoaderCallback<K,V> callback) {
-        Map<K, V> entries;
+        final Map<K, V> entries;
         try {
             entries = dataStoreReader.readAll(keys);
             cache.putAll(entries);

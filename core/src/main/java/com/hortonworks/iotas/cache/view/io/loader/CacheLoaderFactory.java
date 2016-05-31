@@ -22,6 +22,7 @@ import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.view.StaticFactory;
 import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
 
+/** Factory of {@link CacheLoader} objects */
 public interface CacheLoaderFactory<K,V> {
     CacheLoader<K,V> create(Cache<K, V> cache, DataStoreReader<K, V> dataStoreReader);
 
