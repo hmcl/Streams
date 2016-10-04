@@ -251,6 +251,15 @@ public class StreamCatalogService {
         return this.dao.get(new StorableKey(SERVICE_NAMESPACE, service.getPrimaryKey()));
     }
 
+    public Service getServiceByClusterId(Long clusterId, String serviceName) {
+        return getServiceByName(clusterId, serviceName);
+    }
+
+    public Long getServiceIdByClusterId(Long clusterId, String serviceName) {
+        final Service service = getServiceByClusterId(clusterId, serviceName);
+        return service == null ? null : service.getId();
+    }
+
     public Service getServiceByName(Long clusterId, String serviceName) {
         Collection<Service> services = listServices(
             Lists.newArrayList(new QueryParam("clusterId", String.valueOf(clusterId)), new QueryParam("name", serviceName)));

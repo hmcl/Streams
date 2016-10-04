@@ -2,7 +2,8 @@ package com.hortonworks.iotas.streams.cluster.discovery.ambari;
 
 // TODO: Just removed log related configurations... do we need them?
 /**
- * Defines mapping between Service and its configuration types.
+ * Defines mapping between Service and its configuration types. DO NOT Change the order of
+ * these configuration mappings. If you need to add a new mapping, add it to the end.
  */
 public enum ServiceConfigurations {
   ZOOKEEPER("zoo.cfg", "zookeeper-env"),

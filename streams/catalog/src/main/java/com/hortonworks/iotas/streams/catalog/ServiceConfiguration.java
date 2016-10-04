@@ -1,10 +1,13 @@
 package com.hortonworks.iotas.streams.catalog;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.storage.PrimaryKey;
 import com.hortonworks.iotas.storage.catalog.AbstractStorable;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +15,8 @@ import java.util.Map;
  * Catalog that matches one configuration file of service.
  */
 public class ServiceConfiguration extends AbstractStorable {
-  private static final String NAMESPACE = "service_configurations";
+  private static final String NAMESPACE = "service_configuration";
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   private Long id;
   private Long serviceId;
@@ -61,6 +65,16 @@ public class ServiceConfiguration extends AbstractStorable {
    */
   public String getConfiguration() {
     return configuration;
+  }
+
+  /**
+   * JSON configuration deserialized to a {@code Map<String,String>}.
+   */
+  public Map<String, String> getConfigurationMap() throws IOException {
+    if (configuration != null) {    // ternary operator does not allow for type inference
+      return objectMapper.readValue(configuration, new TypeReference<Map<String, String>>(){ });
+    }
+    return null;
   }
 
   public void setConfiguration(String configuration) {
