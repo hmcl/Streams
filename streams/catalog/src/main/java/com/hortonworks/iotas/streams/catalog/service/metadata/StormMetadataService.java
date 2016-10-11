@@ -81,7 +81,7 @@ public class StormMetadataService {
         private HostPort getHostPort() {
             final Component stormUiComp = catalogService.getComponentByName(catalogService.getServiceByClusterId(
                     clusterId, STREAMS_JSON_SCHEMA_SERVICE_STORM).getId(), STREAMS_JSON_SCHEMA_COMPONENT_STORM_UI_SERVER);
-            return new HostPort(stormUiComp.getHosts().get(0), stormUiComp.getPort());
+            return new HostPort(stormUiComp.getHostsList().get(0), stormUiComp.getPort());
         }
     }
 

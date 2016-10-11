@@ -32,7 +32,7 @@ public class KafkaMetadataService {
         List<String> hosts;
         List<HostPort> hostsPorts = null;
         if (kafkaBrokerComp != null) {
-            hosts = kafkaBrokerComp.getHosts();
+            hosts = kafkaBrokerComp.getHostsList();
             final int port = kafkaBrokerComp.getPort();
             hostsPorts = new ArrayList<>(hosts.size());
 

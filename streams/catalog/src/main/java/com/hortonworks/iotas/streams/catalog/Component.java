@@ -5,6 +5,8 @@ import com.hortonworks.iotas.common.Schema;
 import com.hortonworks.iotas.storage.PrimaryKey;
 import com.hortonworks.iotas.storage.catalog.AbstractStorable;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import java.util.Map;
  */
 public class Component extends AbstractStorable {
     private static final String NAMESPACE = "components";
+    public static final String HOSTS_DELIMITER = ",";
 
     private Long id;
     private Long serviceId;
@@ -66,6 +69,10 @@ public class Component extends AbstractStorable {
      */
     public String getHosts() {
         return hosts;
+    }
+
+    public List<String> getHostsList() {
+        return hosts == null ? Collections.<String>emptyList() : Arrays.asList(hosts.split(HOSTS_DELIMITER));
     }
 
     public void setHosts(String hosts) {
