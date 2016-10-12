@@ -2,9 +2,9 @@ package com.hortonworks.iotas.streams.catalog.service.metadata.common;
 
 public class HostPort {
     private final String host;
-    private final int port;
+    private final Integer port;
 
-    public HostPort(String host, int port) {
+    public HostPort(String host, Integer port) {
         this.host = host;
         this.port = port;
     }
@@ -13,7 +13,7 @@ public class HostPort {
         return host;
     }
 
-    public int getPort() {
+    public Integer getPort() {
         return port;
     }
 
