@@ -1,6 +1,6 @@
 package com.hortonworks.iotas.streams.catalog.service.metadata;
 
-import com.hortonworks.iotas.streams.catalog.exception.MissingServiceConfigurationException;
+import com.hortonworks.iotas.streams.catalog.exception.ServiceConfigurationNotFoundException;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
 import com.hortonworks.iotas.streams.catalog.service.metadata.common.OverrideHadoopConfiguration;
 import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
@@ -29,7 +29,7 @@ public class HBaseMetadataService {
     }
 
     public static HBaseMetadataService newInstance(StreamCatalogService catalogService, Long clusterId)
-            throws IOException, MissingServiceConfigurationException {
+            throws IOException, ServiceConfigurationNotFoundException {
 
         return new HBaseMetadataService(ConnectionFactory.createConnection(
                 OverrideHadoopConfiguration.override(HBaseConfiguration.create(), catalogService,

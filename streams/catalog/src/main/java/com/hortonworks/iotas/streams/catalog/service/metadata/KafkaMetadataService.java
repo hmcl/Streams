@@ -2,7 +2,7 @@ package com.hortonworks.iotas.streams.catalog.service.metadata;
 
 import com.hortonworks.iotas.streams.catalog.Component;
 import com.hortonworks.iotas.streams.catalog.ServiceConfiguration;
-import com.hortonworks.iotas.streams.catalog.exception.MissingServiceConfigurationException;
+import com.hortonworks.iotas.streams.catalog.exception.ServiceConfigurationNotFoundException;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
 import com.hortonworks.iotas.streams.catalog.service.metadata.common.HostPort;
 import com.hortonworks.iotas.streams.cluster.discovery.ambari.ComponentPropertyPattern;
@@ -142,13 +142,13 @@ public class KafkaMetadataService {
         return new KafkaZkConnection(zkString, chRoot);
     }
 
-    private String getZkStringRaw(Long clusterId) throws IOException, MissingServiceConfigurationException {
+    private String getZkStringRaw(Long clusterId) throws IOException, ServiceConfigurationNotFoundException {
         final ServiceConfiguration kafkaBrokerConfig = catalogService.getServiceConfigurationByName(
                 getServiceIdByClusterId(clusterId), STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER);
         if (kafkaBrokerConfig != null) {
             return kafkaBrokerConfig.getConfigurationMap().get(KAFKA_ZK_CONNECT_PROP);
         } else {
-            throw new MissingServiceConfigurationException("Required " + STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER + " configuration not found");
+            throw new ServiceConfigurationNotFoundException("Required " + STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER + " configuration not found");
         }
     }
 

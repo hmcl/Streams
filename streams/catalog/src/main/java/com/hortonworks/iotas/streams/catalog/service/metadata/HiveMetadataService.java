@@ -1,6 +1,6 @@
 package com.hortonworks.iotas.streams.catalog.service.metadata;
 
-import com.hortonworks.iotas.streams.catalog.exception.MissingServiceConfigurationException;
+import com.hortonworks.iotas.streams.catalog.exception.ServiceConfigurationNotFoundException;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
 import com.hortonworks.iotas.streams.catalog.service.metadata.common.OverrideHadoopConfiguration;
 import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
@@ -41,7 +41,7 @@ public class HiveMetadataService {
      * in the hive metastore hive-site config serialized in "streams services json"
      */
     public static HiveMetadataService newInstance(StreamCatalogService catalogService, Long clusterId)
-            throws MetaException, IOException, MissingServiceConfigurationException {
+            throws MetaException, IOException, ServiceConfigurationNotFoundException {
         return newInstance(new HiveConf(), catalogService, clusterId);
     }
 
@@ -52,7 +52,7 @@ public class HiveMetadataService {
      * in the hive metastore hive-site config serialized in "streams services json"
      */
     public static HiveMetadataService newInstance(HiveConf hiveConf, StreamCatalogService catalogService, Long clusterId)
-            throws MetaException, IOException, MissingServiceConfigurationException {
+            throws MetaException, IOException, ServiceConfigurationNotFoundException {
         // Creates HiveMetaStoreClient with the HiveConf hive metastore properties defined in hive-site overridden with the values set
         // in the hive metastore hive-site config serialized in "streams services json"
         return new HiveMetadataService(new HiveMetaStoreClient(OverrideHadoopConfiguration.override(hiveConf, catalogService,
