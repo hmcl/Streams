@@ -41,7 +41,6 @@ public class StormMetadataResource {
         if (cluster == null) {
             return WSUtils.respond(NOT_FOUND, ENTITY_BY_NAME_NOT_FOUND, "cluster name " + clusterName);
         }
-
         return getTopologiesByClusterId(cluster.getId());
     }
 
@@ -51,12 +50,7 @@ public class StormMetadataResource {
     public Response getTopologiesByClusterId(@PathParam("clusterId") Long clusterId) {
         try {
             StormMetadataService stormMetadataService = new StormMetadataService.Builder(catalogService, clusterId).build();
-            final List<String> topologies = stormMetadataService.getTopologies();
-            if (topologies != null && !topologies.isEmpty()) {
-                return WSUtils.respond(OK, SUCCESS, topologies);
-            } else {
-                throw new EntityNotFoundException("No topologies found for cluster with id [" + clusterId + "]");
-            }
+            return WSUtils.respond(OK, SUCCESS, stormMetadataService.getTopologies());
         } catch (EntityNotFoundException ex) {
             return WSUtils.respond(NOT_FOUND, ENTITY_NOT_FOUND, ex.getMessage());
         } catch (Exception ex) {

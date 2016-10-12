@@ -13,6 +13,7 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +64,7 @@ public class StormMetadataService {
             return this;
         }
 
-        public StormMetadataService build() throws EntityNotFoundException {
+        public StormMetadataService build() throws ServiceNotFoundException, ServiceComponentNotFoundException {
             return new StormMetadataService(newHttpClient(), getTopologySummaryRestUrl());
         }
 
@@ -75,12 +76,12 @@ public class StormMetadataService {
             return ClientBuilder.newClient(clientConfig);
         }
 
-        private String getTopologySummaryRestUrl() throws EntityNotFoundException {
+        private String getTopologySummaryRestUrl() throws ServiceNotFoundException, ServiceComponentNotFoundException {
             HostPort hostPort = getHostPort();
             return "http://" + hostPort.toString() + (urlRelativePath.startsWith("/") ? urlRelativePath : "/" + urlRelativePath);
         }
 
-        private HostPort getHostPort() throws EntityNotFoundException {
+        private HostPort getHostPort() throws ServiceNotFoundException, ServiceComponentNotFoundException {
             final Long serviceId = catalogService.getServiceIdByClusterId(clusterId, STREAMS_JSON_SCHEMA_SERVICE_STORM);
             if (serviceId == null) {
                 throw new ServiceNotFoundException(clusterId, ServiceConfigurations.STORM);
@@ -99,13 +100,37 @@ public class StormMetadataService {
     /**
      * @return List of storm topologies as returned by Storm's REST API
      */
-    public List<String> getTopologies() {
+    public Topologies getTopologies() {
         final Map<String, ?> jsonAsMap = httpClient.target(url).request(MediaType.APPLICATION_JSON).get(Map.class);
-        final List<Map<String, String>> topologiesSummary = (List<Map<String, String>>) jsonAsMap.get(STORM_REST_API_TOPOLOGIES_KEY);
-        final List<String> topologies = new ArrayList<>(topologiesSummary.size());
-        for (Map<String, String> tpSum : topologiesSummary) {
-            topologies.add(tpSum.get(STORM_REST_API_TOPOLOGY_ID_KEY));
+        List<String> topologies = Collections.emptyList();
+        if (jsonAsMap != null) {
+            final List<Map<String, String>> topologiesSummary = (List<Map<String, String>>) jsonAsMap.get(STORM_REST_API_TOPOLOGIES_KEY);
+            if (topologiesSummary != null) {
+                topologies = new ArrayList<>(topologiesSummary.size());
+                for (Map<String, String> tpSum : topologiesSummary) {
+                    topologies.add(tpSum.get(STORM_REST_API_TOPOLOGY_ID_KEY));
+                }
+            }
         }
-        return topologies;
+        return new Topologies(topologies);
+    }
+
+    /** Wrapper used to show proper JSON formatting
+     * {@code
+     *  {
+     *   "topologies" : [ "A", "B", "C" ]
+     *  }
+     * }
+     * */
+    public static class Topologies {
+        private List<String> topologies;
+
+        public Topologies(List<String> topologies) {
+            this.topologies = topologies;
+        }
+
+        public List<String> getTopologies() {
+            return topologies;
+        }
     }
 }
