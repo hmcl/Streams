@@ -1,9 +1,11 @@
 package com.hortonworks.iotas.streams.catalog.service.metadata;
 
 import com.hortonworks.iotas.streams.catalog.Component;
+import com.hortonworks.iotas.streams.catalog.exception.EntityNotFoundException;
+import com.hortonworks.iotas.streams.catalog.exception.ServiceComponentNotFoundException;
+import com.hortonworks.iotas.streams.catalog.exception.ServiceNotFoundException;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
 import com.hortonworks.iotas.streams.catalog.service.metadata.common.HostPort;
-import com.hortonworks.iotas.streams.cluster.discovery.ambari.AmbariServiceNodeDiscoverer;
 import com.hortonworks.iotas.streams.cluster.discovery.ambari.ComponentPropertyPattern;
 import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
 
@@ -61,7 +63,7 @@ public class StormMetadataService {
             return this;
         }
 
-        public StormMetadataService build() {
+        public StormMetadataService build() throws EntityNotFoundException {
             return new StormMetadataService(newHttpClient(), getTopologySummaryRestUrl());
         }
 
@@ -73,14 +75,23 @@ public class StormMetadataService {
             return ClientBuilder.newClient(clientConfig);
         }
 
-        private String getTopologySummaryRestUrl() {
+        private String getTopologySummaryRestUrl() throws EntityNotFoundException {
             HostPort hostPort = getHostPort();
             return "http://" + hostPort.toString() + (urlRelativePath.startsWith("/") ? urlRelativePath : "/" + urlRelativePath);
         }
 
-        private HostPort getHostPort() {
-            final Component stormUiComp = catalogService.getComponentByName(catalogService.getServiceByClusterId(
-                    clusterId, STREAMS_JSON_SCHEMA_SERVICE_STORM).getId(), STREAMS_JSON_SCHEMA_COMPONENT_STORM_UI_SERVER);
+        private HostPort getHostPort() throws EntityNotFoundException {
+            final Long serviceId = catalogService.getServiceIdByClusterId(clusterId, STREAMS_JSON_SCHEMA_SERVICE_STORM);
+            if (serviceId == null) {
+                throw new ServiceNotFoundException(clusterId, ServiceConfigurations.STORM);
+            }
+
+            final Component stormUiComp = catalogService.getComponentByName(serviceId, STREAMS_JSON_SCHEMA_COMPONENT_STORM_UI_SERVER);
+
+            if (stormUiComp == null) {
+                throw new ServiceComponentNotFoundException(clusterId, ServiceConfigurations.STORM, ComponentPropertyPattern.STORM_UI_SERVER);
+            }
+
             return new HostPort(stormUiComp.getHostsList().get(0), stormUiComp.getPort());
         }
     }
