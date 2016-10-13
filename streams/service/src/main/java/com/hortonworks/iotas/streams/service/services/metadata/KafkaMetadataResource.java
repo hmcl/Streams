@@ -55,12 +55,7 @@ public class KafkaMetadataResource {
     public Response getBrokersByClusterId(@PathParam("clusterId") Long clusterId) {
         try {
             final KafkaMetadataService kafkaMetadataService = new KafkaMetadataService(catalogService);
-            final List<HostPort> hostsPorts = kafkaMetadataService.getBrokerHostPortFromStreamsJson(clusterId);
-            if (hostsPorts != null && !hostsPorts.isEmpty()) {
-                return WSUtils.respond(OK, SUCCESS, hostsPorts);
-            } else {
-                throw new EntityNotFoundException("No Kafka brokers found for cluster [" + clusterId + "]");
-            }
+            return WSUtils.respond(OK, SUCCESS, kafkaMetadataService.getBrokerHostPortFromStreamsJson(clusterId));
         } catch (EntityNotFoundException ex) {
             return WSUtils.respond(NOT_FOUND, ENTITY_NOT_FOUND, ex.getMessage());
         } catch (Exception ex) {
@@ -76,7 +71,6 @@ public class KafkaMetadataResource {
         if (cluster == null) {
             return WSUtils.respond(NOT_FOUND, ENTITY_BY_NAME_NOT_FOUND, "cluster name " + clusterName);
         }
-
         return getTopicsByClusterId(cluster.getId());
     }
 
@@ -86,12 +80,7 @@ public class KafkaMetadataResource {
     public Response getTopicsByClusterId(@PathParam("clusterId") Long clusterId) {
         try {
             final KafkaMetadataService kafkaMetadataService = new KafkaMetadataService(catalogService);
-            final List<String> brokerInfo = kafkaMetadataService.getTopicsFromZk(clusterId);
-            if (brokerInfo != null) {
-                return WSUtils.respond(OK, SUCCESS, brokerInfo);
-            } else {
-                throw new EntityNotFoundException("No Kafka brokers found for cluster [" + clusterId + "]");
-            }
+            return WSUtils.respond(OK, SUCCESS, kafkaMetadataService.getTopicsFromZk(clusterId));
         } catch (EntityNotFoundException ex) {
             return WSUtils.respond(NOT_FOUND, ENTITY_NOT_FOUND, ex.getMessage());
         } catch (Exception ex) {

@@ -30,24 +30,27 @@ public class KafkaMetadataService {
         this.catalogService = catalogService;
     }
 
-    public BrokersHostPort getBrokerHostPortFromStreamsJson(Long clusterId) throws ServiceNotFoundException, ServiceComponentNotFoundException {
+    public BrokersInfo<HostPort> getBrokerHostPortFromStreamsJson(Long clusterId) throws ServiceNotFoundException, ServiceComponentNotFoundException {
         final Component kafkaBrokerComp = getComponentByName(clusterId);
-        return BrokersHostPort.newInstance(kafkaBrokerComp.getHostsList(), kafkaBrokerComp.getPort());
+        return BrokersInfo.hostPort(kafkaBrokerComp.getHostsList(), kafkaBrokerComp.getPort());
     }
 
-    public List<String> getBrokerInfoFromZk(Long clusterId) throws Exception {
+    public BrokersInfo<String> getBrokerInfoFromZk(Long clusterId)
+            throws ServiceConfigurationNotFoundException, IOException, ServiceNotFoundException, ZookeeperClientException {
+
         List<String> brokerInfo = null;
         ZookeeperClient zkCli = null;
         try {
             final KafkaZkConnection kafkaZkConnection = KafkaZkConnection.newInstance(getZkStringRaw(clusterId));
             zkCli = ZookeeperClient.newInstance(kafkaZkConnection);
             zkCli.start();
-            final List<String> brokerIds = zkCli.getChildren(kafkaZkConnection.createPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH));
+            final String brokerIdsZkPath = kafkaZkConnection.createPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
+            final List<String> brokerIds = zkCli.getChildren(brokerIdsZkPath);
 
             if (brokerIds != null) {
                 brokerInfo = new ArrayList<>();
                 for (String bkId : brokerIds) {
-                    final byte[] bytes = zkCli.getData(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH + "/" + bkId);
+                    final byte[] bytes = zkCli.getData(brokerIdsZkPath + "/" + bkId);
                     brokerInfo.add(new String(bytes));
                 }
             }
@@ -56,10 +59,12 @@ public class KafkaMetadataService {
                 zkCli.close();
             }
         }
-        return brokerInfo;
+        return BrokersInfo.fromZk(brokerInfo);
     }
 
-    public List<String> getBrokerIdsFromZk(Long clusterId) throws Exception {
+    public BrokersInfo<BrokersInfo.BrokerId> getBrokerIdsFromZk(Long clusterId)
+            throws ServiceConfigurationNotFoundException, IOException, ServiceNotFoundException, ZookeeperClientException {
+
         final List<String> brokerIds;
         ZookeeperClient zkCli = null;
         try {
@@ -72,14 +77,12 @@ public class KafkaMetadataService {
                 zkCli.close();
             }
         }
-        return brokerIds;
+        return BrokersInfo.brokerIds(brokerIds);
     }
 
-    public static class BrokerIds {
+    public Topics getTopicsFromZk(Long clusterId)
+            throws ServiceConfigurationNotFoundException, IOException, ServiceNotFoundException, ZookeeperClientException {
 
-    }
-
-    public List<String> getTopicsFromZk(Long clusterId) throws Exception {
         final KafkaZkConnection kafkaZkConnection = KafkaZkConnection.newInstance(getZkStringRaw(clusterId));
         final List<String> topics;
         ZookeeperClient zkCli = null;
@@ -92,7 +95,7 @@ public class KafkaMetadataService {
                 zkCli.close();
             }
         }
-        return topics;
+        return topics == null ? new Topics(Collections.<String>emptyList()) : new Topics(topics);
     }
 
     private String getZkStringRaw(Long clusterId) throws IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {
@@ -134,16 +137,27 @@ public class KafkaMetadataService {
      *    "port" : 23
      *   } ]
      *  }
+     *
+     *  {
+     *   "brokers" : [ {
+     *     "id" : "1"
+     *   }, {
+     *     "id" : "2"
+     *   }, {
+     *     "id" : "3"
+     *   } ]
+     *   }
      *}
      * */
-    public static class BrokersHostPort {
-        private List<HostPort> brokers;
 
-        public BrokersHostPort(List<HostPort> brokers) {
+    public static class BrokersInfo<T> {
+        private List<T> brokers;
+
+        public BrokersInfo(List<T> brokers) {
             this.brokers = brokers;
         }
 
-        public static BrokersHostPort newInstance(List<String> hosts, Integer port) {
+        public static BrokersInfo<HostPort> hostPort(List<String> hosts, Integer port) {
             List<HostPort> hostsPorts = Collections.emptyList();
             if (hosts != null) {
                 hostsPorts = new ArrayList<>(hosts.size());
@@ -151,35 +165,48 @@ public class KafkaMetadataService {
                     hostsPorts.add(new HostPort(host, port));
                 }
             }
-            return new BrokersHostPort(hostsPorts);
+            return new BrokersInfo<>(hostsPorts);
         }
 
-        public List<HostPort> getBrokers() {
-            return brokers;
-        }
-    }
-
-    public static class BrokersHostPort<T> {
-        private List<T> brokers;
-
-        public BrokersHostPort(List<T> brokers) {
-            this.brokers = brokers;
-        }
-
-        @SuppressWarnings("unchecked")
-        public static <T> T newInstance(List<String> hosts, Integer port) {
-            List<T> hostsPorts = Collections.emptyList();
-            if (hosts != null) {
-                hostsPorts = new ArrayList<>(hosts.size());
-                for (String host : hosts) {
-                    hostsPorts.add((T) new HostPort(host, port));
+        public static BrokersInfo<BrokerId> brokerIds(List<String> brokerIds) {
+            List<BrokerId> brokerIdsType = Collections.emptyList();
+            if (brokerIds != null) {
+                brokerIdsType = new ArrayList<>(brokerIds.size());
+                for (String brokerId : brokerIds) {
+                    brokerIdsType.add(new BrokerId(brokerId));
                 }
             }
-            return (T) new BrokersHostPort(hostsPorts);
+            return new BrokersInfo<>(brokerIdsType);
+        }
+
+        public static BrokersInfo<String> fromZk(List<String> brokerInfo) {
+            return brokerInfo == null
+                    ? new BrokersInfo<>(Collections.<String>emptyList())
+                    : new BrokersInfo<>(brokerInfo);
         }
 
         public List<T> getBrokers() {
             return brokers;
+        }
+
+        public static class BrokerId {
+            String id;
+
+            public BrokerId(String id) {
+                this.id = id;
+            }
+        }
+    }
+
+    public static class Topics {
+        List<String> topics;
+
+        public Topics(List<String> topics) {
+            this.topics = topics;
+        }
+
+        public List<String> getTopics() {
+            return topics;
         }
     }
 
@@ -193,7 +220,7 @@ public class KafkaMetadataService {
         }
 
         /**
-         * Factory method
+         * Factory method to create instance of {@link KafkaZkConnection} taking into consideration chRoot
          * @param zkStringRaw zk connection string as defined in the broker zk property
          * */
         static KafkaZkConnection newInstance(String zkStringRaw) {
