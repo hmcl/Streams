@@ -46,7 +46,7 @@ public class ZookeeperClient {
         return newInstance(zkConnStrFactory.createZkConnString(), retryPolicy);
     }
 
-    public void start() throws Exception {
+    public void start() {
         zkCli.start();
     }
 
@@ -54,19 +54,27 @@ public class ZookeeperClient {
         zkCli.close();
     }
 
-    public List<String> getChildren(String zkPath) throws Exception {
-        return zkCli.getChildren().forPath(zkPath);
+    public List<String> getChildren(String zkPath) throws ZookeeperClientException {
+        try {
+            return zkCli.getChildren().forPath(zkPath);
+        } catch (Exception e) {
+            throw new ZookeeperClientException(e);
+        }
     }
 
-    public List<String> getChildren(ZkPathFactory zkPathFactory) throws Exception {
+    public List<String> getChildren(ZkPathFactory zkPathFactory) throws ZookeeperClientException {
         return getChildren(zkPathFactory.createPath());
     }
 
-    public byte[] getData(String zkPath) throws Exception {
-        return zkCli.getData().forPath(zkPath);
+    public byte[] getData(String zkPath) throws ZookeeperClientException {
+        try {
+            return zkCli.getData().forPath(zkPath);
+        } catch (Exception e) {
+            throw new ZookeeperClientException(e);
+        }
     }
 
-    public byte[] getData(ZkPathFactory zkPathFactory) throws Exception {
+    public byte[] getData(ZkPathFactory zkPathFactory) throws ZookeeperClientException {
         return getData(zkPathFactory.createPath());
     }
 
