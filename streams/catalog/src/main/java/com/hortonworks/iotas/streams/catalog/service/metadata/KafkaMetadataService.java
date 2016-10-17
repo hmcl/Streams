@@ -22,7 +22,7 @@ public class KafkaMetadataService {
     private static final String STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER = ServiceConfigurations.KAFKA.getConfNames()[0];
 
     private static final String KAFKA_TOPICS_ZK_RELATIVE_PATH = "/brokers/topics";
-    private static final String KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH = "/brokers/ids";
+    public static final String KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH = "/brokers/ids";
     private static final String KAFKA_ZK_CONNECT_PROP = "zookeeper.connect";
 
     private final StreamCatalogService catalogService;
@@ -214,18 +214,19 @@ public class KafkaMetadataService {
         }
     }
 
-    private static class KafkaZkConnection implements ZookeeperClient.ZkConnectionStringFactory {
+    static class KafkaZkConnection implements ZookeeperClient.ZkConnectionStringFactory {
         String zkString;
         String chRoot;
 
-        private KafkaZkConnection(String zkString, String chRoot) {
+        KafkaZkConnection(String zkString, String chRoot) {
             this.zkString = zkString;
             this.chRoot = chRoot;
         }
 
         /**
          * Factory method to create instance of {@link KafkaZkConnection} taking into consideration chRoot
-         * @param zkStringRaw zk connection string as defined in the broker zk property
+         * @param zkStringRaw zk connection string as defined in the broker zk property. It has the pattern
+         *                    "hostname1:port1,hostname2:port2,hostname3:port3/chroot/path"
          * */
         static KafkaZkConnection newInstance(String zkStringRaw) {
             final String[] split = zkStringRaw.split("/", 2);
@@ -255,7 +256,14 @@ public class KafkaMetadataService {
             } else {
                 return chRoot + zkRelativePath;
             }
+        }
 
+        String getZkString() {
+            return zkString;
+        }
+
+        String getChRoot() {
+            return chRoot;
         }
     }
 
