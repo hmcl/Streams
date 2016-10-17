@@ -6,9 +6,14 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryNTimes;
+import org.apache.zookeeper.data.Stat;
 
 import java.util.List;
 
+/**
+ * {@link CuratorFramework} zookeeper client wrapper to simplify basic operations. Wraps {@link CuratorFramework} exceptions as
+ * {@link ZookeeperClientException}
+ */
 public class ZookeeperClient {
     public static final RetryPolicy DEFAULT_RETRY_POLICY = new RetryNTimes(3, 500);
 
@@ -31,16 +36,20 @@ public class ZookeeperClient {
     }
 
     public ZookeeperClient(CuratorFramework zkCli) {
-        this.zkCli= zkCli;
+        this.zkCli = zkCli;
         this.zkConnString = zkCli.getZookeeperClient().getCurrentConnectionString();
         this.retryPolicy = zkCli.getZookeeperClient().getRetryPolicy();
+    }
+
+    public static ZookeeperClient newInstance(String zkConnString) {
+        return newInstance(zkConnString, DEFAULT_RETRY_POLICY);
     }
 
     public static ZookeeperClient newInstance(String zkConnString, RetryPolicy retryPolicy) {
         return new ZookeeperClient(zkConnString, retryPolicy, CuratorFrameworkFactory.newClient(zkConnString, retryPolicy));
     }
 
-    public static  ZookeeperClient newInstance(ZkConnectionStringFactory zkConnStrFactory) {
+    public static ZookeeperClient newInstance(ZkConnectionStringFactory zkConnStrFactory) {
         return newInstance(zkConnStrFactory.createZkConnString(), DEFAULT_RETRY_POLICY);
     }
 
@@ -56,6 +65,22 @@ public class ZookeeperClient {
         zkCli.close();
     }
 
+    // === Create Path
+
+    public String createPath(String zkPath) throws ZookeeperClientException {
+        try {
+            return zkCli.create().forPath(zkPath);
+        } catch (Exception e) {
+            throw new ZookeeperClientException(e);
+        }
+    }
+
+    public String createPath(ZkPathFactory zkPathFactory) throws ZookeeperClientException {
+        return createPath(zkPathFactory.createPath());
+    }
+
+    // === Get Children
+
     public List<String> getChildren(String zkPath) throws ZookeeperClientException {
         try {
             return zkCli.getChildren().forPath(zkPath);
@@ -68,6 +93,8 @@ public class ZookeeperClient {
         return getChildren(zkPathFactory.createPath());
     }
 
+    // === Get Data
+
     public byte[] getData(String zkPath) throws ZookeeperClientException {
         try {
             return zkCli.getData().forPath(zkPath);
@@ -79,6 +106,22 @@ public class ZookeeperClient {
     public byte[] getData(ZkPathFactory zkPathFactory) throws ZookeeperClientException {
         return getData(zkPathFactory.createPath());
     }
+
+    // === Set Data
+
+    public Stat setData(String zkPath) throws ZookeeperClientException {
+        try {
+            return zkCli.setData().forPath(zkPath);
+        } catch (Exception e) {
+            throw new ZookeeperClientException(e);
+        }
+    }
+
+    public Stat setData(ZkPathFactory zkPathFactory) throws ZookeeperClientException {
+        return setData(zkPathFactory.createPath());
+    }
+
+    // === Getter methods
 
     public CuratorFramework getCuratorFrameworkZkCli() {
         return zkCli;

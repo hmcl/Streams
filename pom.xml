@@ -48,6 +48,7 @@
         <calcite.version>1.4.0-incubating</calcite.version>
         <commons.version>2.5</commons.version>
         <commons-cli.version>1.2</commons-cli.version>
+        <curator-framework.version>3.2.0</curator-framework.version>
     </properties>
 
     <distributionManagement>
@@ -261,6 +262,17 @@
                 <groupId>com.esotericsoftware.kryo</groupId>
                 <artifactId>kryo</artifactId>
                 <version>${kryo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-framework</artifactId>
+                <version>${curator-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-test</artifactId>
+                <version>${curator-framework.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
