@@ -17,13 +17,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class KafkaMetadataService {
-    private static final String STREAMS_JSON_SCHEMA_SERVICE_KAFKA = ServiceConfigurations.KAFKA.name();
-    private static final String STREAMS_JSON_SCHEMA_COMPONENT_KAFKA_BROKER = ComponentPropertyPattern.KAFKA_BROKER.name();
-    private static final String STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER = ServiceConfigurations.KAFKA.getConfNames()[0];
+    public static final String STREAMS_JSON_SCHEMA_SERVICE_KAFKA = ServiceConfigurations.KAFKA.name();
+    public static final String STREAMS_JSON_SCHEMA_COMPONENT_KAFKA_BROKER = ComponentPropertyPattern.KAFKA_BROKER.name();
+    public static final String STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER = ServiceConfigurations.KAFKA.getConfNames()[0];
 
-    private static final String KAFKA_TOPICS_ZK_RELATIVE_PATH = "/brokers/topics";
-    public static final String KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH = "/brokers/ids";
-    private static final String KAFKA_ZK_CONNECT_PROP = "zookeeper.connect";
+    public static final String KAFKA_TOPICS_ZK_RELATIVE_PATH = "brokers/topics";
+    public static final String KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH = "brokers/ids";
+    public static final String KAFKA_ZK_CONNECT_PROP = "zookeeper.connect";
 
     private final StreamCatalogService catalogService;
 

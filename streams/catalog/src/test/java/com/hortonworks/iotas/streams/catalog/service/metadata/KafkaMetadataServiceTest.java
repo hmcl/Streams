@@ -7,6 +7,8 @@ import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -14,14 +16,53 @@ import mockit.Injectable;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 
+import static com.hortonworks.iotas.streams.catalog.service.metadata.KafkaMetadataService.KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH;
+
 @RunWith(JMockit.class)
 public class KafkaMetadataServiceTest {
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaMetadataServiceTest.class);
+
+    private static final String CHROOT = "/chroot";
+    private static final String PATH = "/path/d1/d2";
+
+    private static final List<String> zkStrs = Lists.newArrayList("hostname1:port1", "hostname1:port1,hostname2:port2,hostname3:port3");
+    private static final List<String> chRoots = Lists.newArrayList("", CHROOT + PATH, CHROOT + PATH + "/");
+
+    private static final List<String> expectedChrootPath = Lists.newArrayList("/", CHROOT + PATH + "/");
+    private static final List<String> expectedBrokerIdPath = Lists.newArrayList("/" + KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH,
+            CHROOT + PATH + "/" + KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH );
 
     @Tested
     private KafkaMetadataService kafkaMetadataService;
 
     @Injectable
     StreamCatalogService catalogService;
+
+    @Test
+    public void test_KafkaZkConnection_wellInitialized() throws Exception {
+        for (String zkStr : zkStrs) {
+            for (String chRoot : chRoots) {
+                final String zkStrRaw = zkStr + chRoot;
+                LOG.debug("zookeeper.connect=" + zkStrRaw);
+                KafkaMetadataService.KafkaZkConnection kafkaZkConnection = KafkaMetadataService.KafkaZkConnection.newInstance(zkStrRaw);
+                Assert.assertEquals(zkStr, kafkaZkConnection.getZkString());
+                Assert.assertEquals(chRoot.isEmpty() ? expectedChrootPath.get(0) : expectedChrootPath.get(1), kafkaZkConnection.getChRoot());
+            }
+        }
+    }
+
+    @Test
+    public void test_KafkaZkConnection_createPath() throws Exception {
+        for (String zkStr : zkStrs) {
+            for (String chRoot : chRoots) {
+                final String zkStrRaw = zkStr + chRoot;
+                LOG.debug("zookeeper.connect=" + zkStrRaw);
+                KafkaMetadataService.KafkaZkConnection kafkaZkConnection = KafkaMetadataService.KafkaZkConnection.newInstance(zkStrRaw);
+                final String zkPath = kafkaZkConnection.createPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
+                Assert.assertEquals(chRoot.isEmpty() ? expectedBrokerIdPath.get(0) : expectedBrokerIdPath.get(1), zkPath);
+            }
+        }
+    }
 
     @Test
     public void getBrokerHostPortFromStreamsJson() throws Exception {
@@ -43,52 +84,5 @@ public class KafkaMetadataServiceTest {
 
     }
 
-    @Test
-    public void kafkaConnectionWellFormed_Chroot() throws Exception {
-//        final String zkStrRaw = "hostname1:port1,hostname2:port2,hostname3:port3/chroot/path";
-        final List<String> zkStrs = Lists.newArrayList("hostname1:port1", "hostname1:port1,hostname2:port2,hostname3:port3");
-        final List<String> chRoots = Lists.newArrayList("", "/chroot/path/d1/d2", "/chroot/path/d1/d2/");
-
-        for (String zkStr : zkStrs) {
-            for (String chRoot : chRoots) {
-                final String zkStrRaw = zkStr + chRoot;
-                System.out.println("testing: " + zkStrRaw);
-                KafkaMetadataService.KafkaZkConnection kafkaZkConnection = KafkaMetadataService.KafkaZkConnection.newInstance(zkStrRaw);
-                Assert.assertEquals(zkStr, kafkaZkConnection.getZkString());
-                Assert.assertEquals(chRoot.isEmpty() ? "/" : chRoots.get(2), kafkaZkConnection.getChRoot());
-            }
-        }
-    }
-
-    @Test
-    public void testCreatePath() throws Exception {
-        final String zkStrRaw = "hostname1:port1,hostname2:port2,hostname3:port3/chroot/path/d1/d2";
-        KafkaMetadataService.KafkaZkConnection kafkaZkConnection = KafkaMetadataService.KafkaZkConnection.newInstance(zkStrRaw);
-        kafkaZkConnection.createPath(KafkaMetadataService.KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
-        Assert.assertEquals(zkStr, kafkaZkConnection.getZkString());
-        Assert.assertEquals(chRoot.isEmpty() ? "/" : chRoots.get(2), kafkaZkConnection.getChRoot());
-    }
-
-    void executer(Command command) {
-        final List<String> zkStrs = Lists.newArrayList("hostname1:port1", "hostname1:port1,hostname2:port2,hostname3:port3");
-        final List<String> chRoots = Lists.newArrayList("", "/chroot/path/d1/d2", "/chroot/path/d1/d2/");
-
-        for (String zkStr : zkStrs) {
-            for (String chRoot : chRoots) {
-                final String zkStrRaw = zkStr + chRoot;
-                System.out.println("testing: " + zkStrRaw);
-                command.execute();
-                KafkaMetadataService.KafkaZkConnection kafkaZkConnection = KafkaMetadataService.KafkaZkConnection.newInstance(zkStrRaw);
-                Assert.assertEquals(zkStr, kafkaZkConnection.getZkString());
-                Assert.assertEquals(chRoot.isEmpty() ? "/" : chRoots.get(2), kafkaZkConnection.getChRoot());
-            }
-        }
-    }
-
-    }
-
-    interface Command {
-        void execute(String... args);
-    }
 
 }
