@@ -45,7 +45,7 @@ public class KafkaMetadataService {
             final KafkaZkConnection kafkaZkConnection = KafkaZkConnection.newInstance(getZkStringRaw(clusterId));
             zkCli = ZookeeperClient.newInstance(kafkaZkConnection);
             zkCli.start();
-            final String brokerIdsZkPath = kafkaZkConnection.createPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
+            final String brokerIdsZkPath = kafkaZkConnection.buildZkFullPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
             final List<String> brokerIds = zkCli.getChildren(brokerIdsZkPath);
 
             if (brokerIds != null) {
@@ -72,7 +72,7 @@ public class KafkaMetadataService {
             final KafkaZkConnection kafkaZkConnection = KafkaZkConnection.newInstance(getZkStringRaw(clusterId));
             zkCli = ZookeeperClient.newInstance(kafkaZkConnection);
             zkCli.start();
-            brokerIds = zkCli.getChildren(kafkaZkConnection.createPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH));
+            brokerIds = zkCli.getChildren(kafkaZkConnection.buildZkFullPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH));
         } finally {
             if (zkCli != null) {
                 zkCli.close();
@@ -90,7 +90,7 @@ public class KafkaMetadataService {
         try {
             zkCli = ZookeeperClient.newInstance(kafkaZkConnection);
             zkCli.start();
-            topics = zkCli.getChildren(kafkaZkConnection.createPath(KAFKA_TOPICS_ZK_RELATIVE_PATH));
+            topics = zkCli.getChildren(kafkaZkConnection.buildZkFullPath(KAFKA_TOPICS_ZK_RELATIVE_PATH));
         } finally {
             if (zkCli != null) {
                 zkCli.close();
@@ -250,7 +250,7 @@ public class KafkaMetadataService {
             return zkString;
         }
 
-        public String createPath(String zkRelativePath) {
+        public String buildZkFullPath(String zkRelativePath) {
             if (zkRelativePath.startsWith("/")) {
                 return chRoot + zkRelativePath.substring(1);
             } else {

@@ -58,10 +58,14 @@ public class KafkaMetadataServiceTest {
                 final String zkStrRaw = zkStr + chRoot;
                 LOG.debug("zookeeper.connect=" + zkStrRaw);
                 KafkaMetadataService.KafkaZkConnection kafkaZkConnection = KafkaMetadataService.KafkaZkConnection.newInstance(zkStrRaw);
-                final String zkPath = kafkaZkConnection.createPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
+                final String zkPath = kafkaZkConnection.buildZkFullPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
                 Assert.assertEquals(chRoot.isEmpty() ? expectedBrokerIdPath.get(0) : expectedBrokerIdPath.get(1), zkPath);
             }
         }
+    }
+
+    void createConnection() {
+
     }
 
     @Test
@@ -83,6 +87,8 @@ public class KafkaMetadataServiceTest {
     public void getTopicsFromZk() throws Exception {
 
     }
+
+
 
 
 }
