@@ -24,7 +24,7 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 
-@Path("/api/v1/catalog/clusters")
+@Path("/api/v1/catalog")
 @Produces(MediaType.APPLICATION_JSON)
 public class StormMetadataResource {
     private final StreamCatalogService catalogService;
@@ -34,7 +34,7 @@ public class StormMetadataResource {
     }
 
     @GET
-    @Path("/name/{clusterName}/services/storm/topologies")
+    @Path("/clusters/name/{clusterName}/services/storm/topologies")
     @Timed
     public Response getTopologiesByClusterName(@PathParam("clusterName") String clusterName) {
         final Cluster cluster = catalogService.getClusterByName(clusterName);
@@ -45,7 +45,7 @@ public class StormMetadataResource {
     }
 
     @GET
-    @Path("/{clusterId}/services/storm/topologies")
+    @Path("/clusters/{clusterId}/services/storm/topologies")
     @Timed
     public Response getTopologiesByClusterId(@PathParam("clusterId") Long clusterId) {
         try {

@@ -27,8 +27,15 @@ public class OverrideHadoopConfiguration {
             final Map<String, String> configurationMap = serviceConfig.getConfigurationMap();
             if (configurationMap != null) {
                 for (Map.Entry<String, String> propKeyVal : configurationMap.entrySet()) {
-                    configuration.set(propKeyVal.getKey(), propKeyVal.getValue());
-                    LOG.debug("Set property {}", propKeyVal);
+                    final String key = propKeyVal.getKey();
+                    final String val = propKeyVal.getValue();
+
+                    if (key != null && val != null) {
+                        configuration.set(key, val);
+                        LOG.debug("Set property {}", propKeyVal);
+                    } else {
+                        LOG.warn("Skipping null key/val property {}", propKeyVal);
+                    }
                 }
                 return configuration;
             }
@@ -40,7 +47,7 @@ public class OverrideHadoopConfiguration {
     private static Long getServiceIdByClusterId(StreamCatalogService catalogService, Long clusterId,
             ServiceConfigurations service) throws ServiceNotFoundException {
 
-        final Long serviceId = catalogService.getServiceIdByClusterId(clusterId, service.name());
+        final Long serviceId = catalogService.getServiceIdByName(clusterId, service.name());
         if (serviceId == null) {
             throw new ServiceNotFoundException(clusterId, service);
         }

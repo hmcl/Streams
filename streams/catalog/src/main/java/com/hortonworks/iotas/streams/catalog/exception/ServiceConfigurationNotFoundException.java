@@ -4,10 +4,6 @@ import com.hortonworks.iotas.streams.cluster.discovery.ambari.ComponentPropertyP
 import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
 
 public class ServiceConfigurationNotFoundException extends EntityNotFoundException {
-    public ServiceConfigurationNotFoundException() {
-        super();
-    }
-
     public ServiceConfigurationNotFoundException(String message) {
         super(message);
     }
@@ -18,10 +14,6 @@ public class ServiceConfigurationNotFoundException extends EntityNotFoundExcepti
 
     public ServiceConfigurationNotFoundException(Throwable cause) {
         super(cause);
-    }
-
-    protected ServiceConfigurationNotFoundException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
     }
 
     public ServiceConfigurationNotFoundException(Long clusterId, ServiceConfigurations service, String configurationName) {

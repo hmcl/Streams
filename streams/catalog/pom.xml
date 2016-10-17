@@ -103,6 +103,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+        </dependency>
 
         <!--test-->
         <dependency>
@@ -128,6 +132,10 @@
             <artifactId>streams-layout-storm</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-test</artifactId>
         </dependency>
     </dependencies>
 

@@ -1,7 +1,6 @@
 package com.hortonworks.iotas.streams.catalog.service.metadata;
 
 import com.hortonworks.iotas.streams.catalog.Component;
-import com.hortonworks.iotas.streams.catalog.exception.EntityNotFoundException;
 import com.hortonworks.iotas.streams.catalog.exception.ServiceComponentNotFoundException;
 import com.hortonworks.iotas.streams.catalog.exception.ServiceNotFoundException;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
@@ -82,7 +81,7 @@ public class StormMetadataService {
         }
 
         private HostPort getHostPort() throws ServiceNotFoundException, ServiceComponentNotFoundException {
-            final Long serviceId = catalogService.getServiceIdByClusterId(clusterId, STREAMS_JSON_SCHEMA_SERVICE_STORM);
+            final Long serviceId = catalogService.getServiceIdByName(clusterId, STREAMS_JSON_SCHEMA_SERVICE_STORM);
             if (serviceId == null) {
                 throw new ServiceNotFoundException(clusterId, ServiceConfigurations.STORM);
             }

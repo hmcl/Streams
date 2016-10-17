@@ -4,10 +4,6 @@ import com.hortonworks.iotas.streams.cluster.discovery.ambari.ComponentPropertyP
 import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
 
 public class ServiceComponentNotFoundException extends EntityNotFoundException {
-    public ServiceComponentNotFoundException() {
-        super();
-    }
-
     public ServiceComponentNotFoundException(String message) {
         super(message);
     }
@@ -18,10 +14,6 @@ public class ServiceComponentNotFoundException extends EntityNotFoundException {
 
     public ServiceComponentNotFoundException(Throwable cause) {
         super(cause);
-    }
-
-    protected ServiceComponentNotFoundException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
     }
 
     public ServiceComponentNotFoundException(Long clusterId, ServiceConfigurations service, ComponentPropertyPattern component) {

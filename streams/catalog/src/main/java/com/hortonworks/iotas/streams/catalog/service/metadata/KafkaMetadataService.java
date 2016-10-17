@@ -16,108 +16,101 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class KafkaMetadataService {
-    private static final String STREAMS_JSON_SCHEMA_SERVICE_KAFKA = ServiceConfigurations.KAFKA.name();
-    private static final String STREAMS_JSON_SCHEMA_COMPONENT_KAFKA_BROKER = ComponentPropertyPattern.KAFKA_BROKER.name();
-    private static final String STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER = ServiceConfigurations.KAFKA.getConfNames()[0];
+/**
+ * This class opens zookeeper client connections which must be closed either by calling the {@link KafkaMetadataService#close()}'
+ * method on a finally block, or instantiating this class in a try with resources statement.
+ */
+public class KafkaMetadataService implements AutoCloseable {
+    public static final String STREAMS_JSON_SCHEMA_SERVICE_KAFKA = ServiceConfigurations.KAFKA.name();
+    public static final String STREAMS_JSON_SCHEMA_COMPONENT_KAFKA_BROKER = ComponentPropertyPattern.KAFKA_BROKER.name();
+    public static final String STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER = ServiceConfigurations.KAFKA.getConfNames()[0];
 
-    private static final String KAFKA_TOPICS_ZK_RELATIVE_PATH = "/brokers/topics";
-    private static final String KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH = "/brokers/ids";
-    private static final String KAFKA_ZK_CONNECT_PROP = "zookeeper.connect";
+    public static final String KAFKA_TOPICS_ZK_RELATIVE_PATH = "brokers/topics";
+    public static final String KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH = "brokers/ids";
+    public static final String KAFKA_ZK_CONNECT_PROP = "zookeeper.connect";
 
     private final StreamCatalogService catalogService;
+    private final ZookeeperClient zkCli;
+    private final KafkaZkConnection kafkaZkConnection;
 
-    public KafkaMetadataService(StreamCatalogService catalogService) {
+    // package protected useful for unit tests
+    KafkaMetadataService(StreamCatalogService catalogService, ZookeeperClient zkCli, KafkaZkConnection kafkaZkConnection) {
         this.catalogService = catalogService;
+        this.zkCli = zkCli;
+        this.kafkaZkConnection = kafkaZkConnection;
+    }
+
+    /**
+     * Creates and starts a {@link ZookeeperClient} connection as part of the object construction process
+     * The connection must be closed. See {@link com.hortonworks.iotas.streams.catalog.service.metadata.KafkaMetadataService}
+     */
+    public static KafkaMetadataService newInstance(StreamCatalogService streamCatalogService, Long clusterId)
+            throws ServiceConfigurationNotFoundException, IOException, ServiceNotFoundException {
+
+        final KafkaZkConnection kafkaZkConnection = KafkaZkConnection.newInstance(getZkStringRaw(streamCatalogService, clusterId));
+        final ZookeeperClient zkCli = ZookeeperClient.newInstance(kafkaZkConnection);
+        zkCli.start();
+        return new KafkaMetadataService(streamCatalogService, zkCli, kafkaZkConnection);
     }
 
     public BrokersInfo<HostPort> getBrokerHostPortFromStreamsJson(Long clusterId) throws ServiceNotFoundException, ServiceComponentNotFoundException {
-        final Component kafkaBrokerComp = getComponentByName(clusterId);
+        final Component kafkaBrokerComp = getKafkaBrokerComponent(clusterId);
         return BrokersInfo.hostPort(kafkaBrokerComp.getHosts(), kafkaBrokerComp.getPort());
     }
 
-    public BrokersInfo<String> getBrokerInfoFromZk(Long clusterId)
-            throws ServiceConfigurationNotFoundException, IOException, ServiceNotFoundException, ZookeeperClientException {
-
+    public BrokersInfo<String> getBrokerInfoFromZk() throws ZookeeperClientException {
+        final String brokerIdsZkPath = kafkaZkConnection.buildZkFullPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
+        final List<String> brokerIds = zkCli.getChildren(brokerIdsZkPath);
         List<String> brokerInfo = null;
-        ZookeeperClient zkCli = null;
-        try {
-            final KafkaZkConnection kafkaZkConnection = KafkaZkConnection.newInstance(getZkStringRaw(clusterId));
-            zkCli = ZookeeperClient.newInstance(kafkaZkConnection);
-            zkCli.start();
-            final String brokerIdsZkPath = kafkaZkConnection.createPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
-            final List<String> brokerIds = zkCli.getChildren(brokerIdsZkPath);
 
-            if (brokerIds != null) {
-                brokerInfo = new ArrayList<>();
-                for (String bkId : brokerIds) {
-                    final byte[] bytes = zkCli.getData(brokerIdsZkPath + "/" + bkId);
-                    brokerInfo.add(new String(bytes));
-                }
-            }
-        } finally {
-            if (zkCli != null) {
-                zkCli.close();
+        if (brokerIds != null) {
+            brokerInfo = new ArrayList<>();
+            for (String bkId : brokerIds) {
+                final byte[] bytes = zkCli.getData(brokerIdsZkPath + "/" + bkId);
+                brokerInfo.add(new String(bytes));
             }
         }
         return BrokersInfo.fromZk(brokerInfo);
     }
 
-    public BrokersInfo<BrokersInfo.BrokerId> getBrokerIdsFromZk(Long clusterId)
-            throws ServiceConfigurationNotFoundException, IOException, ServiceNotFoundException, ZookeeperClientException {
-
-        final List<String> brokerIds;
-        ZookeeperClient zkCli = null;
-        try {
-            final KafkaZkConnection kafkaZkConnection = KafkaZkConnection.newInstance(getZkStringRaw(clusterId));
-            zkCli = ZookeeperClient.newInstance(kafkaZkConnection);
-            zkCli.start();
-            brokerIds = zkCli.getChildren(kafkaZkConnection.createPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH));
-        } finally {
-            if (zkCli != null) {
-                zkCli.close();
-            }
-        }
+    public BrokersInfo<BrokersInfo.BrokerId> getBrokerIdsFromZk() throws ZookeeperClientException {
+        final List<String> brokerIds = zkCli.getChildren(kafkaZkConnection.buildZkFullPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH));
         return BrokersInfo.brokerIds(brokerIds);
     }
 
-    public Topics getTopicsFromZk(Long clusterId)
-            throws ServiceConfigurationNotFoundException, IOException, ServiceNotFoundException, ZookeeperClientException {
-
-        final KafkaZkConnection kafkaZkConnection = KafkaZkConnection.newInstance(getZkStringRaw(clusterId));
-        final List<String> topics;
-        ZookeeperClient zkCli = null;
-        try {
-            zkCli = ZookeeperClient.newInstance(kafkaZkConnection);
-            zkCli.start();
-            topics = zkCli.getChildren(kafkaZkConnection.createPath(KAFKA_TOPICS_ZK_RELATIVE_PATH));
-        } finally {
-            if (zkCli != null) {
-                zkCli.close();
-            }
-        }
+    public Topics getTopicsFromZk() throws ZookeeperClientException {
+        final List<String> topics = zkCli.getChildren(kafkaZkConnection.buildZkFullPath(KAFKA_TOPICS_ZK_RELATIVE_PATH));
         return topics == null ? new Topics(Collections.<String>emptyList()) : new Topics(topics);
     }
 
-    private String getZkStringRaw(Long clusterId) throws IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {
+    @Override
+    public void close() throws Exception {
+        zkCli.close();
+    }
+
+    // ==== static methods used for object construction
+
+    private static String getZkStringRaw(StreamCatalogService catalogService, Long clusterId)
+            throws IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {
+
         final ServiceConfiguration kafkaBrokerConfig = catalogService.getServiceConfigurationByName(
-                getServiceIdByClusterId(clusterId), STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER);
-        if (kafkaBrokerConfig == null || kafkaBrokerConfig.getConfigurationMap() == null)  {
+                getKafkaServiceId(catalogService, clusterId), STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER);
+        if (kafkaBrokerConfig == null || kafkaBrokerConfig.getConfigurationMap() == null) {
             throw new ServiceConfigurationNotFoundException(clusterId, ServiceConfigurations.KAFKA, STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER);
         }
         return kafkaBrokerConfig.getConfigurationMap().get(KAFKA_ZK_CONNECT_PROP);
     }
 
-    private Component getComponentByName(Long clusterId) throws ServiceNotFoundException, ServiceComponentNotFoundException {
-        Component component = catalogService.getComponentByName(getServiceIdByClusterId(clusterId), STREAMS_JSON_SCHEMA_COMPONENT_KAFKA_BROKER);
+    private Component getKafkaBrokerComponent(Long clusterId) throws ServiceNotFoundException, ServiceComponentNotFoundException {
+        Component component = catalogService.getComponentByName(getKafkaServiceId(catalogService, clusterId), STREAMS_JSON_SCHEMA_COMPONENT_KAFKA_BROKER);
         if (component == null) {
             throw new ServiceComponentNotFoundException(clusterId, ServiceConfigurations.KAFKA, ComponentPropertyPattern.KAFKA_BROKER);
         }
         return component;
     }
 
-    private Long getServiceIdByClusterId(Long clusterId) throws ServiceNotFoundException {
-        Long serviceId = catalogService.getServiceIdByClusterId(clusterId, STREAMS_JSON_SCHEMA_SERVICE_KAFKA);
+    private static Long getKafkaServiceId(StreamCatalogService catalogService, Long clusterId) throws ServiceNotFoundException {
+        Long serviceId = catalogService.getServiceIdByName(clusterId, STREAMS_JSON_SCHEMA_SERVICE_KAFKA);
         if (serviceId == null) {
             throw new ServiceNotFoundException(clusterId, ServiceConfigurations.KAFKA);
         }
@@ -152,7 +145,7 @@ public class KafkaMetadataService {
      * */
 
     public static class BrokersInfo<T> {
-        private List<T> brokers;
+        private final List<T> brokers;
 
         public BrokersInfo(List<T> brokers) {
             this.brokers = brokers;
@@ -191,7 +184,7 @@ public class KafkaMetadataService {
         }
 
         public static class BrokerId {
-            String id;
+            final String id;
 
             public BrokerId(String id) {
                 this.id = id;
@@ -203,7 +196,7 @@ public class KafkaMetadataService {
      * Wrapper used to show proper JSON formatting
      */
     public static class Topics {
-        List<String> topics;
+        final List<String> topics;
 
         public Topics(List<String> topics) {
             this.topics = topics;
@@ -214,23 +207,29 @@ public class KafkaMetadataService {
         }
     }
 
-    private static class KafkaZkConnection implements ZookeeperClient.ZkConnectionStringFactory {
-        String zkString;
-        String chRoot;
+    /**
+     * Wrapper class used to represent zookeeper connection string (including chRoot) as defined in the kafka broker property
+     * {@link KafkaMetadataService#KAFKA_ZK_CONNECT_PROP}
+     */
+    static class KafkaZkConnection implements ZookeeperClient.ZkConnectionStringFactory {
+        final String zkString;
+        final String chRoot;
 
-        private KafkaZkConnection(String zkString, String chRoot) {
+        KafkaZkConnection(String zkString, String chRoot) {
             this.zkString = zkString;
             this.chRoot = chRoot;
         }
 
         /**
          * Factory method to create instance of {@link KafkaZkConnection} taking into consideration chRoot
-         * @param zkStringRaw zk connection string as defined in the broker zk property
-         * */
+         *
+         * @param zkStringRaw zk connection string as defined in the broker zk property. It has the pattern
+         *                    "hostname1:port1,hostname2:port2,hostname3:port3/chroot/path"
+         */
         static KafkaZkConnection newInstance(String zkStringRaw) {
             final String[] split = zkStringRaw.split("/", 2);
-            String zkString = "";
-            String chRoot = "";
+            String zkString;
+            String chRoot;
 
             zkString = split[0];
             if (split.length > 1) {
@@ -249,13 +248,20 @@ public class KafkaMetadataService {
             return zkString;
         }
 
-        public String createPath(String zkRelativePath) {
+        String buildZkFullPath(String zkRelativePath) {
             if (zkRelativePath.startsWith("/")) {
                 return chRoot + zkRelativePath.substring(1);
             } else {
                 return chRoot + zkRelativePath;
             }
+        }
 
+        String getZkString() {
+            return zkString;
+        }
+
+        String getChRoot() {
+            return chRoot;
         }
     }
 

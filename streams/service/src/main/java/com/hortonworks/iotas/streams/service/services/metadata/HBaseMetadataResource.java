@@ -27,7 +27,7 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 
-@Path("/api/v1/catalog/clusters")
+@Path("/api/v1/catalog")
 @Produces(MediaType.APPLICATION_JSON)
 public class HBaseMetadataResource {
     private static final Logger LOG = LoggerFactory.getLogger(HBaseMetadataResource.class);
@@ -38,7 +38,7 @@ public class HBaseMetadataResource {
     }
 
     @GET
-    @Path("/name/{clusterName}/services/hbase/namespaces")
+    @Path("/clusters/name/{clusterName}/services/hbase/namespaces")
     @Timed
     public Response getNamespacesByClusterName(@PathParam("clusterName") String clusterName) {
         final Cluster cluster = catalogService.getClusterByName(clusterName);
@@ -49,7 +49,7 @@ public class HBaseMetadataResource {
     }
 
     @GET
-    @Path("/{clusterId}/services/hbase/namespaces")
+    @Path("/clusters/{clusterId}/services/hbase/namespaces")
     @Timed
     public Response getNamespacesByClusterId(@PathParam("clusterId") Long clusterId) {
         try {
@@ -65,7 +65,7 @@ public class HBaseMetadataResource {
     // ===
 
     @GET
-    @Path("/name/{clusterName}/services/hbase/tables")
+    @Path("/clusters/name/{clusterName}/services/hbase/tables")
     @Timed
     public Response getTablesByClusterName(@PathParam("clusterName") String clusterName) {
         final Cluster cluster = catalogService.getClusterByName(clusterName);
@@ -76,7 +76,7 @@ public class HBaseMetadataResource {
     }
 
     @GET
-    @Path("/{clusterId}/services/hbase/tables")
+    @Path("/clusters/{clusterId}/services/hbase/tables")
     @Timed
     public Response getTablesByClusterId(@PathParam("clusterId") Long clusterId) {
         try {
@@ -92,7 +92,7 @@ public class HBaseMetadataResource {
     // ===
 
     @GET
-    @Path("/name/{clusterName}/services/hbase/namespaces/{namespace}/tables")
+    @Path("/clusters/name/{clusterName}/services/hbase/namespaces/{namespace}/tables")
     @Timed
     public Response getNamespaceTablesByClusterName(@PathParam("clusterName") String clusterName, @PathParam("namespace") String namespace) {
         final Cluster cluster = catalogService.getClusterByName(clusterName);
@@ -103,7 +103,7 @@ public class HBaseMetadataResource {
     }
 
     @GET
-    @Path("/{clusterId}/services/hbase/namespaces/{namespace}/tables")
+    @Path("/clusters/{clusterId}/services/hbase/namespaces/{namespace}/tables")
     @Timed
     public Response getNamespaceTablesByClusterId(@PathParam("clusterId") Long clusterId, @PathParam("namespace") String namespace) {
         try {

@@ -51,6 +51,7 @@
         <commons-lang.version>2.6</commons-lang.version>
         <commons-lang3.version>3.4</commons-lang3.version>
         <schema-registry.version>0.1.0-SNAPSHOT</schema-registry.version>
+        <curator-framework.version>3.2.0</curator-framework.version>
     </properties>
 
     <distributionManagement>
@@ -282,6 +283,17 @@
                 <groupId>com.esotericsoftware.kryo</groupId>
                 <artifactId>kryo</artifactId>
                 <version>${kryo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-framework</artifactId>
+                <version>${curator-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-test</artifactId>
+                <version>${curator-framework.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
