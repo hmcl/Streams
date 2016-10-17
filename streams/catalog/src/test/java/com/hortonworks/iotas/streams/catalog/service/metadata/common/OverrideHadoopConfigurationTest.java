@@ -11,7 +11,10 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -26,6 +29,8 @@ import mockit.integration.junit4.JMockit;
 
 @RunWith(JMockit.class)
 public class OverrideHadoopConfigurationTest {
+    private static final Logger LOG = LoggerFactory.getLogger(OverrideHadoopConfigurationTest.class);
+
     @Tested
     private OverrideHadoopConfiguration overrideHadoopConfiguration;
     @Mocked
@@ -34,9 +39,12 @@ public class OverrideHadoopConfigurationTest {
     private ServiceConfiguration serviceConfiguration;
 
 
+    /**
+     * Helper class to expose the protected method {@code getProps}, used to verify if properties get correctly set
+     */
     private static class HBaseConfigurationTest extends HBaseConfiguration {
 
-        public HBaseConfigurationTest(Configuration c) {
+        HBaseConfigurationTest(Configuration c) {
             super(c);
         }
 
@@ -44,93 +52,65 @@ public class OverrideHadoopConfigurationTest {
         public synchronized Properties getProps() {
             return super.getProps();
         }
-
-        @Override
-        public String toString() {
-            return super.toString();
-        }
     }
 
     @Test
-    public void override() throws Exception {
-        HBaseConfigurationTest mc = new HBaseConfigurationTest(HBaseConfiguration.create());
-        final Properties props = mc.getProps();
-        final Map<Object, Object> newProps = new HashMap<>(2);
-
-        for (Map.Entry<Object, Object> prop : props.entrySet()) {
-            newProps.put(prop.getKey(), prop.getValue());
-        }
-
-        OverrideHadoopConfiguration.override(mc, streamCatalogService, ServiceConfigurations.HBASE, 23L, "hbase-site");
-
-        System.out.println(props);
-    }
-
-    private static class ConfigurationMock extends MockUp<Configuration> {
-        final Properties props = new Properties() {{
-            put("p1", "v11");
-            put("p2", "v21");
-        }};
-
-        synchronized Properties getProps() {
-            return props;
-        }
-    }
-
-    @Test
-    public void overrideMockup() throws Exception {
-        ConfigurationMock configurationMock = new ConfigurationMock();
-        System.out.println(configurationMock.getProps());
-
-
-        /*OverrideHadoopConfiguration.override(configurationMock, streamCatalogService, ServiceConfigurations.HBASE, 23L, "hbase-site");
-
-        System.out.println(configuration.getProps());*/
-    }
-
-
-    @Test
-//    public void overrideMocked(@Injectable final HBaseConfigurationTest configuration) throws Exception {
-    public void overrideMocked(@Injectable final HBaseConfigurationTest configuration) throws Exception {
-//        final Map<Object, Object> props = new HashMap<Object, Object>() {{put("p1", "v11"); put("p2", "v21");}};
-        final Properties props = new Properties() {{
+    public void test_overrideProperties() throws Exception {
+        final Properties added = new Properties() {{
             put("k1", "v11");
             put("k2", "v21");
         }};
 
-        final Map<String, String> newProps = new HashMap<String, String>(){{put("k1", "v12"); put("k2", "v22");}};
-
-        new Expectations() {{
-//            configuration.getProps(); result = newProps;
-            serviceConfiguration.getConfigurationMap(); result = newProps;
+        final Map<String, String> updated = new HashMap<String, String>() {{
+            put("k1", "v12");
+            put("k2", "v22");
         }};
 
+        new Expectations() {{
+            serviceConfiguration.getConfigurationMap();
+            result = updated;
+            times = 1;
+        }};
 
-
-//        System.out.println(configuration.getProps().toString());
-//        Assert.assertEquals(configuration.getProps(), newProps);
-
-        /*new Expectations() {{
-            configuration.getProps(); result = props;
-        }};*/
-
-        HBaseConfigurationTest config = new HBaseConfigurationTest(HBaseConfiguration.create());
-        Properties configProps = config.getProps();
-        System.out.println(configProps);
+        final HBaseConfigurationTest hbaseConfig = new HBaseConfigurationTest(HBaseConfiguration.create());
+        final Properties configProps = hbaseConfig.getProps();
+        LOG.debug("Initial configuration {}", configProps);
 
         Assert.assertFalse(configProps.containsKey("k1"));
         Assert.assertFalse(configProps.containsKey("k2"));
-        configProps.putAll(props);
-        Assert.assertTrue(configProps.containsKey("k1"));
-        Assert.assertTrue(configProps.containsKey("k2"));
 
-        Assert.assertTrue(configProps.get("k1").equals("v11"));
-        Assert.assertTrue(configProps.get("k2").equals("v21"));
+        configProps.putAll(added);
 
-        OverrideHadoopConfiguration.override(config, streamCatalogService, ServiceConfigurations.HBASE, 23L, "hbase-site");
+        Assert.assertEquals(configProps.get("k1"), "v11");
+        Assert.assertEquals(configProps.get("k2"), "v21");
+
+        OverrideHadoopConfiguration.override(hbaseConfig, streamCatalogService, ServiceConfigurations.HBASE, 23L, "hbase-site");
 
         Assert.assertEquals(configProps.get("k1"), "v12");
-        Assert.assertTrue(configProps.get("k2").equals("v22"));
-        System.out.println(configProps);
+        Assert.assertEquals(configProps.get("k2"), "v22");
+
+        LOG.debug("Updated configuration {}", configProps);
+    }
+
+    @Test
+    public void test_addProperties_nullKeyVal_notAdded() throws Exception {
+        final Map<String, String> updated = new HashMap<String, String>() {{
+            put(null, "val");   // null key
+            put("key", null);   // null val
+        }};
+
+        new Expectations() {{
+            serviceConfiguration.getConfigurationMap();
+            result = updated;
+            times = 1;
+        }};
+
+        final HBaseConfigurationTest hbaseConfig = new HBaseConfigurationTest(HBaseConfiguration.create());
+        final Properties configProps = hbaseConfig.getProps();
+
+        OverrideHadoopConfiguration.override(hbaseConfig, streamCatalogService, ServiceConfigurations.HBASE, 23L, "hbase-site");
+
+        Assert.assertFalse(configProps.containsKey("k1"));  // does not contain prop with null val
     }
 }
+

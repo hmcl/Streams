@@ -27,8 +27,15 @@ public class OverrideHadoopConfiguration {
             final Map<String, String> configurationMap = serviceConfig.getConfigurationMap();
             if (configurationMap != null) {
                 for (Map.Entry<String, String> propKeyVal : configurationMap.entrySet()) {
-                    configuration.set(propKeyVal.getKey(), propKeyVal.getValue());
-                    LOG.debug("Set property {}", propKeyVal);
+                    final String key = propKeyVal.getKey();
+                    final String val = propKeyVal.getValue();
+
+                    if (key != null && val != null) {
+                        configuration.set(key, val);
+                        LOG.debug("Set property {}", propKeyVal);
+                    } else {
+                        LOG.debug("Skipping invalid property {}", propKeyVal);
+                    }
                 }
                 return configuration;
             }
