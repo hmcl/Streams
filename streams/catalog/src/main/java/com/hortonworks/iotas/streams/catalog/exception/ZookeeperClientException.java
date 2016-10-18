@@ -6,10 +6,6 @@ package com.hortonworks.iotas.streams.catalog.exception;
  * {@link Exception}, which makes it impossible to handle more specific exceptions in code that calls these methods.
  */
 public class ZookeeperClientException extends Exception {
-    public ZookeeperClientException() {
-        super();
-    }
-
     public ZookeeperClientException(String message) {
         super(message);
     }
@@ -20,9 +16,5 @@ public class ZookeeperClientException extends Exception {
 
     public ZookeeperClientException(Throwable cause) {
         super(cause);
-    }
-
-    protected ZookeeperClientException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
     }
 }
