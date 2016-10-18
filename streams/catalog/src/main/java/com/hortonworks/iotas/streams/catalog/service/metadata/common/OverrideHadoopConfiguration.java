@@ -47,7 +47,7 @@ public class OverrideHadoopConfiguration {
     private static Long getServiceIdByClusterId(StreamCatalogService catalogService, Long clusterId,
             ServiceConfigurations service) throws ServiceNotFoundException {
 
-        final Long serviceId = catalogService.getServiceIdByClusterId(clusterId, service.name());
+        final Long serviceId = catalogService.getServiceIdByName(clusterId, service.name());
         if (serviceId == null) {
             throw new ServiceNotFoundException(clusterId, service);
         }

@@ -54,7 +54,7 @@ public class KafkaMetadataService implements AutoCloseable {
     }
 
     public BrokersInfo<HostPort> getBrokerHostPortFromStreamsJson(Long clusterId) throws ServiceNotFoundException, ServiceComponentNotFoundException {
-        final Component kafkaBrokerComp = getComponentByName(clusterId);
+        final Component kafkaBrokerComp = getKafkaBrokerComponent(clusterId);
         return BrokersInfo.hostPort(kafkaBrokerComp.getHosts(), kafkaBrokerComp.getPort());
     }
 
@@ -94,23 +94,23 @@ public class KafkaMetadataService implements AutoCloseable {
             throws IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {
 
         final ServiceConfiguration kafkaBrokerConfig = catalogService.getServiceConfigurationByName(
-                getServiceIdByClusterId(catalogService, clusterId), STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER);
+                getKafkaServiceId(catalogService, clusterId), STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER);
         if (kafkaBrokerConfig == null || kafkaBrokerConfig.getConfigurationMap() == null) {
             throw new ServiceConfigurationNotFoundException(clusterId, ServiceConfigurations.KAFKA, STREAMS_JSON_SCHEMA_CONFIG_KAFKA_BROKER);
         }
         return kafkaBrokerConfig.getConfigurationMap().get(KAFKA_ZK_CONNECT_PROP);
     }
 
-    private Component getComponentByName(Long clusterId) throws ServiceNotFoundException, ServiceComponentNotFoundException {
-        Component component = catalogService.getComponentByName(getServiceIdByClusterId(catalogService, clusterId), STREAMS_JSON_SCHEMA_COMPONENT_KAFKA_BROKER);
+    private Component getKafkaBrokerComponent(Long clusterId) throws ServiceNotFoundException, ServiceComponentNotFoundException {
+        Component component = catalogService.getComponentByName(getKafkaServiceId(catalogService, clusterId), STREAMS_JSON_SCHEMA_COMPONENT_KAFKA_BROKER);
         if (component == null) {
             throw new ServiceComponentNotFoundException(clusterId, ServiceConfigurations.KAFKA, ComponentPropertyPattern.KAFKA_BROKER);
         }
         return component;
     }
 
-    private static Long getServiceIdByClusterId(StreamCatalogService catalogService, Long clusterId) throws ServiceNotFoundException {
-        Long serviceId = catalogService.getServiceIdByClusterId(clusterId, STREAMS_JSON_SCHEMA_SERVICE_KAFKA);
+    private static Long getKafkaServiceId(StreamCatalogService catalogService, Long clusterId) throws ServiceNotFoundException {
+        Long serviceId = catalogService.getServiceIdByName(clusterId, STREAMS_JSON_SCHEMA_SERVICE_KAFKA);
         if (serviceId == null) {
             throw new ServiceNotFoundException(clusterId, ServiceConfigurations.KAFKA);
         }
