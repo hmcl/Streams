@@ -53,8 +53,7 @@ public class KafkaMetadataResource {
     @Path("/{clusterId}/services/kafka/brokers")
     @Timed
     public Response getBrokersByClusterId(@PathParam("clusterId") Long clusterId) {
-        try {
-            final KafkaMetadataService kafkaMetadataService = new KafkaMetadataService(catalogService);
+        try(final KafkaMetadataService kafkaMetadataService = KafkaMetadataService.newInstance(catalogService, clusterId)) {
             return WSUtils.respond(kafkaMetadataService.getBrokerHostPortFromStreamsJson(clusterId), OK, SUCCESS);
         } catch (EntityNotFoundException ex) {
             return WSUtils.respond(NOT_FOUND, ENTITY_NOT_FOUND, ex.getMessage());
@@ -78,9 +77,8 @@ public class KafkaMetadataResource {
     @Path("/{clusterId}/services/kafka/topics")
     @Timed
     public Response getTopicsByClusterId(@PathParam("clusterId") Long clusterId) {
-        try {
-            final KafkaMetadataService kafkaMetadataService = new KafkaMetadataService(catalogService);
-            return WSUtils.respond(kafkaMetadataService.getTopicsFromZk(clusterId), OK, SUCCESS);
+        try(final KafkaMetadataService kafkaMetadataService = KafkaMetadataService.newInstance(catalogService, clusterId)) {
+            return WSUtils.respond(kafkaMetadataService.getTopicsFromZk(), OK, SUCCESS);
         } catch (EntityNotFoundException ex) {
             return WSUtils.respond(NOT_FOUND, ENTITY_NOT_FOUND, ex.getMessage());
         } catch (Exception ex) {
