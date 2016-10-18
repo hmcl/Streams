@@ -7,6 +7,7 @@ import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.test.TestingServer;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,9 +102,16 @@ public class KafkaMetadataServiceTest {
 
     @Before
     public void setUp() throws Exception {
+        final TestingServer server = new TestingServer();
+        final String connectionString = server.getConnectString();
+        zkCli = ZookeeperClient.newInstance(connectionString);
+        zkCli.start();
+        kafkaMetadataService = new KafkaMetadataService(catalogService, zkCli, kafkaZkConnection);
+    }
 
-
-
+    @After
+    public void tearDown() {
+        zkCli.close();
     }
 
     @Test
@@ -123,31 +131,20 @@ public class KafkaMetadataServiceTest {
 
     @Test
     public void getTopicsFromZk() throws Exception {
-        final TestingServer server = new TestingServer();
-        final String connectionString = server.getConnectString();
-        zkCli = ZookeeperClient.newInstance(connectionString);
-        zkCli.start();
-
-        kafkaMetadataService = new KafkaMetadataService(catalogService, zkCli, kafkaZkConnection);
-
-        new Expectations() {{
-            kafkaZkConnection.getChRoot(); result = "";
-        }};
-
-        final String topicsRootZkPath = kafkaZkConnection.getChRoot() + "/" + KAFKA_TOPICS_ZK_RELATIVE_PATH;
+        final String topicsRootZkPath = chRoots.get(1) + "/" + KAFKA_TOPICS_ZK_RELATIVE_PATH;
 
         final String topic1ZkPath = topicsRootZkPath + "/unit_test_topic_1";
         final String topic2ZkPath = topicsRootZkPath + "/unit_test_topic_2";
-
-        new Expectations() {{
-            kafkaZkConnection.buildZkFullPath(anyString); result = topicsRootZkPath;
-        }};
 
         zkCli.createPath(topic1ZkPath);
         zkCli.setData(topic1ZkPath, "topic_1 data".getBytes());
 
         zkCli.createPath(topic2ZkPath);
         zkCli.setData(topic1ZkPath, "topic_2 data".getBytes());
+
+        new Expectations() {{
+            kafkaZkConnection.buildZkFullPath(anyString); result = topicsRootZkPath;
+        }};
 
         List<String> actualTopics = kafkaMetadataService.getTopicsFromZk().getTopics();
         Collections.sort(actualTopics);
