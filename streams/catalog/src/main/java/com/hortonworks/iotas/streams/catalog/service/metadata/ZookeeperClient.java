@@ -14,7 +14,7 @@ import java.util.List;
  * {@link CuratorFramework} zookeeper client wrapper to simplify basic operations. Wraps {@link CuratorFramework} exceptions as
  * {@link ZookeeperClientException}
  */
-public class ZookeeperClient {
+public class ZookeeperClient implements AutoCloseable {
     public static final RetryPolicy DEFAULT_RETRY_POLICY = new RetryNTimes(3, 500);
 
     private String zkConnString;
@@ -69,7 +69,7 @@ public class ZookeeperClient {
 
     public String createPath(String zkPath) throws ZookeeperClientException {
         try {
-            return zkCli.create().forPath(zkPath);
+            return zkCli.create().creatingParentsIfNeeded().forPath(zkPath);
         } catch (Exception e) {
             throw new ZookeeperClientException(e);
         }
@@ -109,16 +109,16 @@ public class ZookeeperClient {
 
     // === Set Data
 
-    public Stat setData(String zkPath) throws ZookeeperClientException {
+    public Stat setData(String zkPath, byte[] data) throws ZookeeperClientException {
         try {
-            return zkCli.setData().forPath(zkPath);
+            return zkCli.setData().forPath(zkPath, data);
         } catch (Exception e) {
             throw new ZookeeperClientException(e);
         }
     }
 
-    public Stat setData(ZkPathFactory zkPathFactory) throws ZookeeperClientException {
-        return setData(zkPathFactory.createPath());
+    public Stat setData(ZkPathFactory zkPathFactory, byte[] data) throws ZookeeperClientException {
+        return setData(zkPathFactory.createPath(), data);
     }
 
     // === Getter methods
