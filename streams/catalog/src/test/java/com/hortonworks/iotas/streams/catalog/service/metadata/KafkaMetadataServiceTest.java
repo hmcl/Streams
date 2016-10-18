@@ -1,22 +1,32 @@
 package com.hortonworks.iotas.streams.catalog.service.metadata;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
 
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.test.TestingServer;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import mockit.Expectations;
 import mockit.Injectable;
+import mockit.Mocked;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 
 import static com.hortonworks.iotas.streams.catalog.service.metadata.KafkaMetadataService.KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH;
+import static com.hortonworks.iotas.streams.catalog.service.metadata.KafkaMetadataService.KAFKA_TOPICS_ZK_RELATIVE_PATH;
 
 @RunWith(JMockit.class)
 public class KafkaMetadataServiceTest {
@@ -32,11 +42,15 @@ public class KafkaMetadataServiceTest {
     private static final List<String> expectedBrokerIdPath = Lists.newArrayList("/" + KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH,
             CHROOT + PATH + "/" + KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH );
 
+    // Mocks
     @Tested
     private KafkaMetadataService kafkaMetadataService;
-
     @Injectable
     StreamCatalogService catalogService;
+    @Injectable
+    private ZookeeperClient zkCli;
+    @Injectable
+    KafkaMetadataService.KafkaZkConnection kafkaZkConnection;
 
     @Test
     public void test_KafkaZkConnection_wellInitialized() throws Exception {
@@ -64,7 +78,31 @@ public class KafkaMetadataServiceTest {
         }
     }
 
-    void createConnection() {
+    @Test
+    public void createConnection() throws Exception {
+        final TestingServer server = new TestingServer();
+        final String connectionString = server.getConnectString();
+        try(ZookeeperClient zookeeperClient = ZookeeperClient.newInstance(connectionString)) {
+//            zookeeperClient = ZookeeperClient.newInstance(connectionString);
+            zookeeperClient.start();
+//        CuratorFramework curatorFrameworkZkCli = zookeeperClient.getCuratorFrameworkZkCli();
+////        curatorFrameworkZkCli.create().forPath("");
+//        curatorFrameworkZkCli.create().forPath("/hmcl");
+            zookeeperClient.createPath("/hmcl");
+            zookeeperClient.getChildren("/hmcl");
+
+            System.out.println(connectionString);
+        } /*finally {
+            if (zookeeperClient != null) {
+                zookeeperClient.close();
+            }
+        }*/
+    }
+
+    @Before
+    public void setUp() throws Exception {
+
+
 
     }
 
@@ -85,7 +123,38 @@ public class KafkaMetadataServiceTest {
 
     @Test
     public void getTopicsFromZk() throws Exception {
+        final TestingServer server = new TestingServer();
+        final String connectionString = server.getConnectString();
+        zkCli = ZookeeperClient.newInstance(connectionString);
+        zkCli.start();
 
+        kafkaMetadataService = new KafkaMetadataService(catalogService, zkCli, kafkaZkConnection);
+
+        new Expectations() {{
+            kafkaZkConnection.getChRoot(); result = "";
+        }};
+
+        final String topicsRootZkPath = kafkaZkConnection.getChRoot() + "/" + KAFKA_TOPICS_ZK_RELATIVE_PATH;
+
+        final String topic1ZkPath = topicsRootZkPath + "/unit_test_topic_1";
+        final String topic2ZkPath = topicsRootZkPath + "/unit_test_topic_2";
+
+        new Expectations() {{
+            kafkaZkConnection.buildZkFullPath(anyString); result = topicsRootZkPath;
+        }};
+
+        zkCli.createPath(topic1ZkPath);
+        zkCli.setData(topic1ZkPath, "topic_1 data".getBytes());
+
+        zkCli.createPath(topic2ZkPath);
+        zkCli.setData(topic1ZkPath, "topic_2 data".getBytes());
+
+        List<String> actualTopics = kafkaMetadataService.getTopicsFromZk().getTopics();
+        Collections.sort(actualTopics);
+        System.out.println("actual topics: " + actualTopics);
+        List<String> expectedTopics = Lists.<String>newArrayList("unit_test_topic_1", "unit_test_topic_2");
+
+        Assert.assertEquals(expectedTopics, actualTopics);
     }
 
 

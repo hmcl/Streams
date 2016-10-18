@@ -33,7 +33,8 @@ public class KafkaMetadataService implements AutoCloseable {
     private final ZookeeperClient zkCli;
     private final KafkaZkConnection kafkaZkConnection;
 
-    private KafkaMetadataService(StreamCatalogService catalogService, ZookeeperClient zkCli, KafkaZkConnection kafkaZkConnection) {
+    // package protected useful for unit tests
+    KafkaMetadataService(StreamCatalogService catalogService, ZookeeperClient zkCli, KafkaZkConnection kafkaZkConnection) {
         this.catalogService = catalogService;
         this.zkCli = zkCli;
         this.kafkaZkConnection = kafkaZkConnection;
