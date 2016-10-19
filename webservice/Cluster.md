@@ -67,7 +67,7 @@ and show only sample for creating a service, service configuration, component.
 
 ### Create a cluster
 
-`POST /api/v1/clusters`
+`POST /api/v1/catalog/clusters`
 
 **Sample Input**
 
