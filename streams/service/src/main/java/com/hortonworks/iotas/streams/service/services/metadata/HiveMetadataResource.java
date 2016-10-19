@@ -25,7 +25,7 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 
-@Path("/api/v1/catalog/clusters")
+@Path("/api/v1/catalog")
 @Produces(MediaType.APPLICATION_JSON)
 public class HiveMetadataResource {
     private static final Logger LOG = LoggerFactory.getLogger(HiveMetadataResource.class);
@@ -36,7 +36,7 @@ public class HiveMetadataResource {
     }
 
     @GET
-    @Path("/name/{clusterName}/services/hive/databases")
+    @Path("/clusters/name/{clusterName}/services/hive/databases")
     @Timed
     public Response getDatabasesByClusterName(@PathParam("clusterName") String clusterName) {
         final Cluster cluster = catalogService.getClusterByName(clusterName);
@@ -47,7 +47,7 @@ public class HiveMetadataResource {
     }
 
     @GET
-    @Path("/{clusterId}/services/hive/databases")
+    @Path("/clusters/{clusterId}/services/hive/databases")
     @Timed
     public Response getDatabasesByClusterId(@PathParam("clusterId") Long clusterId) {
         try {
@@ -61,7 +61,7 @@ public class HiveMetadataResource {
     }
 
     @GET
-    @Path("/name/{clusterName}/services/hive/databases/{dbName}/tables")
+    @Path("/clusters/name/{clusterName}/services/hive/databases/{dbName}/tables")
     @Timed
     public Response getDatabaseTablesByClusterName(@PathParam("clusterName") String clusterName, @PathParam("dbName") String dbName) {
         final Cluster cluster = catalogService.getClusterByName(clusterName);
@@ -72,7 +72,7 @@ public class HiveMetadataResource {
     }
 
     @GET
-    @Path("/{clusterId}/services/hive/databases/{dbName}/tables")
+    @Path("/clusters/{clusterId}/services/hive/databases/{dbName}/tables")
     @Timed
     public Response getDatabaseTablesByClusterId(@PathParam("clusterId") Long clusterId, @PathParam("dbName") String dbName) {
         try {

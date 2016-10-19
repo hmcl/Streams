@@ -28,7 +28,7 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 
-@Path("/api/v1/catalog/clusters")
+@Path("/api/v1/catalog")
 @Produces(MediaType.APPLICATION_JSON)
 public class KafkaMetadataResource {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaMetadataResource.class);
@@ -39,7 +39,7 @@ public class KafkaMetadataResource {
     }
 
     @GET
-    @Path("/name/{clusterName}/services/kafka/brokers")
+    @Path("/clusters/name/{clusterName}/services/kafka/brokers")
     @Timed
     public Response getBrokersByClusterName(@PathParam("clusterName") String clusterName) {
         final Cluster cluster = catalogService.getClusterByName(clusterName);
@@ -50,7 +50,7 @@ public class KafkaMetadataResource {
     }
 
     @GET
-    @Path("/{clusterId}/services/kafka/brokers")
+    @Path("/clusters/{clusterId}/services/kafka/brokers")
     @Timed
     public Response getBrokersByClusterId(@PathParam("clusterId") Long clusterId) {
         try(final KafkaMetadataService kafkaMetadataService = KafkaMetadataService.newInstance(catalogService, clusterId)) {
@@ -63,7 +63,7 @@ public class KafkaMetadataResource {
     }
 
     @GET
-    @Path("/name/{clusterName}/services/kafka/topics")
+    @Path("/clusters/name/{clusterName}/services/kafka/topics")
     @Timed
     public Response getTopicsByClusterName(@PathParam("clusterName") String clusterName) {
         final Cluster cluster = catalogService.getClusterByName(clusterName);
@@ -74,7 +74,7 @@ public class KafkaMetadataResource {
     }
 
     @GET
-    @Path("/{clusterId}/services/kafka/topics")
+    @Path("/clusters/{clusterId}/services/kafka/topics")
     @Timed
     public Response getTopicsByClusterId(@PathParam("clusterId") Long clusterId) {
         try(final KafkaMetadataService kafkaMetadataService = KafkaMetadataService.newInstance(catalogService, clusterId)) {
