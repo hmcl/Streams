@@ -2,22 +2,28 @@ package com.hortonworks.iotas.streams.catalog.service.metadata;
 
 import com.google.common.collect.Lists;
 
+import com.hortonworks.iotas.streams.catalog.Component;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
+import com.hortonworks.iotas.streams.catalog.service.metadata.common.HostPort;
 
 import org.apache.curator.test.TestingServer;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import mockit.Expectations;
 import mockit.Injectable;
+import mockit.Mocked;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 
@@ -42,11 +48,27 @@ public class KafkaMetadataServiceTest {
     @Tested
     private KafkaMetadataService kafkaMetadataService;
     @Injectable
-    StreamCatalogService catalogService;
+    private StreamCatalogService catalogService;
     @Injectable
     private ZookeeperClient zkCli;
     @Injectable
-    KafkaMetadataService.KafkaZkConnection kafkaZkConnection;
+    private KafkaMetadataService.KafkaZkConnection kafkaZkConnection;
+
+    @Before
+    public void setUp() throws Exception {
+        final TestingServer server = new TestingServer();
+        final String connectionString = server.getConnectString();
+        zkCli = ZookeeperClient.newInstance(connectionString);
+        zkCli.start();
+        kafkaMetadataService = new KafkaMetadataService(catalogService, zkCli, kafkaZkConnection);
+    }
+
+    @After
+    public void tearDown() {
+        zkCli.close();
+    }
+
+    // === Test Methods ===
 
     @Test
     public void test_KafkaZkConnection_wellInitialized() throws Exception {
@@ -75,43 +97,23 @@ public class KafkaMetadataServiceTest {
     }
 
     @Test
-    public void createConnection() throws Exception {
-        final TestingServer server = new TestingServer();
-        final String connectionString = server.getConnectString();
-        try(ZookeeperClient zookeeperClient = ZookeeperClient.newInstance(connectionString)) {
-//            zookeeperClient = ZookeeperClient.newInstance(connectionString);
-            zookeeperClient.start();
-//        CuratorFramework curatorFrameworkZkCli = zookeeperClient.getCuratorFrameworkZkCli();
-////        curatorFrameworkZkCli.create().forPath("");
-//        curatorFrameworkZkCli.create().forPath("/hmcl");
-            zookeeperClient.createPath("/hmcl");
-            zookeeperClient.getChildren("/hmcl");
+    public void getBrokerHostPortFromStreamsJson(@Injectable final Component component) throws Exception {
+        final List<String> expectedHosts = Lists.newArrayList("hostname1", "hostname2");
+        final Integer expectedPort = 1234;
 
-            System.out.println(connectionString);
-        } /*finally {
-            if (zookeeperClient != null) {
-                zookeeperClient.close();
-            }
-        }*/
-    }
+        new Expectations() {{
+            component.getHosts(); result = expectedHosts;
+            component.getPort(); result = expectedPort;
+            catalogService.getComponentByName(anyLong, anyString); result = component;
+        }};
 
-    @Before
-    public void setUp() throws Exception {
-        final TestingServer server = new TestingServer();
-        final String connectionString = server.getConnectString();
-        zkCli = ZookeeperClient.newInstance(connectionString);
-        zkCli.start();
-        kafkaMetadataService = new KafkaMetadataService(catalogService, zkCli, kafkaZkConnection);
-    }
-
-    @After
-    public void tearDown() {
-        zkCli.close();
-    }
-
-    @Test
-    public void getBrokerHostPortFromStreamsJson() throws Exception {
-
+        final KafkaMetadataService.BrokersInfo<HostPort> brokerHostPort = kafkaMetadataService.getBrokerHostPortFromStreamsJson(1L);
+        // verify host
+        Assert.assertEquals(expectedHosts.get(0), brokerHostPort.getBrokers().get(0).getHost());
+        Assert.assertEquals(expectedHosts.get(1), brokerHostPort.getBrokers().get(1).getHost());
+        // verify port
+        Assert.assertEquals(expectedPort, brokerHostPort.getBrokers().get(0).getPort());
+        Assert.assertEquals(expectedPort, brokerHostPort.getBrokers().get(1).getPort());
     }
 
     @Test
@@ -121,13 +123,20 @@ public class KafkaMetadataServiceTest {
 
     @Test
     public void getBrokerIdsFromZk() throws Exception {
+        final String brokerIdsRootZkPath = chRoots.get(1) + "/" + KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH;
+
+        final String broker1ZkPath = brokerIdsRootZkPath + "/broker_1";
+        final String broker2ZkPath = brokerIdsRootZkPath + "/broker_2";
+
+//        zkCli.createPath(topic1ZkPath);
+        
 
     }
 
     @Test
     public void getTopicsFromZk() throws Exception {
         final String topicsRootZkPath = chRoots.get(1) + "/" + KAFKA_TOPICS_ZK_RELATIVE_PATH;
-
+        
         final String topic1ZkPath = topicsRootZkPath + "/unit_test_topic_1";
         final String topic2ZkPath = topicsRootZkPath + "/unit_test_topic_2";
 
@@ -149,6 +158,10 @@ public class KafkaMetadataServiceTest {
         List<String> expectedTopics = Lists.<String>newArrayList("unit_test_topic_1", "unit_test_topic_2");
 
         Assert.assertEquals(expectedTopics, actualTopics);
+    }
+
+    void exec(String rootPath, List<String> children) {
+
     }
 
 
