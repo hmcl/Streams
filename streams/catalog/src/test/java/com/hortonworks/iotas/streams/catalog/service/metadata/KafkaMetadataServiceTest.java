@@ -1,29 +1,27 @@
 package com.hortonworks.iotas.streams.catalog.service.metadata;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 import com.hortonworks.iotas.streams.catalog.Component;
+import com.hortonworks.iotas.streams.catalog.exception.ZookeeperClientException;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
 import com.hortonworks.iotas.streams.catalog.service.metadata.common.HostPort;
 
 import org.apache.curator.test.TestingServer;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Mocked;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 
@@ -42,7 +40,7 @@ public class KafkaMetadataServiceTest {
 
     private static final List<String> expectedChrootPath = Lists.newArrayList("/", CHROOT + PATH + "/");
     private static final List<String> expectedBrokerIdPath = Lists.newArrayList("/" + KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH,
-            CHROOT + PATH + "/" + KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH );
+            CHROOT + PATH + "/" + KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
 
     // Mocks
     @Tested
@@ -90,7 +88,7 @@ public class KafkaMetadataServiceTest {
                 final String zkStrRaw = zkStr + chRoot;
                 LOG.debug("zookeeper.connect=" + zkStrRaw);
                 KafkaMetadataService.KafkaZkConnection kafkaZkConnection = KafkaMetadataService.KafkaZkConnection.newInstance(zkStrRaw);
-                final String zkPath = kafkaZkConnection.buildZkFullPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
+                final String zkPath = kafkaZkConnection.buildZkRootPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
                 Assert.assertEquals(chRoot.isEmpty() ? expectedBrokerIdPath.get(0) : expectedBrokerIdPath.get(1), zkPath);
             }
         }
@@ -102,9 +100,12 @@ public class KafkaMetadataServiceTest {
         final Integer expectedPort = 1234;
 
         new Expectations() {{
-            component.getHosts(); result = expectedHosts;
-            component.getPort(); result = expectedPort;
-            catalogService.getComponentByName(anyLong, anyString); result = component;
+            component.getHosts();
+            result = expectedHosts;
+            component.getPort();
+            result = expectedPort;
+            catalogService.getComponentByName(anyLong, anyString);
+            result = component;
         }};
 
         final KafkaMetadataService.BrokersInfo<HostPort> brokerHostPort = kafkaMetadataService.getBrokerHostPortFromStreamsJson(1L);
@@ -129,14 +130,14 @@ public class KafkaMetadataServiceTest {
         final String broker2ZkPath = brokerIdsRootZkPath + "/broker_2";
 
 //        zkCli.createPath(topic1ZkPath);
-        
+
 
     }
 
     @Test
     public void getTopicsFromZk() throws Exception {
         final String topicsRootZkPath = chRoots.get(1) + "/" + KAFKA_TOPICS_ZK_RELATIVE_PATH;
-        
+
         final String topic1ZkPath = topicsRootZkPath + "/unit_test_topic_1";
         final String topic2ZkPath = topicsRootZkPath + "/unit_test_topic_2";
 
@@ -149,7 +150,8 @@ public class KafkaMetadataServiceTest {
         System.out.println("topic 2 data: " + new String(zkCli.getData(topic2ZkPath)));
 
         new Expectations() {{
-            kafkaZkConnection.buildZkFullPath(anyString); result = topicsRootZkPath;
+            kafkaZkConnection.buildZkRootPath(anyString);
+            result = topicsRootZkPath;
         }};
 
         List<String> actualTopics = kafkaMetadataService.getTopicsFromZk().getTopics();
@@ -160,11 +162,59 @@ public class KafkaMetadataServiceTest {
         Assert.assertEquals(expectedTopics, actualTopics);
     }
 
-    void exec(String rootPath, List<String> children) {
+//    @Test
+    private void getTopicsFromZkReuse() throws Exception {
+        exec(KAFKA_TOPICS_ZK_RELATIVE_PATH,
+                Lists.newArrayList("topic_1", "topic_2"),
+                new Function<List<String>,List<String>>() {
+                    public List<String> apply(List<String> input) {
+                        final List<String> actualTopics = getTopics();
+                        Collections.sort(actualTopics);
+                        return actualTopics;
+                    }
 
+
+                },
+                null,
+                null);
+    }
+    private List<String> getTopics() {
+        try {
+            return kafkaMetadataService.getTopicsFromZk().getTopics();
+        } catch (ZookeeperClientException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    <F, T> void exec(String componentZkPath, List<String> componentZkLeaves, Function<F, T> execution, Function<F, T> verification, String... data) throws Exception {
+        if (data != null) {
+            Assert.assertEquals("Data array and list of zk leaf nodes must have the same size", componentZkLeaves.size(), data.length);
+        }
 
+        for (String chRoot : chRoots) {
+            final String zkRootPath = chRoot + "/" + componentZkPath;
+            int i = 0;
+            for (String zkLeaf : componentZkLeaves) {
+                final String zkFullPath = zkRootPath + "/" + zkLeaf;
+                zkCli.createPath(zkFullPath);
+                LOG.info("Created zk path [{}]", zkFullPath);
 
+                if (data != null) {
+                    zkCli.setData(zkFullPath, data[i].getBytes());
+                    LOG.info("Set data [{} => {}]", zkFullPath, data[i]);
+                }
+                i++;
+            }
 
+            new Expectations() {{
+                kafkaZkConnection.buildZkRootPath(anyString);
+                result = zkRootPath;
+            }};
+
+            T actual = execution.apply(null);
+
+            T expected = verification.apply((F) actual);
+
+        }
+    }
 }
