@@ -52,8 +52,7 @@ public class HBaseMetadataResource {
     @Path("/clusters/{clusterId}/services/hbase/namespaces")
     @Timed
     public Response getNamespacesByClusterId(@PathParam("clusterId") Long clusterId) {
-        try {
-            HBaseMetadataService hbaseMetadataService = HBaseMetadataService.newInstance(catalogService, clusterId);
+        try (HBaseMetadataService hbaseMetadataService = HBaseMetadataService.newInstance(catalogService, clusterId)) {
             return WSUtils.respond(hbaseMetadataService.getHBaseNamespaces(), OK, SUCCESS);
         } catch (EntityNotFoundException ex) {
             return WSUtils.respond(NOT_FOUND, ENTITY_NOT_FOUND, ex.getMessage());
@@ -79,8 +78,7 @@ public class HBaseMetadataResource {
     @Path("/clusters/{clusterId}/services/hbase/tables")
     @Timed
     public Response getTablesByClusterId(@PathParam("clusterId") Long clusterId) {
-        try {
-            HBaseMetadataService hbaseMetadataService = HBaseMetadataService.newInstance(catalogService, clusterId);
+        try (HBaseMetadataService hbaseMetadataService = HBaseMetadataService.newInstance(catalogService, clusterId)) {
             return WSUtils.respond(hbaseMetadataService.getHBaseTables(), OK, SUCCESS);
         } catch (EntityNotFoundException ex) {
             return WSUtils.respond(NOT_FOUND, ENTITY_NOT_FOUND, ex.getMessage());
@@ -106,8 +104,7 @@ public class HBaseMetadataResource {
     @Path("/clusters/{clusterId}/services/hbase/namespaces/{namespace}/tables")
     @Timed
     public Response getNamespaceTablesByClusterId(@PathParam("clusterId") Long clusterId, @PathParam("namespace") String namespace) {
-        try {
-            HBaseMetadataService hbaseMetadataService = HBaseMetadataService.newInstance(catalogService, clusterId);
+        try (HBaseMetadataService hbaseMetadataService = HBaseMetadataService.newInstance(catalogService, clusterId)) {
             return WSUtils.respond(hbaseMetadataService.getHBaseTables(namespace), OK, SUCCESS);
         } catch (EntityNotFoundException ex) {
             return WSUtils.respond(NOT_FOUND, ENTITY_NOT_FOUND, ex.getMessage());

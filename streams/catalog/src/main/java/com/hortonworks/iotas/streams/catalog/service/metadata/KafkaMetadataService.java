@@ -59,7 +59,7 @@ public class KafkaMetadataService implements AutoCloseable {
     }
 
     public BrokersInfo<String> getBrokerInfoFromZk() throws ZookeeperClientException {
-        final String brokerIdsZkPath = kafkaZkConnection.buildZkFullPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
+        final String brokerIdsZkPath = kafkaZkConnection.buildZkRootPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH);
         final List<String> brokerIds = zkCli.getChildren(brokerIdsZkPath);
         List<String> brokerInfo = null;
 
@@ -74,12 +74,12 @@ public class KafkaMetadataService implements AutoCloseable {
     }
 
     public BrokersInfo<BrokersInfo.BrokerId> getBrokerIdsFromZk() throws ZookeeperClientException {
-        final List<String> brokerIds = zkCli.getChildren(kafkaZkConnection.buildZkFullPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH));
+        final List<String> brokerIds = zkCli.getChildren(kafkaZkConnection.buildZkRootPath(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH));
         return BrokersInfo.brokerIds(brokerIds);
     }
 
     public Topics getTopicsFromZk() throws ZookeeperClientException {
-        final List<String> topics = zkCli.getChildren(kafkaZkConnection.buildZkFullPath(KAFKA_TOPICS_ZK_RELATIVE_PATH));
+        final List<String> topics = zkCli.getChildren(kafkaZkConnection.buildZkRootPath(KAFKA_TOPICS_ZK_RELATIVE_PATH));
         return topics == null ? new Topics(Collections.<String>emptyList()) : new Topics(topics);
     }
 
@@ -179,7 +179,7 @@ public class KafkaMetadataService implements AutoCloseable {
                     : new BrokersInfo<>(brokerInfo);
         }
 
-        public List<T> getBrokers() {
+        public List<T> getInfo() {
             return brokers;
         }
 
@@ -188,6 +188,10 @@ public class KafkaMetadataService implements AutoCloseable {
 
             public BrokerId(String id) {
                 this.id = id;
+            }
+
+            public String getId() {
+                return id;
             }
         }
     }
@@ -248,7 +252,7 @@ public class KafkaMetadataService implements AutoCloseable {
             return zkString;
         }
 
-        String buildZkFullPath(String zkRelativePath) {
+        String buildZkRootPath(String zkRelativePath) {
             if (zkRelativePath.startsWith("/")) {
                 return chRoot + zkRelativePath.substring(1);
             } else {
