@@ -12,7 +12,7 @@ public enum ServiceConfigurations {
   HDFS("core-site", "hadoop-env", "hadoop-policy", "hdfs-site"),
   HBASE("hbase-env", "hbase-policy", "hbase-site"),
   HIVE("hive-env", "hive-interactive-env", "hive-interactive-site",
-      "hive-metastore-site", "hiveserver2-interactive-site",
+      "hivemetastore-site", "hiveserver2-interactive-site",
       "hiveserver2-site");
 
   private final String[] confNames;
