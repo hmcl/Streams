@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import mockit.Expectations;
 import mockit.Injectable;
@@ -98,138 +98,125 @@ public class KafkaMetadataServiceTest {
     }
 
     @Test
-    public void getBrokerHostPortFromStreamsJson(@Injectable final Component component) throws Exception {
+    public void test_getBrokerHostPortFromStreamsJson(@Injectable final Component component) throws Exception {
         final List<String> expectedHosts = Lists.newArrayList("hostname1", "hostname2");
         final Integer expectedPort = 1234;
 
         new Expectations() {{
-            component.getHosts();
-            result = expectedHosts;
-            component.getPort();
-            result = expectedPort;
-            catalogService.getComponentByName(anyLong, anyString);
-            result = component;
+            component.getHosts(); result = expectedHosts;
+            component.getPort(); result = expectedPort;
+            catalogService.getComponentByName(anyLong, anyString); result = component;
         }};
 
         final KafkaMetadataService.BrokersInfo<HostPort> brokerHostPort = kafkaMetadataService.getBrokerHostPortFromStreamsJson(1L);
         // verify host
-        Assert.assertEquals(expectedHosts.get(0), brokerHostPort.getBrokers().get(0).getHost());
-        Assert.assertEquals(expectedHosts.get(1), brokerHostPort.getBrokers().get(1).getHost());
+        Assert.assertEquals(expectedHosts.get(0), brokerHostPort.getInfo().get(0).getHost());
+        Assert.assertEquals(expectedHosts.get(1), brokerHostPort.getInfo().get(1).getHost());
         // verify port
-        Assert.assertEquals(expectedPort, brokerHostPort.getBrokers().get(0).getPort());
-        Assert.assertEquals(expectedPort, brokerHostPort.getBrokers().get(1).getPort());
+        Assert.assertEquals(expectedPort, brokerHostPort.getInfo().get(0).getPort());
+        Assert.assertEquals(expectedPort, brokerHostPort.getInfo().get(1).getPort());
     }
 
     @Test
-    public void getBrokerInfoFromZk() throws Exception {
+    public void test_getBrokerInfoFromZk() throws Exception {
+        final ArrayList<String> brokerIdZkLeaves = Lists.newArrayList("1001", "1002");
+        final ArrayList<String> brokerZkData = Lists.newArrayList(
+                "{\"jmx_port\":-1,\"timestamp\":\"1475798012574\",\"endpoints\":[\"PLAINTEXT://cn035.l42scl.hortonworks.com:6667\"],\"host\":\"cn035.l42scl.hortonworks.com\",\"version\":3,\"port\":6667}",
+                "{\"jmx_port\":-1,\"timestamp\":\"1475798017180\",\"endpoints\":[\"PLAINTEXT://cn067.l42scl.hortonworks.com:6667\"],\"host\":\"cn067.l42scl.hortonworks.com\",\"version\":3,\"port\":6667}");
 
+        testZkCode(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH,
+                brokerIdZkLeaves,
+                this::getActualBrokerData,
+                p -> Assert.assertEquals(brokerZkData, p),
+                brokerZkData);
     }
 
-    @Test
-    public void getBrokerIdsFromZk() throws Exception {
-        final String brokerIdsRootZkPath = chRoots.get(1) + "/" + KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH;
-
-        final String broker1ZkPath = brokerIdsRootZkPath + "/broker_1";
-        final String broker2ZkPath = brokerIdsRootZkPath + "/broker_2";
-
-//        zkCli.createPath(topic1ZkPath);
-
-
-    }
-
-    @Test
-    public void getTopicsFromZk() throws Exception {
-        final String topicsRootZkPath = chRoots.get(1) + "/" + KAFKA_TOPICS_ZK_RELATIVE_PATH;
-
-        final String topic1ZkPath = topicsRootZkPath + "/unit_test_topic_1";
-        final String topic2ZkPath = topicsRootZkPath + "/unit_test_topic_2";
-
-        zkCli.createPath(topic1ZkPath);
-        zkCli.setData(topic1ZkPath, "topic_1 data".getBytes());
-        System.out.println("topic 1 data: " + new String(zkCli.getData(topic1ZkPath)));
-
-        zkCli.createPath(topic2ZkPath);
-        zkCli.setData(topic2ZkPath, "topic_2 data".getBytes());
-        System.out.println("topic 2 data: " + new String(zkCli.getData(topic2ZkPath)));
-
-        new Expectations() {{
-            kafkaZkConnection.buildZkRootPath(anyString);
-            result = topicsRootZkPath;
-        }};
-
-        List<String> actualTopics = kafkaMetadataService.getTopicsFromZk().getTopics();
-        Collections.sort(actualTopics);
-        System.out.println("actual topics: " + actualTopics);
-
-        List<String> expectedTopics = Lists.<String>newArrayList("unit_test_topic_1", "unit_test_topic_2");
-        Assert.assertEquals(expectedTopics, actualTopics);
-    }
-
-    @Test
-    public void getTopicsFromZkReuse() throws Exception {
-        final ArrayList<String> componentZkLeaves = Lists.newArrayList("topic_1", "topic_2");
-        execute(KAFKA_TOPICS_ZK_RELATIVE_PATH,
-                componentZkLeaves,
-                () -> {
-                    final List<String> actualTopics = getTopics();
-                    Collections.sort(actualTopics);
-                    return actualTopics;
-                },
-                p -> Assert.assertEquals(componentZkLeaves, p),
-                null);
-    }
-
-    private List<String> getTopics() {
+    private List<String> getActualBrokerData() {
         try {
-            return kafkaMetadataService.getTopicsFromZk().getTopics();
+            final KafkaMetadataService.BrokersInfo<String> brokerInfo= kafkaMetadataService.getBrokerInfoFromZk();
+            return brokerInfo.getInfo().stream()
+                    .sorted(String::compareTo)
+                    .collect(Collectors.toList());
         } catch (ZookeeperClientException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Test
+    public void test_GetBrokerIdsFromZk() throws Exception {
+        final ArrayList<String> brokerIdZkLeaves = Lists.newArrayList("1001", "1002");
+        testZkCode(KAFKA_BROKERS_IDS_ZK_RELATIVE_PATH,
+                brokerIdZkLeaves,
+                this::getActualBrokerIds,
+                p -> Assert.assertEquals(brokerIdZkLeaves, p),
+                null);
+    }
 
-    private <T> void execute(String componentZkPath, List<String> componentZkLeaves, Supplier<T> execution, Consumer<T> verification, String... data) throws Exception {
-        if (data != null) {
-            Assert.assertEquals("Data array and list of zk leaf nodes must have the same size", componentZkLeaves.size(), data.length);
+    private List<String> getActualBrokerIds() {
+        try {
+            final List<KafkaMetadataService.BrokersInfo.BrokerId> brokers = kafkaMetadataService.getBrokerIdsFromZk().getInfo();
+            return brokers.stream()
+                    .map(KafkaMetadataService.BrokersInfo.BrokerId::getId)
+                    .sorted(String::compareTo)
+                    .collect(Collectors.toList());
+        } catch (ZookeeperClientException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void test_getTopicsFromZk() throws Exception {
+        final ArrayList<String> componentZkLeaves = Lists.newArrayList("topic_1", "topic_2");
+        testZkCode(KAFKA_TOPICS_ZK_RELATIVE_PATH,
+                componentZkLeaves,
+                this::getActualTopics,
+                p -> Assert.assertEquals(componentZkLeaves, p),
+                null);
+    }
+
+    private List<String> getActualTopics() {
+        try {
+            final List<String> actualTopics = kafkaMetadataService.getTopicsFromZk().getTopics();
+            Collections.sort(actualTopics);
+            return actualTopics;
+        } catch (ZookeeperClientException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private <T> void testZkCode(String componentZkPath, List<String> componentZkLeaves,
+            Supplier<T> executionCode, Consumer<T> verificationCode, List<String> zkNodeData) throws Exception {
+        if (zkNodeData != null) {
+            Assert.assertEquals("Data array and list of zk leaf nodes must have the same size", componentZkLeaves.size(), zkNodeData.size());
         }
 
-        for (int j = 0; j < chRoots.size() - 1; j++) {
+        for (int j = 0; j < chRoots.size() - 1; j++) {  // Don't include last index because it adds nothing new to testing and avoids //
             final String zkRootPath = chRoots.get(j) + "/" + componentZkPath;
             for (int i = 0; i < componentZkLeaves.size(); i++) {
                 final String zkFullPath = zkRootPath + "/" + componentZkLeaves.get(i);
                 zkCli.createPath(zkFullPath);
                 LOG.info("Created zk path [{}]", zkFullPath);
 
-                if (data != null) {
-                    zkCli.setData(zkFullPath, data[i].getBytes());
-                    LOG.info("Set data [{} => {}]", zkFullPath, data[i]);
+                if (zkNodeData != null) {
+                    zkCli.setData(zkFullPath, zkNodeData.get(i).getBytes());
+                    LOG.info("Set data [{} => {}]", zkFullPath, zkNodeData.get(i));
                 }
             }
 
+            // Record expectations
             new Expectations() {{
                 kafkaZkConnection.buildZkRootPath(anyString);
                 result = zkRootPath;
             }};
 
-            T actual = execution.get();
+            // Executes the code to test and returns the actual result
+            T actual = executionCode.get();
 
-//            T expected = verification.accept(actual);
-            verification.accept(actual);
-
-//            Assert.assertEquals(expected, actual);
+            /*
+            Verifies that the result of the code execution (passed in as parameter) matches the actual result.
+            This method should define the expected result and implement the assertions
+            */
+            verificationCode.accept(actual);
         }
     }
-
-    @Test
-    public void testExec1() throws Exception {
-        exec1(KAFKA_TOPICS_ZK_RELATIVE_PATH, Lists.newArrayList("tp1", "tp2"));
-
-    }
-
-    <F, T> void exec1(String componentZkPath, List<String> componentZkLeaves) throws Exception {
-/*        chRoots.stream().map(p -> p).filter(p -> true).componentZkLeaves.stream().map(p -> {
-            System.out.println(p); p = p + "/" + componentZkPath; return p;}).forEach(System.out::println);*/
-    }
-
-
 }

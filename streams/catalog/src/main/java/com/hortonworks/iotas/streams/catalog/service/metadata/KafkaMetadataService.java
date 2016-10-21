@@ -179,7 +179,7 @@ public class KafkaMetadataService implements AutoCloseable {
                     : new BrokersInfo<>(brokerInfo);
         }
 
-        public List<T> getBrokers() {
+        public List<T> getInfo() {
             return brokers;
         }
 
@@ -188,6 +188,10 @@ public class KafkaMetadataService implements AutoCloseable {
 
             public BrokerId(String id) {
                 this.id = id;
+            }
+
+            public String getId() {
+                return id;
             }
         }
     }
