@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.hortonworks.iotas.streams.catalog.ServiceConfiguration;
 import com.hortonworks.iotas.streams.catalog.exception.ServiceConfigurationNotFoundException;
 import com.hortonworks.iotas.streams.catalog.exception.ServiceNotFoundException;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
@@ -26,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -167,15 +170,29 @@ public class HBaseMetadataServiceTest {
     public void testMock1(@Mocked final StreamCatalogService catalogService,
                           @Mocked OverrideHadoopConfiguration overrideHadoopConfiguration) throws Exception {
 
+        final HBaseConfigurationTest configurationTest = getConfigurationTest();
         new Expectations() {{
             OverrideHadoopConfiguration.override((Configuration) any, catalogService, ServiceConfigurations.HBASE, 123L, "hbase-site");
-            result = getConfigurationTest();
+            result = configurationTest;
         }};
 
-        HBaseMetadataService.newInstance(catalogService, 1L);
+        HBaseMetadataService.newInstance(configurationTest, catalogService, 1L);
     }
 
-    HBaseConfigurationTest getConfigurationTest() throws Exception {
+    @Test
+    public void testMock2(@Mocked final StreamCatalogService catalogService,
+                          @Mocked ServiceConfiguration serviceConfiguration/*,
+                          @Mocked OverrideHadoopConfiguration overrideHadoopConfiguration*/) throws Exception {
+
+        new Expectations() {{
+            serviceConfiguration.getConfigurationMap(); result = getHBaseConfiProps();
+        }};
+
+        HBaseMetadataService service = HBaseMetadataService.newInstance(catalogService, 1L);
+        System.out.println("Namespaces: " + service.getHBaseNamespaces().getNamespaces());
+    }
+
+    private HBaseConfigurationTest getConfigurationTest() throws Exception {
         HBaseConfigurationTest config = new HBaseConfigurationTest(HBaseConfiguration.create());
         overrideProps1(config);
         return config;
@@ -239,6 +256,12 @@ public class HBaseMetadataServiceTest {
     @Test
     public void testgetHbaseSiteXmlProps() throws Exception {
         getHbaseSiteXmlProps();
+    }
+
+    public Map<String, String> getHBaseConfiProps() throws IOException {
+        final String path = "/Users/hlouro/Hortonworks/Dev/GitHub/hmcl/Streams/streams/catalog/src/test/java/com/hortonworks/iotas/streams/catalog/service/metadata/hbase-config-map.json";
+        Map<String, String> config = new ObjectMapper().readValue(new FileInputStream(path), new TypeReference<Map<String, String>>() { });
+        return config;
     }
 
     public List<Map<String, String>> getHbaseSiteXmlProps() throws Exception {
