@@ -55,20 +55,6 @@ public class KafkaMetadataServiceTest {
     @Injectable
     private KafkaMetadataService.KafkaZkConnection kafkaZkConnection;
 
-    @Before
-    public void setUp() throws Exception {
-        final TestingServer server = new TestingServer();
-        final String connectionString = server.getConnectString();
-        zkCli = ZookeeperClient.newInstance(connectionString);
-        zkCli.start();
-        kafkaMetadataService = new KafkaMetadataService(catalogService, zkCli, kafkaZkConnection);
-    }
-
-    @After
-    public void tearDown() {
-        zkCli.close();
-    }
-
     // === Test Methods ===
 
     @Test
@@ -184,39 +170,61 @@ public class KafkaMetadataServiceTest {
         }
     }
 
+    public void startZk() throws Exception {
+        final TestingServer server = new TestingServer();
+        final String connectionString = server.getConnectString();
+        zkCli = ZookeeperClient.newInstance(connectionString);
+        zkCli.start();
+//        kafkaMetadataService = new KafkaMetadataService(catalogService, zkCli, kafkaZkConnection);
+    }
+
+    public void stopZk() {
+        zkCli.close();
+    }
+
     private <T> void testZkCode(String componentZkPath, List<String> componentZkLeaves,
             Supplier<T> executionCode, Consumer<T> verificationCode, List<String> zkNodeData) throws Exception {
-        if (zkNodeData != null) {
-            Assert.assertEquals("Data array and list of zk leaf nodes must have the same size", componentZkLeaves.size(), zkNodeData.size());
-        }
 
-        for (int j = 0; j < chRoots.size() - 1; j++) {  // Don't include last index because it adds nothing new to testing and avoids //
-            final String zkRootPath = chRoots.get(j) + "/" + componentZkPath;
-            for (int i = 0; i < componentZkLeaves.size(); i++) {
-                final String zkFullPath = zkRootPath + "/" + componentZkLeaves.get(i);
-                zkCli.createPath(zkFullPath);
-                LOG.info("Created zk path [{}]", zkFullPath);
+        startZk();
 
-                if (zkNodeData != null) {
-                    zkCli.setData(zkFullPath, zkNodeData.get(i).getBytes());
-                    LOG.info("Set data [{} => {}]", zkFullPath, zkNodeData.get(i));
-                }
+        // pass started zk to class under test
+        kafkaMetadataService = new KafkaMetadataService(catalogService, zkCli, kafkaZkConnection);
+
+        try {
+            if (zkNodeData != null) {
+                Assert.assertEquals("Data array and list of zk leaf nodes must have the same size", componentZkLeaves.size(), zkNodeData.size());
             }
 
-            // Record expectations
-            new Expectations() {{
-                kafkaZkConnection.buildZkRootPath(anyString);
-                result = zkRootPath;
-            }};
+            for (int j = 0; j < chRoots.size() - 1; j++) {  // Don't include last index because it adds nothing new to testing and avoids //
+                final String zkRootPath = chRoots.get(j) + "/" + componentZkPath;
+                for (int i = 0; i < componentZkLeaves.size(); i++) {
+                    final String zkFullPath = zkRootPath + "/" + componentZkLeaves.get(i);
+                    zkCli.createPath(zkFullPath);
+                    LOG.info("Created zk path [{}]", zkFullPath);
 
-            // Executes the code to test and returns the actual result
-            T actual = executionCode.get();
+                    if (zkNodeData != null) {
+                        zkCli.setData(zkFullPath, zkNodeData.get(i).getBytes());
+                        LOG.info("Set data [{} => {}]", zkFullPath, zkNodeData.get(i));
+                    }
+                }
 
-            /*
-            Verifies that the result of the code execution (passed in as parameter) matches the actual result.
-            This method should define the expected result and implement the assertions
-            */
-            verificationCode.accept(actual);
+                // Record expectations
+                new Expectations() {{
+                    kafkaZkConnection.buildZkRootPath(anyString);
+                    result = zkRootPath;
+                }};
+
+                // Executes the code to test and returns the actual result
+                T actual = executionCode.get();
+
+                /*
+                Verifies that the result of the code execution (passed in as parameter) matches the actual result.
+                This method should define the expected result and implement the assertions
+                */
+                verificationCode.accept(actual);
+            }
+        } finally {
+            stopZk();
         }
     }
 }
