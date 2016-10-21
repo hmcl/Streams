@@ -200,11 +200,11 @@ public class KafkaMetadataServiceTest {
                 for (int i = 0; i < componentZkLeaves.size(); i++) {
                     final String zkFullPath = zkRootPath + "/" + componentZkLeaves.get(i);
                     zkCli.createPath(zkFullPath);
-                    LOG.info("Created zk path [{}]", zkFullPath);
+                    LOG.debug("Created zk path [{}]", zkFullPath);
 
                     if (zkNodeData != null) {
                         zkCli.setData(zkFullPath, zkNodeData.get(i).getBytes());
-                        LOG.info("Set data [{} => {}]", zkFullPath, zkNodeData.get(i));
+                        LOG.debug("Set data [{} => {}]", zkFullPath, zkNodeData.get(i));
                     }
                 }
 
