@@ -7,6 +7,7 @@ import com.hortonworks.iotas.streams.catalog.service.metadata.common.OverrideHad
 import com.hortonworks.iotas.streams.catalog.service.metadata.common.Tables;
 import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.TableName;
@@ -34,8 +35,14 @@ public class HBaseMetadataService {
     public static HBaseMetadataService newInstance(StreamCatalogService catalogService, Long clusterId)
             throws IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {
 
+        return newInstance(HBaseConfiguration.create(), catalogService, clusterId);
+    }
+
+    public static HBaseMetadataService newInstance(Configuration hbaseConfig, StreamCatalogService catalogService, Long clusterId)
+            throws IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {
+
         return new HBaseMetadataService(ConnectionFactory.createConnection(
-                OverrideHadoopConfiguration.override(HBaseConfiguration.create(), catalogService,
+                OverrideHadoopConfiguration.override(hbaseConfig, catalogService,
                         ServiceConfigurations.HBASE, clusterId, STREAMS_JSON_SCHEMA_CONFIG_HBASE_SITE))
                 .getAdmin());
     }
