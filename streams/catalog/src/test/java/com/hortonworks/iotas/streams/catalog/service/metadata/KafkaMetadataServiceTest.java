@@ -1,6 +1,5 @@
 package com.hortonworks.iotas.streams.catalog.service.metadata;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 import com.hortonworks.iotas.streams.catalog.Component;
@@ -17,8 +16,12 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import mockit.Expectations;
 import mockit.Injectable;
@@ -157,27 +160,25 @@ public class KafkaMetadataServiceTest {
         List<String> actualTopics = kafkaMetadataService.getTopicsFromZk().getTopics();
         Collections.sort(actualTopics);
         System.out.println("actual topics: " + actualTopics);
-        List<String> expectedTopics = Lists.<String>newArrayList("unit_test_topic_1", "unit_test_topic_2");
 
+        List<String> expectedTopics = Lists.<String>newArrayList("unit_test_topic_1", "unit_test_topic_2");
         Assert.assertEquals(expectedTopics, actualTopics);
     }
 
-//    @Test
-    private void getTopicsFromZkReuse() throws Exception {
-        exec(KAFKA_TOPICS_ZK_RELATIVE_PATH,
-                Lists.newArrayList("topic_1", "topic_2"),
-                new Function<List<String>,List<String>>() {
-                    public List<String> apply(List<String> input) {
-                        final List<String> actualTopics = getTopics();
-                        Collections.sort(actualTopics);
-                        return actualTopics;
-                    }
-
-
+    @Test
+    public void getTopicsFromZkReuse() throws Exception {
+        final ArrayList<String> componentZkLeaves = Lists.newArrayList("topic_1", "topic_2");
+        execute(KAFKA_TOPICS_ZK_RELATIVE_PATH,
+                componentZkLeaves,
+                () -> {
+                    final List<String> actualTopics = getTopics();
+                    Collections.sort(actualTopics);
+                    return actualTopics;
                 },
-                null,
+                p -> Assert.assertEquals(componentZkLeaves, p),
                 null);
     }
+
     private List<String> getTopics() {
         try {
             return kafkaMetadataService.getTopicsFromZk().getTopics();
@@ -186,16 +187,16 @@ public class KafkaMetadataServiceTest {
         }
     }
 
-    <F, T> void exec(String componentZkPath, List<String> componentZkLeaves, Function<F, T> execution, Function<F, T> verification, String... data) throws Exception {
+
+    private <T> void execute(String componentZkPath, List<String> componentZkLeaves, Supplier<T> execution, Consumer<T> verification, String... data) throws Exception {
         if (data != null) {
             Assert.assertEquals("Data array and list of zk leaf nodes must have the same size", componentZkLeaves.size(), data.length);
         }
 
-        for (String chRoot : chRoots) {
-            final String zkRootPath = chRoot + "/" + componentZkPath;
-            int i = 0;
-            for (String zkLeaf : componentZkLeaves) {
-                final String zkFullPath = zkRootPath + "/" + zkLeaf;
+        for (int j = 0; j < chRoots.size() - 1; j++) {
+            final String zkRootPath = chRoots.get(j) + "/" + componentZkPath;
+            for (int i = 0; i < componentZkLeaves.size(); i++) {
+                final String zkFullPath = zkRootPath + "/" + componentZkLeaves.get(i);
                 zkCli.createPath(zkFullPath);
                 LOG.info("Created zk path [{}]", zkFullPath);
 
@@ -203,7 +204,6 @@ public class KafkaMetadataServiceTest {
                     zkCli.setData(zkFullPath, data[i].getBytes());
                     LOG.info("Set data [{} => {}]", zkFullPath, data[i]);
                 }
-                i++;
             }
 
             new Expectations() {{
@@ -211,10 +211,25 @@ public class KafkaMetadataServiceTest {
                 result = zkRootPath;
             }};
 
-            T actual = execution.apply(null);
+            T actual = execution.get();
 
-            T expected = verification.apply((F) actual);
+//            T expected = verification.accept(actual);
+            verification.accept(actual);
 
+//            Assert.assertEquals(expected, actual);
         }
     }
+
+    @Test
+    public void testExec1() throws Exception {
+        exec1(KAFKA_TOPICS_ZK_RELATIVE_PATH, Lists.newArrayList("tp1", "tp2"));
+
+    }
+
+    <F, T> void exec1(String componentZkPath, List<String> componentZkLeaves) throws Exception {
+/*        chRoots.stream().map(p -> p).filter(p -> true).componentZkLeaves.stream().map(p -> {
+            System.out.println(p); p = p + "/" + componentZkPath; return p;}).forEach(System.out::println);*/
+    }
+
+
 }
