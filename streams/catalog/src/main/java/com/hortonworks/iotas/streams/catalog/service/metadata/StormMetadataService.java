@@ -1,5 +1,6 @@
 package com.hortonworks.iotas.streams.catalog.service.metadata;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.hortonworks.iotas.streams.catalog.Component;
 import com.hortonworks.iotas.streams.catalog.exception.ServiceComponentNotFoundException;
 import com.hortonworks.iotas.streams.catalog.exception.ServiceNotFoundException;
@@ -128,7 +129,8 @@ public class StormMetadataService {
             this.topologies = topologies;
         }
 
-        public List<String> getTopologies() {
+        @JsonGetter("topologies")
+        public List<String> asList() {
             return topologies;
         }
     }
