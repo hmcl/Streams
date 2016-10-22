@@ -65,7 +65,7 @@ public class HBaseMetadataServiceTest {
         in the scope of the test because it depends on recorded expectations in order to abstract lots of initialization.
      */
     @Test
-    public void test_all() throws Exception {
+    public void test_getNamespace_getTables() throws Exception {
         setUp();
         try {
             test_getHBaseTables();
