@@ -25,7 +25,6 @@ import java.util.List;
  * Provides HBase databases tables metadata information using {@link org.apache.hadoop.hbase.client.HBaseAdmin}
  */
 public class HBaseMetadataService {
-    private static final String STREAMS_JSON_SCHEMA_SERVICE_HBASE = ServiceConfigurations.HBASE.name();
     private static final String STREAMS_JSON_SCHEMA_CONFIG_HBASE_SITE = ServiceConfigurations.HBASE.getConfNames()[2];
 
     private Admin hBaseAdmin;
@@ -74,7 +73,7 @@ public class HBaseMetadataService {
     }
 
     /*
-    Created and delete methods useful for integration tests. Left as package protected for now.
+    Create and delete methods useful for integration tests. Left as package protected for now.
     These methods can be made public and exposed in REST API.
     */
     void createNamespace(String namespace) throws IOException {

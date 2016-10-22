@@ -11,15 +11,11 @@ import com.hortonworks.iotas.streams.catalog.service.metadata.common.Tables;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import mockit.Expectations;
 import mockit.Mocked;
@@ -30,7 +26,7 @@ public class HBaseMetadataServiceTest {
     private static final List<String> HBASE_TEST_NAMESPACES = ImmutableList.copyOf(new String[]{"test_namespace_1", "test_namespace_2"});
     private static final List<String> HBASE_TEST_TABLES = ImmutableList.copyOf(new String[]{"test_table_1", "test_table_2"});
     private static final String HBASE_TEST_TABLE_FAMILY = "test_table_family";
-    private static final String HIVE_METASTORE_CONFIG = "metadata/hivemetastore-site.json";
+    private static final String HBASE_SITE_CONFIG = "metadata/hbase-site.json";
 
     private HBaseMetadataService hbaseService;
 
@@ -41,7 +37,7 @@ public class HBaseMetadataServiceTest {
 
     private void setUp() throws Exception {
         new Expectations() {{
-            serviceConfiguration.getConfigurationMap(); result = getHBaseConfiProps1();
+            serviceConfiguration.getConfigurationMap(); result = getHBaseSiteConfig();
         }};
 
         hbaseService = HBaseMetadataService.newInstance(catalogService, 1L);
@@ -102,10 +98,9 @@ public class HBaseMetadataServiceTest {
         Assert.assertTrue(hBaseNamespaces.getNamespaces().containsAll(HBASE_TEST_NAMESPACES));
     }
 
-    private Map<String, String> getHBaseConfiProps1() throws IOException {
-        Map<String, String> config = new ObjectMapper().readValue(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(HIVE_METASTORE_CONFIG),
+    private Map<String, String> getHBaseSiteConfig() throws IOException {
+        return new ObjectMapper().readValue(Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream(HBASE_SITE_CONFIG),
                 new TypeReference<Map<String, String>>() { });
-        return config;
     }
 }
