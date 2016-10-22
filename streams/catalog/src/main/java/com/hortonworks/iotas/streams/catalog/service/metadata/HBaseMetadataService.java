@@ -9,6 +9,8 @@ import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurati
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
@@ -69,6 +71,31 @@ public class HBaseMetadataService {
      */
     public Namespaces getHBaseNamespaces() throws IOException {
         return Namespaces.newInstance(hBaseAdmin.listNamespaceDescriptors());
+    }
+
+    /*
+    Created and delete methods useful for integration tests. Left as package protected for now.
+    These methods can be made public and exposed in REST API.
+    */
+    void createNamespace(String namespace) throws IOException {
+        hBaseAdmin.createNamespace(NamespaceDescriptor.create(namespace).build());
+    }
+
+    void createTable(String namespace, String tableName, String familyName) throws IOException {
+        hBaseAdmin.createTable(new HTableDescriptor(TableName.valueOf(namespace, tableName))
+                .addFamily(new HColumnDescriptor(familyName)));
+    }
+
+    void deleteNamespace(String namespace) throws IOException {
+        hBaseAdmin.deleteNamespace(namespace);
+    }
+
+    void deleteTable(String namespace, String tableName) throws IOException {
+        hBaseAdmin.deleteTable(TableName.valueOf(namespace, tableName));
+    }
+
+    void disableTable(String namespace, String tableName) throws IOException {
+        hBaseAdmin.disableTable(TableName.valueOf(namespace, tableName));
     }
 
     /**
