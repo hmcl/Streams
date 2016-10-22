@@ -1,24 +1,15 @@
 package com.hortonworks.iotas.streams.catalog.service.metadata;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.hortonworks.iotas.streams.catalog.ServiceConfiguration;
-import com.hortonworks.iotas.streams.catalog.exception.ServiceConfigurationNotFoundException;
-import com.hortonworks.iotas.streams.catalog.exception.ServiceNotFoundException;
-import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import com.hortonworks.iotas.streams.catalog.service.metadata.common.OverrideHadoopConfiguration;
-import com.hortonworks.iotas.streams.catalog.service.metadata.common.Tables;
-import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
-import org.apache.calcite.sql.parser.SqlParser;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.Admin;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
-import org.apache.hadoop.hdfs.DFSClient;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hortonworks.iotas.streams.catalog.ServiceConfiguration;
+import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
+import com.hortonworks.iotas.streams.catalog.service.metadata.common.Tables;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -27,29 +18,25 @@ import org.slf4j.LoggerFactory;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.stream.Collectors;
 
 import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 
 @RunWith(JMockit.class)
 public class HBaseMetadataServiceTest {
     private static final Logger LOG = LoggerFactory.getLogger(HBaseMetadataServiceTest.class);
 
-    @Tested
-    private HBaseMetadataService hBaseMetadataService;
-    @Injectable
-    private Admin hBaseAdmin;
+    private HBaseMetadataService hbaseService;
+
+    @Mocked
+    private StreamCatalogService catalogService;
+    @Mocked
+    private ServiceConfiguration serviceConfiguration;
 
     /*@Before
     public void setUp() throws Exception {
@@ -63,165 +50,36 @@ public class HBaseMetadataServiceTest {
                 ConnectionFactory.createConnection(HBaseConfiguration.create()).getAdmin());
     }*/
 
-    final class MyMock<T extends Configuration> extends MockUp<OverrideHadoopConfiguration> {
-        T config;
+    class ServiceConfigurationMockUp extends MockUp<ServiceConfiguration> {
 
-        public MyMock() {
-        }
-
-        public MyMock(T config) {
-            log("Created MyMock");
-            this.config = config;
-        }
-
-        /*public static <K extends Configuration> MyMock<K> newInstance() throws Exception {
-            final HBaseConfigurationTest config = new HBaseConfigurationTest(HBaseConfiguration.create());
-            overrideProps(config);
-            return new MyMock<K>((K) config);
-        }*/
-
-        private void overrideProps(HBaseConfigurationTest config) throws Exception {
-//            log("newInstance Before: " + config.getProps());
-            final List<Map<String, String>> newProps = getHbaseSiteXmlProps();
-            for (Map<String, String> newProp : newProps) {
-                assert config.getProps() != null;
-                if (newProp != null) {
-                    String name = newProp.get("name");
-                    String value = newProp.get("value");
-                    if (name != null && value != null) {
-                        config.getProps().put(name, value);
-                        log(String.format("Set Property (%s,%s)", name, value));
-                    } else {
-                        log(String.format("NULL property (%s,%s)", name, value));
-                    }
-                }
-            }
-//            log("newInstance After: " + config.getProps());
-        }
-
-        private List<Map<String, String>> getHbaseSiteXmlProps() throws Exception {
-            final ObjectMapper mapper = new XmlMapper();
-            List<Map<String, String>> props = mapper.readValue(getHbaseSiteXmlFileInputStream(), new TypeReference<List<Map<String, String>>>() { });
-            LOG.debug("hbase-site props: {}", props);
-            return  props;
-        }
-
-        private FileInputStream getHbaseSiteXmlFileInputStream() throws FileNotFoundException {
-            final String filePath = "/Users/hlouro/Hortonworks/Tasks/IoTaS/ClusterMetadata/ConfigFiles/hbase-site.xml";
-            return new FileInputStream(filePath);
-        }
-
-
-        @Mock T override(T configuration, StreamCatalogService catalogService,
-                         ServiceConfigurations service, Long clusterId, String configurationName) {
-            
-            final HBaseConfigurationTest testConfig = new HBaseConfigurationTest(configuration);
-            
-            log("override Before: " + testConfig.getProps());
-
-            try {
-                overrideProps(testConfig);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
-            log("override After: " + testConfig.getProps());
-            return (T) testConfig;
-//            return configuration;
-        }
-
-        void log(String msg, String... args) {
-            System.out.println(Thread.currentThread().getName() + " - " + Integer.toHexString(System.identityHashCode(this)) + " - " + String.format(msg, args));
-        }
-    }
-
-
-
-
-    final class ConnFactoryMock extends MockUp<ConnectionFactory> {
-        @Mock Connection createConnection(Configuration conf) throws IOException {
-            return null;
-        }
-    }
-
-    private static class HBaseConfigurationTest extends HBaseConfiguration {
-
-        public HBaseConfigurationTest(Configuration c) {
-            super(c);
-        }
-
-        @Override
-        public synchronized Properties getProps() {
-            return super.getProps();
+        Map<String, String> getConfigurationMap() throws IOException {
+            return getHBaseConfiProps();
         }
     }
 
 
     @Test
-    public void testMock(@Mocked StreamCatalogService catalogService) throws Exception {
-//        new ConnFactoryMock();
-//        MyMock.<HBaseConfigurationTest>newInstance();
-        new MyMock<HBaseConfigurationTest>();
-//        OverrideHadoopConfiguration.override(null, null, null, null, null);   // does not work
-        HBaseMetadataService.newInstance(catalogService, 1L);
-    }
-
-    @Test
-    public void testMock1(@Mocked final StreamCatalogService catalogService,
-                          @Mocked OverrideHadoopConfiguration overrideHadoopConfiguration) throws Exception {
-
-        final HBaseConfigurationTest configurationTest = getConfigurationTest();
-        new Expectations() {{
-            OverrideHadoopConfiguration.override((Configuration) any, catalogService, ServiceConfigurations.HBASE, 123L, "hbase-site");
-            result = configurationTest;
-        }};
-
-        HBaseMetadataService.newInstance(configurationTest, catalogService, 1L);
-    }
-
-    @Test
-    public void testMock2(@Mocked final StreamCatalogService catalogService,
-                          @Mocked ServiceConfiguration serviceConfiguration/*,
-                          @Mocked OverrideHadoopConfiguration overrideHadoopConfiguration*/) throws Exception {
+    public void testMock2(/*@Mocked final StreamCatalogService catalogService, @Mocked ServiceConfiguration serviceConfiguration*/) throws Exception {
 
         new Expectations() {{
             serviceConfiguration.getConfigurationMap(); result = getHBaseConfiProps();
         }};
 
-        HBaseMetadataService service = HBaseMetadataService.newInstance(catalogService, 1L);
-        System.out.println("Namespaces: " + service.getHBaseNamespaces().getNamespaces());
-    }
+//        new ServiceConfigurationMockUp();
 
-    private HBaseConfigurationTest getConfigurationTest() throws Exception {
-        HBaseConfigurationTest config = new HBaseConfigurationTest(HBaseConfiguration.create());
-        overrideProps1(config);
-        return config;
-    }
+        /*HBaseMetadataService*/ hbaseService = HBaseMetadataService.newInstance(catalogService, 1L);
 
-    private void overrideProps1(HBaseConfigurationTest config) throws Exception {
-//            log("newInstance Before: " + config.getProps());
-        final List<Map<String, String>> newProps = getHbaseSiteXmlProps();
-        for (Map<String, String> newProp : newProps) {
-            assert config.getProps() != null;
-            if (newProp != null) {
-                String name = newProp.get("name");
-                String value = newProp.get("value");
-                if (name != null && value != null) {
-                    config.getProps().put(name, value);
-                    log1(String.format("Set Property (%s,%s)", name, value));
-                } else {
-                    log1(String.format("NULL property (%s,%s)", name, value));
-                }
-            }
-        }
-//            log("newInstance After: " + config.getProps());
-    }
+        final String namespace = "test_namespace";
+        hbaseService.createNamespace(namespace);
 
-    private List<Map<String, String>> getHbaseSiteXmlProps1() throws Exception {
-        final ObjectMapper mapper = new XmlMapper();
-        List<Map<String, String>> props = mapper.readValue(getHbaseSiteXmlFileInputStream(), new TypeReference<List<Map<String, String>>>() { });
-        LOG.debug("hbase-site props: {}", props);
-        return  props;
+        hbaseService.createTable(namespace, "test_table_1", "family");
+        hbaseService.createTable(namespace, "test_table_2", "family");
+        hbaseService.createTable(namespace, "test_table_3", "family");
+
+        hbaseService.deleteNamespace(namespace);
+
+        System.out.println("Namespaces: " + hbaseService.getHBaseNamespaces().getNamespaces());
+//        System.out.println("Namespaces: " + hBaseMetadataService.getHBaseNamespaces().getNamespaces());
     }
 
     private FileInputStream getHbaseSiteXmlFileInputStream1() throws FileNotFoundException {
@@ -233,54 +91,98 @@ public class HBaseMetadataServiceTest {
         System.out.println(Thread.currentThread().getName() + " - " + Integer.toHexString(System.identityHashCode(this)) + " - " + String.format(msg, args));
     }
 
+    final static String HBASE_TEST_NAMESPACE = "test_namespace";
+    final static List<String> HBASE_TEST_TABLES = ImmutableList.copyOf(new String[]{"test_table_1", "test_table_2"});
+    final static String HBASE_TEST_TABLE_FAMILY = "test_table_family";
+
     // ===
+
+
+
 
     @Test
     public void getHBaseTables() throws Exception {
-        Tables hBaseTables = hBaseMetadataService.getHBaseTables();
-        System.out.println("Stop");
+        try {
+            setUp();
+            Tables hBaseTables = hbaseService.getHBaseTables();
+            System.out.println("Stop");
+        } finally {
+            tearDown();
+        }
+    }
+
+    private void setUp() throws Exception {
+        new Expectations() {{
+            serviceConfiguration.getConfigurationMap(); result = getHBaseConfiProps();
+        }};
+
+        hbaseService = HBaseMetadataService.newInstance(catalogService, 1L);
+
+        hbaseService.createNamespace(HBASE_TEST_NAMESPACE);
+
+        for (String table : HBASE_TEST_TABLES) {
+            hbaseService.createTable(HBASE_TEST_NAMESPACE, table, HBASE_TEST_TABLE_FAMILY);
+        }
+    }
+
+    private void tearDown() throws Exception {
+        for (String table : HBASE_TEST_TABLES) {
+            hbaseService.disableTable(HBASE_TEST_NAMESPACE, table);
+            hbaseService.deleteTable(HBASE_TEST_NAMESPACE, table);
+        }
+
+        hbaseService.deleteNamespace(HBASE_TEST_NAMESPACE);
     }
 
     @Test
-    public void getHBaseTablesForNamespace() throws Exception {
-        Tables hBaseTables = hBaseMetadataService.getHBaseTables("ns1");
-        System.out.println("Stop");
+    public void callteardown() throws Exception {
+        new Expectations() {{
+            serviceConfiguration.getConfigurationMap(); result = getHBaseConfiProps();
+        }};
+
+        hbaseService = HBaseMetadataService.newInstance(catalogService, 1L);
+        tearDown();
+    }
+
+    /*
+        Calling all the tests in one method because table creation during setup is quite expensive and needs to be done in the scope
+        of the test because it depends on recorded expectations, which abstract lots of initialization.
+     */
+    @Test
+    public void test_all() throws Exception {
+        setUp();
+        try {
+            test_getHBaseTablesForNamespace();
+            test_getHBaseNamespaces();
+        } finally {
+            tearDown();
+        }
+
     }
 
     @Test
-    public void getHBaseNamespaces() throws Exception {
-        HBaseMetadataService.Namespaces hBaseNamespaces = hBaseMetadataService.getHBaseNamespaces();
-        System.out.println("Stop");
+    public void test_getHBaseTables() throws Exception {
+        Tables hBaseTables = hbaseService.getHBaseTables(HBASE_TEST_NAMESPACE);
+        Assert.assertEquals(HBASE_TEST_TABLES.stream().map(p -> HBASE_TEST_NAMESPACE + ":" + p).collect(Collectors.toList()),
+                hBaseTables.getTables().stream().sorted(String::compareTo).collect(Collectors.toList()));
     }
 
     @Test
-    public void testgetHbaseSiteXmlProps() throws Exception {
-        getHbaseSiteXmlProps();
+    public void test_getHBaseTablesForNamespace() throws Exception {
+        Tables hBaseTables = hbaseService.getHBaseTables(HBASE_TEST_NAMESPACE);
+        Assert.assertEquals(HBASE_TEST_TABLES.stream().map(p -> HBASE_TEST_NAMESPACE + ":" + p).collect(Collectors.toList()),
+                            hBaseTables.getTables().stream().sorted(String::compareTo).collect(Collectors.toList()));
     }
 
-    public Map<String, String> getHBaseConfiProps() throws IOException {
+    @Test
+    public void test_getHBaseNamespaces() throws Exception {
+        final HBaseMetadataService.Namespaces hBaseNamespaces = hbaseService.getHBaseNamespaces();
+        Assert.assertTrue(hBaseNamespaces.getNamespaces().contains(HBASE_TEST_NAMESPACE));
+    }
+
+    public static Map<String, String> getHBaseConfiProps() throws IOException {
         final String path = "/Users/hlouro/Hortonworks/Dev/GitHub/hmcl/Streams/streams/catalog/src/test/java/com/hortonworks/iotas/streams/catalog/service/metadata/hbase-config-map.json";
         Map<String, String> config = new ObjectMapper().readValue(new FileInputStream(path), new TypeReference<Map<String, String>>() { });
         return config;
-    }
-
-    public List<Map<String, String>> getHbaseSiteXmlProps() throws Exception {
-        final ObjectMapper mapper = new XmlMapper();
-        List<Map<String, String>> props = mapper.readValue(getHbaseSiteXmlFileInputStream(), new TypeReference<List<Map<String, String>>>() { });
-        LOG.debug("hbase-site props: {}", props);
-        System.out.printf("hbase-site props: %s", props);
-        return  props;
-    }
-
-    @Test
-    public void readHBaseSite() throws Exception {
-        ObjectMapper mapper = new XmlMapper();
-        JsonNode jsonTree = mapper.readTree(getHbaseSiteXmlFileInputStream());
-        System.out.println(jsonTree.asText());
-    }
-
-    private FileInputStream getHbaseSiteXmlFileInputStream() throws FileNotFoundException {
-        final String filePath = "/Users/hlouro/Hortonworks/Tasks/IoTaS/ClusterMetadata/ConfigFiles/hbase-site.xml";
-        return new FileInputStream(filePath);
     }
 }
