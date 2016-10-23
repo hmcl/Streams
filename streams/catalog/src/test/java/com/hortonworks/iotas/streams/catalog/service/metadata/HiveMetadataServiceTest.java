@@ -30,7 +30,7 @@ import mockit.integration.junit4.JMockit;
 
 @RunWith(JMockit.class)
 public class HiveMetadataServiceTest {
-    private static final List<String> HIVE_TEST_DATABASES = ImmutableList.copyOf(new String[]{"test_database_1"/*, "test_database_2"*/});
+    private static final List<String> HIVE_TEST_DATABASES = ImmutableList.copyOf(new String[]{"test_database_1", "test_database_2"});
     private static final List<String> HIVE_TEST_TABLES = ImmutableList.copyOf(new String[]{"test_table_1", "test_table_2"});
     private static final String HIVE_SITE_CONFIG = "metadata/hivemetastore-site.json";
 
@@ -63,16 +63,6 @@ public class HiveMetadataServiceTest {
                 1, new SerDeInfo(), Lists.newArrayList("col1"), Lists.newArrayList(new Order("col1", 1)), new HashMap<>());
     }
 
-    /*@Test
-    public void td() throws Exception {
-        new Expectations() {{
-            serviceConfiguration.getConfigurationMap(); result = getHiveSiteConfig();
-        }};
-
-        hiveService = HiveMetadataService.newInstance(catalogService, 1L);
-        tearDown();
-    }*/
-
     private void tearDown() throws Exception {
         for (String database : HIVE_TEST_DATABASES) {
             for (String table : HIVE_TEST_TABLES) {
@@ -99,9 +89,11 @@ public class HiveMetadataServiceTest {
     }
 
     private void test_getHiveTablesForDatabase() throws Exception {
-        final Tables hiveTables = hiveService.getHiveTables(HIVE_TEST_DATABASES.get(0));
-        Assert.assertEquals(HIVE_TEST_TABLES,
-                            hiveTables.getTables().stream().sorted(String::compareTo).collect(Collectors.toList()));
+        for (String db : HIVE_TEST_DATABASES) {
+            final Tables hiveTables = hiveService.getHiveTables(db);
+            Assert.assertEquals(HIVE_TEST_TABLES,
+                                hiveTables.getTables().stream().sorted(String::compareTo).collect(Collectors.toList()));
+        }
     }
 
     private void test_getHiveDatabases() throws Exception {

@@ -28,7 +28,6 @@ import static javax.ws.rs.core.Response.Status.OK;
 @Path("/api/v1/catalog")
 @Produces(MediaType.APPLICATION_JSON)
 public class HiveMetadataResource {
-    private static final Logger LOG = LoggerFactory.getLogger(HiveMetadataResource.class);
     private final StreamCatalogService catalogService;
 
     public HiveMetadataResource(StreamCatalogService catalogService) {
@@ -50,8 +49,7 @@ public class HiveMetadataResource {
     @Path("/clusters/{clusterId}/services/hive/databases")
     @Timed
     public Response getDatabasesByClusterId(@PathParam("clusterId") Long clusterId) {
-        try {
-            HiveMetadataService hiveMetadataService = HiveMetadataService.newInstance(catalogService, clusterId);
+        try(final HiveMetadataService hiveMetadataService = HiveMetadataService.newInstance(catalogService, clusterId)) {
             return WSUtils.respond(hiveMetadataService.getHiveDatabases(), OK, SUCCESS);
         } catch (EntityNotFoundException ex) {
             return WSUtils.respond(NOT_FOUND, ENTITY_NOT_FOUND, ex.getMessage());
@@ -75,8 +73,7 @@ public class HiveMetadataResource {
     @Path("/clusters/{clusterId}/services/hive/databases/{dbName}/tables")
     @Timed
     public Response getDatabaseTablesByClusterId(@PathParam("clusterId") Long clusterId, @PathParam("dbName") String dbName) {
-        try {
-            HiveMetadataService hiveMetadataService = HiveMetadataService.newInstance(catalogService, clusterId);
+        try(final HiveMetadataService hiveMetadataService = HiveMetadataService.newInstance(catalogService, clusterId)) {
             return WSUtils.respond(hiveMetadataService.getHiveTables(dbName), OK, SUCCESS);
         } catch (EntityNotFoundException ex) {
             return WSUtils.respond(NOT_FOUND, ENTITY_NOT_FOUND, ex.getMessage());
