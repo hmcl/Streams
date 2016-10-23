@@ -34,12 +34,22 @@ public class HBaseMetadataService implements AutoCloseable {
         this.hBaseAdmin = hBaseAdmin;
     }
 
+    /**
+     * Creates a new instance of {@link HBaseMetadataService} which delegates to {@link Admin} instantiated with default
+     * {@link HBaseConfiguration} and {@code hbase-site.xml} config related properties overridden with the
+     * values set in the hbase-site config serialized in "streams json"
+     */
     public static HBaseMetadataService newInstance(StreamCatalogService catalogService, Long clusterId)
             throws IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {
 
         return newInstance(HBaseConfiguration.create(), catalogService, clusterId);
     }
 
+    /**
+     * Creates a new instance of {@link HBaseMetadataService} which delegates to {@link Admin} instantiated  with the provided
+     * {@link HBaseConfiguration} and {@code hbase-site.xml} config related properties overridden with the values set
+     * in the hbase-site config serialized in "streams json"
+     */
     public static HBaseMetadataService newInstance(Configuration hbaseConfig, StreamCatalogService catalogService, Long clusterId)
             throws IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {
 

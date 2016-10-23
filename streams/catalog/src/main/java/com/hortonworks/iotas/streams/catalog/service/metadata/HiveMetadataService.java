@@ -45,9 +45,9 @@ public class HiveMetadataService implements AutoCloseable {
     }
 
     /**
-     * Creates a new instance of {@link HiveMetadataService} which delegates to {@link HiveMetaStoreClient} with base default
-     * {@link HiveConf} and {@code hive-site.xml} config related properties overridden with the values set
-     * in the hive metastore hive-site config serialized in "streams services json"
+     * Creates a new instance of {@link HiveMetadataService} which delegates to {@link HiveMetaStoreClient} instantiated with
+     * default {@link HiveConf} and {@code hivemetastore-site.xml} config related properties overridden with the
+     * values set in the hivemetastore-site config serialized in "streams json"
      */
     public static HiveMetadataService newInstance(StreamCatalogService catalogService, Long clusterId)
             throws MetaException, IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {
@@ -56,9 +56,9 @@ public class HiveMetadataService implements AutoCloseable {
 
 
     /**
-     * Creates a new instance of {@link HiveMetadataService} which delegates to {@link HiveMetaStoreClient} the provided
-     * {@link HiveConf} as base config, and {@code hive-site.xml} config related properties overridden with the values set
-     * in the hive metastore hive-site config serialized in "streams services json"
+     * Creates a new instance of {@link HiveMetadataService} which delegates to {@link HiveMetaStoreClient} instantiated with
+     * the provided {@link HiveConf} and {@code hivemetastore-site.xml} config related properties overridden with the
+     * values set in the hivemetastore-site config serialized in "streams json"
      */
     public static HiveMetadataService newInstance(HiveConf hiveConf, StreamCatalogService catalogService, Long clusterId)
             throws MetaException, IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {
