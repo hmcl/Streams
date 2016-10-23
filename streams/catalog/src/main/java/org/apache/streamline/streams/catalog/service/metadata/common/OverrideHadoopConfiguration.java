@@ -1,12 +1,12 @@
-package com.hortonworks.iotas.streams.catalog.service.metadata.common;
+package org.apache.streamline.streams.catalog.service.metadata.common;
 
-import com.hortonworks.iotas.streams.catalog.ServiceConfiguration;
-import com.hortonworks.iotas.streams.catalog.exception.ServiceConfigurationNotFoundException;
-import com.hortonworks.iotas.streams.catalog.exception.ServiceNotFoundException;
-import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
+import org.apache.streamline.streams.catalog.ServiceConfiguration;
+import org.apache.streamline.streams.catalog.exception.ServiceConfigurationNotFoundException;
+import org.apache.streamline.streams.catalog.exception.ServiceNotFoundException;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.streamline.streams.catalog.service.StreamCatalogService;
+import org.apache.streamline.streams.cluster.discovery.ambari.ServiceConfigurations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ public class OverrideHadoopConfiguration {
     private static final Logger LOG = LoggerFactory.getLogger(OverrideHadoopConfiguration.class);
 
     public static <T extends Configuration> T override(T configuration, StreamCatalogService catalogService,
-            ServiceConfigurations service, Long clusterId, String configurationName)
+                                                       ServiceConfigurations service, Long clusterId, String configurationName)
                 throws IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {
 
         final ServiceConfiguration serviceConfig = catalogService.getServiceConfigurationByName(

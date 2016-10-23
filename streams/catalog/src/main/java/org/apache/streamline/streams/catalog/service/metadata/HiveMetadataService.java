@@ -1,12 +1,6 @@
-package com.hortonworks.iotas.streams.catalog.service.metadata;
+package org.apache.streamline.streams.catalog.service.metadata;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.hortonworks.iotas.streams.catalog.exception.ServiceConfigurationNotFoundException;
-import com.hortonworks.iotas.streams.catalog.exception.ServiceNotFoundException;
-import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import com.hortonworks.iotas.streams.catalog.service.metadata.common.OverrideHadoopConfiguration;
-import com.hortonworks.iotas.streams.catalog.service.metadata.common.Tables;
-import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
 
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
@@ -15,6 +9,12 @@ import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.apache.hadoop.hive.metastore.api.Table;
+import org.apache.streamline.streams.catalog.exception.ServiceConfigurationNotFoundException;
+import org.apache.streamline.streams.catalog.exception.ServiceNotFoundException;
+import org.apache.streamline.streams.catalog.service.StreamCatalogService;
+import org.apache.streamline.streams.catalog.service.metadata.common.OverrideHadoopConfiguration;
+import org.apache.streamline.streams.catalog.service.metadata.common.Tables;
+import org.apache.streamline.streams.cluster.discovery.ambari.ServiceConfigurations;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

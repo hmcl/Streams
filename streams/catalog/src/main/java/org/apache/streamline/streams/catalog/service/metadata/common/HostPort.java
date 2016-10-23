@@ -1,4 +1,4 @@
-package com.hortonworks.iotas.streams.catalog.service.metadata.common;
+package org.apache.streamline.streams.catalog.service.metadata.common;
 
 public class HostPort {
     private final String host;

@@ -1,7 +1,8 @@
-package com.hortonworks.iotas.streams.catalog.exception;
+package org.apache.streamline.streams.catalog.exception;
 
-import com.hortonworks.iotas.streams.cluster.discovery.ambari.ComponentPropertyPattern;
-import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
+
+import org.apache.streamline.streams.cluster.discovery.ambari.ComponentPropertyPattern;
+import org.apache.streamline.streams.cluster.discovery.ambari.ServiceConfigurations;
 
 public class ServiceComponentNotFoundException extends EntityNotFoundException {
     public ServiceComponentNotFoundException(String message) {

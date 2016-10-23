@@ -1,11 +1,5 @@
-package com.hortonworks.iotas.streams.catalog.service.metadata;
+package org.apache.streamline.streams.catalog.service.metadata;
 
-import com.hortonworks.iotas.streams.catalog.exception.ServiceConfigurationNotFoundException;
-import com.hortonworks.iotas.streams.catalog.exception.ServiceNotFoundException;
-import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import com.hortonworks.iotas.streams.catalog.service.metadata.common.OverrideHadoopConfiguration;
-import com.hortonworks.iotas.streams.catalog.service.metadata.common.Tables;
-import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -16,6 +10,12 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.streamline.streams.catalog.exception.ServiceConfigurationNotFoundException;
+import org.apache.streamline.streams.catalog.exception.ServiceNotFoundException;
+import org.apache.streamline.streams.catalog.service.StreamCatalogService;
+import org.apache.streamline.streams.catalog.service.metadata.common.OverrideHadoopConfiguration;
+import org.apache.streamline.streams.catalog.service.metadata.common.Tables;
+import org.apache.streamline.streams.cluster.discovery.ambari.ServiceConfigurations;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,9 +35,9 @@ public class HBaseMetadataService implements AutoCloseable {
     }
 
     /**
-     * Creates a new instance of {@link HBaseMetadataService} which delegates to {@link Admin} instantiated with default
-     * {@link HBaseConfiguration} and {@code hbase-site.xml} config related properties overridden with the
-     * values set in the hbase-site config serialized in "streams json"
+     * Creates a new instance of {@link HBaseMetadataService} which delegates to {@link Admin} instantiated with default {@link
+     * HBaseConfiguration} and {@code hbase-site.xml} config related properties overridden with the values set in the hbase-site
+     * config serialized in "streams json"
      */
     public static HBaseMetadataService newInstance(StreamCatalogService catalogService, Long clusterId)
             throws IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {
@@ -47,8 +47,8 @@ public class HBaseMetadataService implements AutoCloseable {
 
     /**
      * Creates a new instance of {@link HBaseMetadataService} which delegates to {@link Admin} instantiated  with the provided
-     * {@link HBaseConfiguration} and {@code hbase-site.xml} config related properties overridden with the values set
-     * in the hbase-site config serialized in "streams json"
+     * {@link HBaseConfiguration} and {@code hbase-site.xml} config related properties overridden with the values set in the
+     * hbase-site config serialized in "streams json"
      */
     public static HBaseMetadataService newInstance(Configuration hbaseConfig, StreamCatalogService catalogService, Long clusterId)
             throws IOException, ServiceConfigurationNotFoundException, ServiceNotFoundException {

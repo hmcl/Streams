@@ -7,12 +7,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hortonworks.iotas.streams.catalog.ServiceConfiguration;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import com.hortonworks.iotas.streams.catalog.service.metadata.common.Tables;
+import org.apache.streamline.streams.catalog.service.metadata.common.Tables;
 
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.Order;
 import org.apache.hadoop.hive.metastore.api.SerDeInfo;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
+import org.apache.streamline.streams.catalog.service.metadata.HiveMetadataService;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

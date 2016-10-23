@@ -1,29 +1,24 @@
 package com.hortonworks.iotas.streams.catalog.service.metadata.common;
 
-import com.google.common.collect.Maps;
-
 import com.hortonworks.iotas.streams.catalog.ServiceConfiguration;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
 import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.streamline.streams.catalog.service.metadata.common.OverrideHadoopConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import mockit.Expectations;
-import mockit.Injectable;
-import mockit.MockUp;
 import mockit.Mocked;
-import mockit.StrictExpectations;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 

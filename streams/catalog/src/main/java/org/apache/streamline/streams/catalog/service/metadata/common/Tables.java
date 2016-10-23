@@ -1,6 +1,4 @@
-package com.hortonworks.iotas.streams.catalog.service.metadata.common;
-
-import com.hortonworks.iotas.streams.catalog.service.metadata.HBaseMetadataService;
+package org.apache.streamline.streams.catalog.service.metadata.common;
 
 import org.apache.hadoop.hbase.TableName;
 

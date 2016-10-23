@@ -1,4 +1,4 @@
-package com.hortonworks.iotas.streams.catalog.exception;
+package org.apache.streamline.streams.catalog.exception;
 
 
 /**

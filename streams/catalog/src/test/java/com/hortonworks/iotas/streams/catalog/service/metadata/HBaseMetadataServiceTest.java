@@ -6,8 +6,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hortonworks.iotas.streams.catalog.ServiceConfiguration;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import com.hortonworks.iotas.streams.catalog.service.metadata.common.Tables;
+import org.apache.streamline.streams.catalog.service.metadata.common.Tables;
 
+import org.apache.streamline.streams.catalog.service.metadata.HBaseMetadataService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

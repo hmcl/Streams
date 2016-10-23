@@ -1,4 +1,4 @@
-package com.hortonworks.iotas.streams.catalog;
+package org.apache.streamline.streams.catalog;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;

@@ -1,14 +1,14 @@
-package com.hortonworks.iotas.streams.catalog.service.metadata;
+package org.apache.streamline.streams.catalog.service.metadata;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.hortonworks.iotas.streams.catalog.Component;
-import com.hortonworks.iotas.streams.catalog.exception.ServiceComponentNotFoundException;
-import com.hortonworks.iotas.streams.catalog.exception.ServiceNotFoundException;
-import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import com.hortonworks.iotas.streams.catalog.service.metadata.common.HostPort;
-import com.hortonworks.iotas.streams.cluster.discovery.ambari.ComponentPropertyPattern;
-import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
 
+import org.apache.streamline.streams.catalog.Component;
+import org.apache.streamline.streams.catalog.exception.ServiceComponentNotFoundException;
+import org.apache.streamline.streams.catalog.exception.ServiceNotFoundException;
+import org.apache.streamline.streams.catalog.service.StreamCatalogService;
+import org.apache.streamline.streams.catalog.service.metadata.common.HostPort;
+import org.apache.streamline.streams.cluster.discovery.ambari.ComponentPropertyPattern;
+import org.apache.streamline.streams.cluster.discovery.ambari.ServiceConfigurations;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 

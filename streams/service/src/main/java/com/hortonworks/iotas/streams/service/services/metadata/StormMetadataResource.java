@@ -3,11 +3,9 @@ package com.hortonworks.iotas.streams.service.services.metadata;
 import com.codahale.metrics.annotation.Timed;
 import com.hortonworks.iotas.common.util.WSUtils;
 import com.hortonworks.iotas.streams.catalog.Cluster;
-import com.hortonworks.iotas.streams.catalog.exception.EntityNotFoundException;
+import org.apache.streamline.streams.catalog.exception.EntityNotFoundException;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import com.hortonworks.iotas.streams.catalog.service.metadata.StormMetadataService;
-
-import java.util.List;
+import org.apache.streamline.streams.catalog.service.metadata.StormMetadataService;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
