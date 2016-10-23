@@ -81,9 +81,9 @@ public class HBaseMetadataService implements AutoCloseable {
     }
 
     /*
-        Create and delete methods useful for integration tests. Left as package protected for now.
+        Create and delete methods useful for system tests. Left as package protected for now.
         These methods can be made public and exposed in REST API.
-        */
+    */
     void createNamespace(String namespace) throws IOException {
         hBaseAdmin.createNamespace(NamespaceDescriptor.create(namespace).build());
     }

@@ -58,6 +58,7 @@ public class HBaseMetadataServiceTest {
             }
             hbaseService.deleteNamespace(namespace);
         }
+        hbaseService.close();
     }
 
     /*
@@ -68,9 +69,9 @@ public class HBaseMetadataServiceTest {
     public void test_getNamespace_getTables() throws Exception {
         setUp();
         try {
+            test_getHBaseNamespaces();
             test_getHBaseTables();
             test_getHBaseTablesForNamespace();
-            test_getHBaseNamespaces();
         } finally {
             tearDown();
         }
