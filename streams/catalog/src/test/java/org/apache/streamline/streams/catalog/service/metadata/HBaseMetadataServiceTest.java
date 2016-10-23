@@ -1,14 +1,13 @@
-package com.hortonworks.iotas.streams.catalog.service.metadata;
+package org.apache.streamline.streams.catalog.service.metadata;
 
 import com.google.common.collect.ImmutableList;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hortonworks.iotas.streams.catalog.ServiceConfiguration;
-import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import org.apache.streamline.streams.catalog.service.metadata.common.Tables;
 
-import org.apache.streamline.streams.catalog.service.metadata.HBaseMetadataService;
+import org.apache.streamline.streams.catalog.ServiceConfiguration;
+import org.apache.streamline.streams.catalog.service.StreamCatalogService;
+import org.apache.streamline.streams.catalog.service.metadata.common.Tables;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +37,8 @@ public class HBaseMetadataServiceTest {
 
     private void setUp() throws Exception {
         new Expectations() {{
-            serviceConfiguration.getConfigurationMap(); result = getHBaseSiteConfig();
+            serviceConfiguration.getConfigurationMap();
+            result = getHBaseSiteConfig();
         }};
 
         hbaseService = HBaseMetadataService.newInstance(catalogService, 1L);
@@ -82,17 +82,17 @@ public class HBaseMetadataServiceTest {
         final Tables hBaseTables = hbaseService.getHBaseTables();
         Assert.assertTrue(
                 hBaseTables.getTables().stream().sorted(String::compareTo).collect(Collectors.toList())
-                .containsAll(HBASE_TEST_NAMESPACES.stream()
+                        .containsAll(HBASE_TEST_NAMESPACES.stream()
                                 .flatMap(ns -> HBASE_TEST_TABLES.stream().map(st -> ns + ":" + st))
                                 .collect(Collectors.toList())
-                )
+                        )
         );
     }
 
     private void test_getHBaseTablesForNamespace() throws Exception {
         final Tables hBaseTables = hbaseService.getHBaseTables(HBASE_TEST_NAMESPACES.get(0));
         Assert.assertEquals(HBASE_TEST_TABLES.stream().map(p -> HBASE_TEST_NAMESPACES.get(0) + ":" + p).collect(Collectors.toList()),
-                            hBaseTables.getTables().stream().sorted(String::compareTo).collect(Collectors.toList()));
+                hBaseTables.getTables().stream().sorted(String::compareTo).collect(Collectors.toList()));
     }
 
     private void test_getHBaseNamespaces() throws Exception {
@@ -102,7 +102,8 @@ public class HBaseMetadataServiceTest {
 
     private Map<String, String> getHBaseSiteConfig() throws IOException {
         return new ObjectMapper().readValue(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(HBASE_SITE_CONFIG),
-                new TypeReference<Map<String, String>>() { });
+                        .getResourceAsStream(HBASE_SITE_CONFIG),
+                new TypeReference<Map<String, String>>() {
+                });
     }
 }

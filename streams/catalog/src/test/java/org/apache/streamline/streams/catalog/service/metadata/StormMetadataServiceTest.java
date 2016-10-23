@@ -1,4 +1,4 @@
-package com.hortonworks.iotas.streams.catalog.service.metadata;
+package org.apache.streamline.streams.catalog.service.metadata;
 
 import com.google.common.collect.Lists;
 

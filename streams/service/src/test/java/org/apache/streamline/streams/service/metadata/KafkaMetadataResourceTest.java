@@ -1,10 +1,10 @@
-package com.hortonworks.iotas.streams.service.services.metadata;
+package org.apache.streamline.streams.service.metadata;
 
-import com.hortonworks.iotas.common.util.FileStorage;
-import com.hortonworks.iotas.storage.StorageManager;
-import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import com.hortonworks.iotas.streams.layout.component.TopologyActions;
-import com.hortonworks.iotas.streams.metrics.topology.TopologyMetrics;
+import org.apache.streamline.common.util.FileStorage;
+import org.apache.streamline.storage.StorageManager;
+import org.apache.streamline.streams.catalog.service.StreamCatalogService;
+import org.apache.streamline.streams.layout.component.TopologyActions;
+import org.apache.streamline.streams.metrics.topology.TopologyMetrics;
 
 import org.junit.Before;
 import org.junit.Test;

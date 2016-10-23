@@ -1,19 +1,18 @@
-package com.hortonworks.iotas.streams.catalog.service.metadata;
+package org.apache.streamline.streams.catalog.service.metadata;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hortonworks.iotas.streams.catalog.ServiceConfiguration;
-import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import org.apache.streamline.streams.catalog.service.metadata.common.Tables;
 
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.Order;
 import org.apache.hadoop.hive.metastore.api.SerDeInfo;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
-import org.apache.streamline.streams.catalog.service.metadata.HiveMetadataService;
+import org.apache.streamline.streams.catalog.ServiceConfiguration;
+import org.apache.streamline.streams.catalog.service.StreamCatalogService;
+import org.apache.streamline.streams.catalog.service.metadata.common.Tables;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

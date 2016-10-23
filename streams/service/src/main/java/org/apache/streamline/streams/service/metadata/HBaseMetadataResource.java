@@ -1,12 +1,12 @@
-package com.hortonworks.iotas.streams.service.services.metadata;
+package org.apache.streamline.streams.service.metadata;
 
 import com.codahale.metrics.annotation.Timed;
-import com.hortonworks.iotas.common.util.WSUtils;
-import com.hortonworks.iotas.streams.catalog.Cluster;
-import org.apache.streamline.streams.catalog.exception.EntityNotFoundException;
-import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import org.apache.streamline.streams.catalog.service.metadata.HBaseMetadataService;
 
+import org.apache.streamline.common.util.WSUtils;
+import org.apache.streamline.streams.catalog.Cluster;
+import org.apache.streamline.streams.catalog.exception.EntityNotFoundException;
+import org.apache.streamline.streams.catalog.service.StreamCatalogService;
+import org.apache.streamline.streams.catalog.service.metadata.HBaseMetadataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,13 +17,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static com.hortonworks.iotas.common.catalog.CatalogResponse.ResponseMessage.ENTITY_BY_NAME_NOT_FOUND;
-import static com.hortonworks.iotas.common.catalog.CatalogResponse.ResponseMessage.ENTITY_NOT_FOUND;
-import static com.hortonworks.iotas.common.catalog.CatalogResponse.ResponseMessage.EXCEPTION;
-import static com.hortonworks.iotas.common.catalog.CatalogResponse.ResponseMessage.SUCCESS;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
+import static org.apache.streamline.common.catalog.CatalogResponse.ResponseMessage.ENTITY_BY_NAME_NOT_FOUND;
+import static org.apache.streamline.common.catalog.CatalogResponse.ResponseMessage.ENTITY_NOT_FOUND;
+import static org.apache.streamline.common.catalog.CatalogResponse.ResponseMessage.EXCEPTION;
+import static org.apache.streamline.common.catalog.CatalogResponse.ResponseMessage.SUCCESS;
 
 @Path("/api/v1/catalog")
 @Produces(MediaType.APPLICATION_JSON)

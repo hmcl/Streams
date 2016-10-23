@@ -1,12 +1,10 @@
-package com.hortonworks.iotas.streams.catalog.service.metadata.common;
-
-import com.hortonworks.iotas.streams.catalog.ServiceConfiguration;
-import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
-import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurations;
+package org.apache.streamline.streams.catalog.service.metadata.common;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.streamline.streams.catalog.service.metadata.common.OverrideHadoopConfiguration;
+import org.apache.streamline.streams.catalog.ServiceConfiguration;
+import org.apache.streamline.streams.catalog.service.StreamCatalogService;
+import org.apache.streamline.streams.cluster.discovery.ambari.ServiceConfigurations;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

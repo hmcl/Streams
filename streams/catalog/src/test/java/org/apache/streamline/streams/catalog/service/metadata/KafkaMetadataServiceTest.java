@@ -1,13 +1,12 @@
-package com.hortonworks.iotas.streams.catalog.service.metadata;
+package org.apache.streamline.streams.catalog.service.metadata;
 
 import com.google.common.collect.Lists;
 
 
 import org.apache.curator.test.TestingServer;
+import org.apache.streamline.streams.catalog.Component;
 import org.apache.streamline.streams.catalog.exception.ZookeeperClientException;
 import org.apache.streamline.streams.catalog.service.StreamCatalogService;
-import org.apache.streamline.streams.catalog.service.metadata.KafkaMetadataService;
-import org.apache.streamline.streams.catalog.service.metadata.ZookeeperClient;
 import org.apache.streamline.streams.catalog.service.metadata.common.HostPort;
 import org.junit.Assert;
 import org.junit.Test;

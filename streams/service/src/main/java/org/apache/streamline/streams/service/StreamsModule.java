@@ -23,10 +23,10 @@ import org.apache.streamline.streams.metrics.topology.TopologyMetrics;
 import org.apache.streamline.streams.notification.service.NotificationServiceImpl;
 import org.apache.streamline.streams.notification.service.NotificationsResource;
 import com.hortonworks.registries.schemaregistry.client.SchemaRegistryClient;
-import com.hortonworks.iotas.streams.service.services.metadata.HBaseMetadataResource;
-import com.hortonworks.iotas.streams.service.services.metadata.HiveMetadataResource;
-import com.hortonworks.iotas.streams.service.services.metadata.KafkaMetadataResource;
-import com.hortonworks.iotas.streams.service.services.metadata.StormMetadataResource;
+import org.apache.streamline.streams.service.metadata.HBaseMetadataResource;
+import org.apache.streamline.streams.service.metadata.HiveMetadataResource;
+import org.apache.streamline.streams.service.metadata.KafkaMetadataResource;
+import org.apache.streamline.streams.service.metadata.StormMetadataResource;
 
 import java.util.ArrayList;
 import java.util.Collections;
