@@ -14,6 +14,7 @@ import org.apache.hadoop.hive.metastore.api.Order;
 import org.apache.hadoop.hive.metastore.api.SerDeInfo;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -28,6 +29,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 
+@Ignore
 @RunWith(JMockit.class)
 public class HiveMetadataServiceTest {
     private static final List<String> HIVE_TEST_DATABASES = ImmutableList.copyOf(new String[]{"test_database_1", "test_database_2"});
