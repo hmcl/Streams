@@ -14,6 +14,7 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ import java.util.List;
 /**
  * Provides HBase databases tables metadata information using {@link org.apache.hadoop.hbase.client.HBaseAdmin}
  */
-public class HBaseMetadataService {
+public class HBaseMetadataService implements AutoCloseable {
     private static final String STREAMS_JSON_SCHEMA_CONFIG_HBASE_SITE = ServiceConfigurations.HBASE.getConfNames()[2];
 
     private Admin hBaseAdmin;
@@ -72,10 +73,17 @@ public class HBaseMetadataService {
         return Namespaces.newInstance(hBaseAdmin.listNamespaceDescriptors());
     }
 
+    @Override
+    public void close() throws Exception {
+        final Connection connection = hBaseAdmin.getConnection();
+        hBaseAdmin.close();
+        connection.close();
+    }
+
     /*
-    Create and delete methods useful for integration tests. Left as package protected for now.
-    These methods can be made public and exposed in REST API.
-    */
+        Create and delete methods useful for integration tests. Left as package protected for now.
+        These methods can be made public and exposed in REST API.
+        */
     void createNamespace(String namespace) throws IOException {
         hBaseAdmin.createNamespace(NamespaceDescriptor.create(namespace).build());
     }
