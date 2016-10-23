@@ -1,5 +1,6 @@
 package com.hortonworks.iotas.streams.catalog.service.metadata;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hortonworks.iotas.streams.catalog.exception.ServiceConfigurationNotFoundException;
 import com.hortonworks.iotas.streams.catalog.exception.ServiceNotFoundException;
 import com.hortonworks.iotas.streams.catalog.service.StreamCatalogService;
@@ -9,21 +10,26 @@ import com.hortonworks.iotas.streams.cluster.discovery.ambari.ServiceConfigurati
 
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
+import org.apache.hadoop.hive.metastore.api.Database;
+import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.MetaException;
+import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
+import org.apache.hadoop.hive.metastore.api.Table;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Provides Hive databases and database tables metadata information using {@link HiveMetaStoreClient}
  */
-public class HiveMetadataService {
+public class HiveMetadataService implements AutoCloseable {
     protected static final Logger LOG = LoggerFactory.getLogger(HiveMetadataService.class);
 
-    private static final String STREAMS_JSON_SCHEMA_SERVICE_HIVE = ServiceConfigurations.HIVE.name();
     private static final String STREAMS_JSON_SCHEMA_CONFIG_HIVE_METASTORE_SITE = ServiceConfigurations.HIVE.getConfNames()[3];
 
     private final HiveConf hiveConf;  // HiveConf used to create HiveMetaStoreClient. If this class is created with the 1 parameter constructor, it is set to null
@@ -74,6 +80,56 @@ public class HiveMetadataService {
         return Databases.newInstance(metaStoreClient.getAllDatabases());
     }
 
+    @Override
+    public void close() throws Exception {
+        metaStoreClient.close();
+    }
+
+    /*
+        Create and delete methods useful for system tests. Left as package protected for now.
+        These methods can be made public and exposed in REST API.
+    */
+
+    void createDatabase(String dbName, String description, String locationUri, Map<String, String> parameters) throws TException {
+        metaStoreClient.createDatabase(new Database(dbName,description, locationUri, parameters));
+    }
+
+    void dropDatabase(String dbName) throws TException {
+        metaStoreClient.dropDatabase(dbName);
+    }
+
+    void createTable(String tableName,
+                     String dbName,
+                     String owner,
+                     int createTime,
+                     int lastAccessTime,
+                     int retention,
+                     StorageDescriptor sd,
+                     List<FieldSchema> partitionKeys,
+                     Map<String,String> parameters,
+                     String viewOriginalText,
+                     String viewExpandedText,
+                     String tableType) throws TException {
+
+        metaStoreClient.createTable(new Table(
+                tableName,
+                dbName,
+                owner,
+                createTime,
+                lastAccessTime,
+                retention,
+                sd,
+                partitionKeys,
+                parameters,
+                viewOriginalText,
+                viewExpandedText,
+                tableType));
+    }
+
+    void dropTable(String dbName, String tableName) throws TException {
+        metaStoreClient.dropTable(dbName, tableName);
+    }
+
     /**
      * @return The instance of the {@link HiveMetaStoreClient} used to retrieve Hive databases and tables metadata
      */
@@ -104,7 +160,8 @@ public class HiveMetadataService {
             return databases == null ? new Databases(Collections.<String>emptyList()) : new Databases(databases);
         }
 
-        public List<String> getDatabases() {
+        @JsonProperty("databases")
+        public List<String> asList() {
             return databases;
         }
     }
