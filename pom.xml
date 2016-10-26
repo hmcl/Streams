@@ -59,6 +59,8 @@
         <redis.lettuce.version>3.4.2.Final</redis.lettuce.version>
         <firebase-client.version>1.0.7</firebase-client.version>
 
+        <!-- Test -->
+        <wiremock-standalone.version>2.0.9-beta</wiremock-standalone.version>
     </properties>
 
     <distributionManagement>
@@ -98,6 +100,12 @@
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
                 <artifactId>jackson-jaxrs-base</artifactId>
                 <version>${jackson.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.github.tomakehurst</groupId>
+                <artifactId>wiremock-standalone</artifactId>
+                <version>${wiremock-standalone.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -162,7 +170,6 @@
                 <artifactId>firebase-client</artifactId>
                 <version>${firebase-client.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.github.fge</groupId>
                 <artifactId>json-schema-validator</artifactId>
@@ -174,10 +181,8 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <dependency>
-                <groupId>com.github.tomakehurst</groupId>
-                <artifactId>wiremock-standalone</artifactId>
-            </dependency>
+
+
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
