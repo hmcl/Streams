@@ -92,6 +92,14 @@
                 <scope>provided</scope>
             </dependency>
 
+            <!-- Test -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-base</artifactId>
+                <version>${jackson.version}</version>
+                <scope>test</scope>
+            </dependency>
+
             <!-- Compile -->
             <dependency>
                 <groupId>biz.paluch.redis</groupId>
@@ -149,10 +157,7 @@
                 <version>${jackson.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-base</artifactId>
-            </dependency>
+
             <dependency>
                 <groupId>com.firebase</groupId>
                 <artifactId>firebase-client</artifactId>
