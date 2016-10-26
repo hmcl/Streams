@@ -13,7 +13,6 @@
 
     <properties>
         <storm.version>1.1.0-SNAPSHOT</storm.version>
-        <aws-java-sdk.version>1.10.77</aws-java-sdk.version>
     </properties>
 
     <dependencies>
@@ -191,8 +190,6 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
-            <version>${aws-java-sdk.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.storm</groupId>
