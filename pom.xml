@@ -57,6 +57,7 @@
         <aws-java-sdk.version>1.10.77</aws-java-sdk.version>
         <!--TODO currently using lettuce version 3 because version 4 depends on jdk8. Upgrade to version 4 when upgrading to jdk8 -->
         <redis.lettuce.version>3.4.2.Final</redis.lettuce.version>
+        <firebase-client.version>1.0.7</firebase-client.version>
 
     </properties>
 
@@ -156,12 +157,12 @@
                 <artifactId>jackson-dataformat-yaml</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
-
-
             <dependency>
                 <groupId>com.firebase</groupId>
                 <artifactId>firebase-client</artifactId>
+                <version>${firebase-client.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.github.fge</groupId>
                 <artifactId>json-schema-validator</artifactId>
