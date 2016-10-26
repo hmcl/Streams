@@ -139,7 +139,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-protobuf</artifactId>
-            <scope>compile</scope>
         </dependency>
         
 
