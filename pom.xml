@@ -68,11 +68,11 @@
     </properties>
 
     <distributionManagement>
-      <repository>
-        <id>${repoid}</id>
-        <name>${reponame}</name>
-        <url>${repourl}</url>
-      </repository>
+        <repository>
+            <id>${repoid}</id>
+            <name>${reponame}</name>
+            <url>${repourl}</url>
+        </repository>
     </distributionManagement>
 
     <dependencyManagement>
@@ -350,11 +350,38 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.hbase</groupId>
                 <artifactId>hbase-client</artifactId>
+                <version>${hbase.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.zookeeper</groupId>
+                        <artifactId>zookeeper</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.jersey</groupId>
+                        <artifactId>jersey-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.jersey</groupId>
+                        <artifactId>jersey-json</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.hadoop</groupId>
+                        <artifactId>hadoop-common</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.hive</groupId>
                 <artifactId>hive-exec</artifactId>
@@ -567,21 +594,6 @@
                 <version>${scalaVersion}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.hbase</groupId>
-                <artifactId>hbase-client</artifactId>
-                <version>${hbase.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-log4j12</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.zookeeper</groupId>
-                        <artifactId>zookeeper</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
                 <version>${jersey.version}</version>
@@ -642,99 +654,101 @@
     </repositories>
 
     <build>
-      <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-shade-plugin</artifactId>
-              <version>${maven-shade-plugin.version}</version>
-              <configuration>
-                <createDependencyReducedPom>true</createDependencyReducedPom>
-                <filters>
-                  <filter>
-                    <artifact>*:*</artifact>
-                    <excludes>
-                      <exclude>META-INF/*.SF</exclude>
-                      <exclude>META-INF/*.DSA</exclude>
-                      <exclude>META-INF/*.RSA</exclude>
-                    </excludes>
-                  </filter>
-                </filters>
-              </configuration>
-              <executions>
-                <execution>
-                  <phase>package</phase>
-                  <goals>
-                    <goal>shade</goal>
-                  </goals>
-                  <configuration>
-                    <transformers>
-                      <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                      <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                        <mainClass>org.apache.streamline.webservice.StreamlineApplication</mainClass>
-                      </transformer>
-                    </transformers>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-            <!-- Enforces compilation using JDK 1.7. By default Maven uses JDK 1.5 -->
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <configuration>
-                <source>1.8</source>
-                <target>1.8</target>
-              </configuration>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-jar-plugin</artifactId>
-              <version>${maven-jar-plugin.version}</version>
-              <configuration>
-                <archive>
-                  <manifest>
-                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                  </manifest>
-                </archive>
-              </configuration>
-            </plugin>
-            <!-- Test Plugins -->
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-surefire-plugin</artifactId>
-              <version>${maven-surefire.version}</version>
-                <configuration>
-                    <groups>${include.unit.test.groups}</groups>
-                    <excludedGroups>${exclude.unit.test.groups}</excludedGroups>
-                </configuration>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-surefire-report-plugin</artifactId>
-              <version>${maven-surefire.version}</version>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-failsafe-plugin</artifactId>
-              <version>${maven-surefire.version}</version>
-              <configuration>
-                <includes>
-                  <include>**/*.java</include>
-                </includes>
-                <groups>${include.integration.test.groups}</groups>
-                <excludedGroups>${exclude.integration.test.groups}</excludedGroups>
-              </configuration>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>integration-test</goal>
-                    <goal>verify</goal>
-                  </goals>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${maven-shade-plugin.version}</version>
+                    <configuration>
+                        <createDependencyReducedPom>true</createDependencyReducedPom>
+                        <filters>
+                            <filter>
+                                <artifact>*:*</artifact>
+                                <excludes>
+                                    <exclude>META-INF/*.SF</exclude>
+                                    <exclude>META-INF/*.DSA</exclude>
+                                    <exclude>META-INF/*.RSA</exclude>
+                                </excludes>
+                            </filter>
+                        </filters>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <transformers>
+                                    <transformer
+                                            implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                    <transformer
+                                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                        <mainClass>org.apache.streamline.webservice.StreamlineApplication</mainClass>
+                                    </transformer>
+                                </transformers>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- Enforces compilation using JDK 1.7. By default Maven uses JDK 1.5 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-plugin.version}</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <!-- Test Plugins -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire.version}</version>
+                    <configuration>
+                        <groups>${include.unit.test.groups}</groups>
+                        <excludedGroups>${exclude.unit.test.groups}</excludedGroups>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>${maven-surefire.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${maven-surefire.version}</version>
+                    <configuration>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
+                        <groups>${include.integration.test.groups}</groups>
+                        <excludedGroups>${exclude.integration.test.groups}</excludedGroups>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>integration-test</goal>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
         </pluginManagement>
     </build>
     <reporting>
@@ -747,38 +761,50 @@
     </reporting>
 
     <profiles>
-         <profile>
-           <id>dist</id>
-           <properties>
-             <exclude.unit.test.groups>org.apache.streamline.common.test.IntegrationTest,org.apache.streamline.common.test.HBaseIntegrationTest</exclude.unit.test.groups>
-             <include.unit.test.groups></include.unit.test.groups>
-             <exclude.integration.test.groups>org.apache.streamline.common.test.HBaseIntegrationTest</exclude.integration.test.groups>
-             <include.integration.test.groups>org.apache.streamline.common.test.IntegrationTest</include.integration.test.groups>
-           </properties>
-           <modules>
-             <module>streamline-dist</module>
-           </modules>
-         </profile>    
+        <profile>
+            <id>dist</id>
+            <properties>
+                <exclude.unit.test.groups>
+                    org.apache.streamline.common.test.IntegrationTest,org.apache.streamline.common.test.HBaseIntegrationTest
+                </exclude.unit.test.groups>
+                <include.unit.test.groups></include.unit.test.groups>
+                <exclude.integration.test.groups>org.apache.streamline.common.test.HBaseIntegrationTest
+                </exclude.integration.test.groups>
+                <include.integration.test.groups>org.apache.streamline.common.test.IntegrationTest
+                </include.integration.test.groups>
+            </properties>
+            <modules>
+                <module>streamline-dist</module>
+            </modules>
+        </profile>
         <profile>
             <id>dev-tests-basic</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <exclude.unit.test.groups>org.apache.streamline.common.test.IntegrationTest,org.apache.streamline.common.test.HBaseIntegrationTest</exclude.unit.test.groups>
+                <exclude.unit.test.groups>
+                    org.apache.streamline.common.test.IntegrationTest,org.apache.streamline.common.test.HBaseIntegrationTest
+                </exclude.unit.test.groups>
                 <include.unit.test.groups></include.unit.test.groups>
-                <exclude.integration.test.groups>org.apache.streamline.common.test.HBaseIntegrationTest</exclude.integration.test.groups>
-                <include.integration.test.groups>org.apache.streamline.common.test.IntegrationTest</include.integration.test.groups>
+                <exclude.integration.test.groups>org.apache.streamline.common.test.HBaseIntegrationTest
+                </exclude.integration.test.groups>
+                <include.integration.test.groups>org.apache.streamline.common.test.IntegrationTest
+                </include.integration.test.groups>
             </properties>
         </profile>
 
         <profile>
             <id>dev-tests-including-external-env</id>
             <properties>
-                <exclude.unit.test.groups>org.apache.streamline.common.test.IntegrationTest,org.apache.streamline.common.test.HBaseIntegrationTest</exclude.unit.test.groups>
+                <exclude.unit.test.groups>
+                    org.apache.streamline.common.test.IntegrationTest,org.apache.streamline.common.test.HBaseIntegrationTest
+                </exclude.unit.test.groups>
                 <include.unit.test.groups></include.unit.test.groups>
                 <exclude.integration.test.groups></exclude.integration.test.groups>
-                <include.integration.test.groups>org.apache.streamline.common.test.IntegrationTest,org.apache.streamline.common.test.HBaseIntegrationTest</include.integration.test.groups>
+                <include.integration.test.groups>
+                    org.apache.streamline.common.test.IntegrationTest,org.apache.streamline.common.test.HBaseIntegrationTest
+                </include.integration.test.groups>
             </properties>
         </profile>
     </profiles>
