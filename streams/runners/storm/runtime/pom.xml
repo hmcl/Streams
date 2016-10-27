@@ -161,7 +161,6 @@
         <dependency>
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-kinesis</artifactId>
-            <version>${storm.version}</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
