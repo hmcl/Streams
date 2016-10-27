@@ -13,7 +13,6 @@
 
     <properties>
         <hikari.version>2.2.5</hikari.version>
-        <h2database.version>1.4.188</h2database.version>
     </properties>
 
     <dependencies>
@@ -108,8 +107,6 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>${h2database.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

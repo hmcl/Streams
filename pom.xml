@@ -61,6 +61,7 @@
 
         <!-- Test -->
         <wiremock-standalone.version>2.0.9-beta</wiremock-standalone.version>
+        <h2.version>1.4.188</h2.version>
     </properties>
 
     <distributionManagement>
@@ -106,6 +107,12 @@
                 <groupId>com.github.tomakehurst</groupId>
                 <artifactId>wiremock-standalone</artifactId>
                 <version>${wiremock-standalone.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -181,16 +188,12 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-            </dependency>
+
             <dependency>
                 <groupId>com.hortonworks.registries</groupId>
                 <artifactId>schema-registry-client</artifactId>
