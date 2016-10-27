@@ -12,10 +12,6 @@
 
     <artifactId>webservice</artifactId>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.streamline</groupId>
@@ -127,7 +123,6 @@
             <artifactId>jackson-dataformat-protobuf</artifactId>
         </dependency>
         
-
         <!-- test dependency -->
         <dependency>
             <groupId>io.dropwizard</groupId>

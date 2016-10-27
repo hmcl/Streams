@@ -12,12 +12,6 @@
 
     <artifactId>simulator</artifactId>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <envClassifier></envClassifier>
-
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.streamline</groupId>
