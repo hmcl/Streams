@@ -26,7 +26,7 @@
             <artifactId>streamline-common</artifactId>
             <version>0.1.0-SNAPSHOT</version>
         </dependency>
-        <!-- test dependency -->
+        <!-- Test Scope Dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -34,7 +34,6 @@
         <dependency>
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>

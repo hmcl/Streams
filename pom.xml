@@ -79,7 +79,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Runtime -->
+            <!-- Runtime Scope Dependencies -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
@@ -93,7 +93,7 @@
                 </exclusions>
             </dependency>
 
-            <!-- Provided -->
+            <!-- Provided Scope Dependencies -->
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk</artifactId>
@@ -113,7 +113,7 @@
                 </exclusions>
             </dependency>
 
-            <!-- Test -->
+            <!-- Test Scope Dependencies -->
             <dependency>
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
                 <artifactId>jackson-jaxrs-base</artifactId>
@@ -150,8 +150,14 @@
                 <version>${hamcrest.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.jmockit</groupId>
+                <artifactId>jmockit</artifactId>
+                <version>${jmockit.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-            <!-- Compile -->
+            <!-- Compile Scope Dependencies -->
             <dependency>
                 <groupId>biz.paluch.redis</groupId>
                 <artifactId>lettuce</artifactId>
@@ -722,10 +728,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.jmockit</groupId>
-                <artifactId>jmockit</artifactId>
-            </dependency>
-            <dependency>
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-library</artifactId>
             </dependency>
@@ -767,13 +769,6 @@
             </dependency>
 
             <!-- Test dependencies -->
-            <!-- JMockit dependency must appear before JUnit dependency -->
-            <dependency>
-                <groupId>org.jmockit</groupId>
-                <artifactId>jmockit</artifactId>
-                <version>${jmockit.version}</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
