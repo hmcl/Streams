@@ -124,6 +124,12 @@
                 <version>${dropwizard.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
 
             <!-- Compile -->
             <dependency>
@@ -242,7 +248,6 @@
                 <artifactId>dropwizard-assets</artifactId>
                 <version>${dropwizard.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-core</artifactId>
@@ -263,10 +268,6 @@
                 </exclusions>
             </dependency>
 
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-            </dependency>
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
@@ -590,12 +591,6 @@
                 <groupId>org.jmockit</groupId>
                 <artifactId>jmockit</artifactId>
                 <version>${jmockit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
