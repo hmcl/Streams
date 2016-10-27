@@ -11,10 +11,6 @@
 
     <artifactId>storage-core</artifactId>
 
-    <properties>
-        <hikari.version>2.2.5</hikari.version>
-    </properties>
-
     <dependencies>
         <!-- module dependency -->
         <dependency>
@@ -38,7 +34,6 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP-java6</artifactId>
-            <version>${hikari.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
