@@ -67,11 +67,11 @@
         <junit.version>4.11</junit.version>
         <wiremock-standalone.version>2.0.9-beta</wiremock-standalone.version>
 
+        <!-- Plugin Versions -->
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
         <maven-shade-plugin.version>2.4.1</maven-shade-plugin.version>
         <maven-surefire.version>2.18.1</maven-surefire.version>
     </properties>
-    <!-- Plugin Versions -->
 
     <distributionManagement>
         <repository>
@@ -586,6 +586,129 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
+
+            <!-- Project Artifact Dependencies -->
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>cache</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>parser-registry</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>registries</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>storage</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>storage-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-catalog</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-cluster</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-layout</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-layout-storm</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-metrics</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-metrics-storm</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-notification</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-notifier</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-runners</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-runners-storm</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-runtime</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-runtime-storm</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-sdk</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streamline-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>streams</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>tag-registry</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.streamline</groupId>
+                <artifactId>webservice</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- END Project Artifact Dependencies -->
 
             <!-- Provided Scope Dependencies -->
             <dependency>
