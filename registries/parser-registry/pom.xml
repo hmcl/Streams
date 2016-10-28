@@ -14,13 +14,10 @@
         <dependency>
             <groupId>org.apache.streamline</groupId>
             <artifactId>common</artifactId>
-            <version>${project.version}</version>
        </dependency>
         <dependency>
             <groupId>org.apache.streamline</groupId>
             <artifactId>storage-core</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
