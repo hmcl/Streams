@@ -27,7 +27,6 @@ import org.apache.streamline.cache.view.datastore.DataStoreWriter;
 import org.apache.streamline.cache.view.io.loader.CacheLoader;
 import org.apache.streamline.cache.view.io.loader.CacheLoaderCallback;
 import org.apache.streamline.cache.view.io.writer.CacheWriter;
-import org.apache.streamline.storage.exception.StorageException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +66,7 @@ public class DataStoreBackedCache<K,V> extends AbstractCache<K,V> implements Loa
     }
 
     @Override
-    public V get(K key) throws StorageException {
+    public V get(K key) {
         V val = cache.get(key);
         if (val == null && dataStoreReader != null) {     // cache miss
             val = dataStoreReader.read(key);              // in sync read through

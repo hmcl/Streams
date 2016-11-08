@@ -21,7 +21,6 @@ package org.apache.streamline.cache.view.impl.redis;
 import org.apache.streamline.cache.Cache;
 import org.apache.streamline.cache.stats.CacheStats;
 import org.apache.streamline.cache.view.config.ExpiryPolicy;
-import org.apache.streamline.storage.exception.StorageException;
 import com.lambdaworks.redis.RedisConnection;
 
 import org.slf4j.Logger;
@@ -47,7 +46,7 @@ public class RedisHashesCache<K, V> extends RedisAbstractCache<K, V> implements 
     }
 
     @Override
-    public V get(K field) throws StorageException {
+    public V get(K field) {
         return redisConnection.hget(key, field);
     }
 

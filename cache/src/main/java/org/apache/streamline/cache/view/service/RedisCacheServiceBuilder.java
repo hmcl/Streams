@@ -62,7 +62,7 @@ public class RedisCacheServiceBuilder {
                 return (T) getRedisCacheService();
             case GUAVA:
                 return (T) getGuavaCacheService();
-            case MEMCACHED:
+//            case MEMCACHED:
             default:
                 throw new IllegalStateException("Invalid cache option. " + cacheType
                         + ". Valid options are " + Arrays.toString(TypeConfig.Cache.values()));

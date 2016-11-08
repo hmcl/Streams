@@ -18,6 +18,13 @@
 
 package org.apache.streamline.cache.view.service;
 
+import com.lambdaworks.redis.RedisConnection;
+import com.lambdaworks.redis.RedisURI;
+import com.lambdaworks.redis.codec.RedisCodec;
+import com.lambdaworks.redis.codec.Utf8StringCodec;
+
+import org.apache.streamline.cache.exception.InvalidCacheViewConfigException;
+import org.apache.streamline.cache.exception.MissingCacheViewConfigException;
 import org.apache.streamline.cache.view.Factory;
 import org.apache.streamline.cache.view.config.CacheConfig;
 import org.apache.streamline.cache.view.config.ConnectionConfig;
@@ -37,15 +44,7 @@ import org.apache.streamline.cache.view.io.writer.CacheWriter;
 import org.apache.streamline.cache.view.io.writer.CacheWriterAsync;
 import org.apache.streamline.cache.view.io.writer.CacheWriterSync;
 import org.apache.streamline.cache.view.service.registry.CacheServiceLocalRegistry;
-import org.apache.streamline.exception.InvalidCacheViewConfigException;
-import org.apache.streamline.exception.MissingCacheViewConfigException;
-import org.apache.streamline.util.ReflectionHelper;
-import com.lambdaworks.redis.RedisClient;
-import com.lambdaworks.redis.RedisConnection;
-import com.lambdaworks.redis.RedisURI;
-import com.lambdaworks.redis.codec.RedisCodec;
-import com.lambdaworks.redis.codec.Utf8StringCodec;
-
+import org.apache.streamline.common.util.ReflectionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
