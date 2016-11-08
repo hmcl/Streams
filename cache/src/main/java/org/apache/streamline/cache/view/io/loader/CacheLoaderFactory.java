@@ -18,9 +18,9 @@
 
 package org.apache.streamline.cache.view.io.loader;
 
-import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.view.StaticFactory;
-import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
+import org.apache.streamline.cache.Cache;
+import org.apache.streamline.cache.view.StaticFactory;
+import org.apache.streamline.cache.view.datastore.DataStoreReader;
 
 /** Factory of {@link CacheLoader} objects */
 public interface CacheLoaderFactory<K,V> {

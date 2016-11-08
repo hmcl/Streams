@@ -18,13 +18,13 @@
 
 package org.apache.streamline.cache.view.service;
 
-import com.hortonworks.iotas.cache.view.Factory;
-import com.hortonworks.iotas.cache.view.config.CacheConfig;
-import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
-import com.hortonworks.iotas.cache.view.config.TypeConfig;
-import com.hortonworks.iotas.cache.view.config.ViewConfig;
-import com.hortonworks.iotas.cache.view.impl.redis.RedisHashesCache;
-import com.hortonworks.iotas.cache.view.impl.redis.RedisStringsCache;
+import org.apache.streamline.cache.view.Factory;
+import org.apache.streamline.cache.view.config.CacheConfig;
+import org.apache.streamline.cache.view.config.ExpiryPolicy;
+import org.apache.streamline.cache.view.config.TypeConfig;
+import org.apache.streamline.cache.view.config.ViewConfig;
+import org.apache.streamline.cache.view.impl.redis.RedisHashesCache;
+import org.apache.streamline.cache.view.impl.redis.RedisStringsCache;
 import com.lambdaworks.redis.RedisConnection;
 
 import java.util.Arrays;

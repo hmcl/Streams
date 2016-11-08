@@ -18,10 +18,10 @@
 
 package org.apache.streamline.cache.view.impl.redis;
 
-import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.stats.CacheStats;
-import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
-import com.hortonworks.iotas.storage.exception.StorageException;
+import org.apache.streamline.cache.Cache;
+import org.apache.streamline.cache.stats.CacheStats;
+import org.apache.streamline.cache.view.config.ExpiryPolicy;
+import org.apache.streamline.storage.exception.StorageException;
 import com.lambdaworks.redis.RedisConnection;
 
 import org.slf4j.Logger;

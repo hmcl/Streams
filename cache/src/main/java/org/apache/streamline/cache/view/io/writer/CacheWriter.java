@@ -18,7 +18,7 @@
 
 package org.apache.streamline.cache.view.io.writer;
 
-import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
+import org.apache.streamline.cache.view.datastore.DataStoreWriter;
 
 /**
  * Marker interface that

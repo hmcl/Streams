@@ -18,7 +18,7 @@
 
 package org.apache.streamline.cache;
 
-import com.hortonworks.iotas.cache.view.io.loader.CacheLoaderCallback;
+import org.apache.streamline.cache.view.io.loader.CacheLoaderCallback;
 
 import java.util.Collection;
 

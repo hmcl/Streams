@@ -18,8 +18,8 @@
 
 package org.apache.streamline.cache.view.service.registry;
 
-import com.hortonworks.iotas.cache.view.service.CacheService;
-import com.hortonworks.iotas.cache.view.service.CacheServiceId;
+import org.apache.streamline.cache.view.service.CacheService;
+import org.apache.streamline.cache.view.service.CacheServiceId;
 
 public interface CacheServiceRegistry {
     <K,V> void register(CacheServiceId cacheServiceId, CacheService<K,V> cacheService);

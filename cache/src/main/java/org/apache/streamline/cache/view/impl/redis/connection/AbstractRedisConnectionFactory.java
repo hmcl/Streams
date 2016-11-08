@@ -18,9 +18,9 @@
 
 package org.apache.streamline.cache.view.impl.redis.connection;
 
-import com.hortonworks.iotas.cache.view.Factory;
-import com.hortonworks.iotas.cache.view.config.CacheConfig;
-import com.hortonworks.iotas.cache.view.config.ConnectionConfig;
+import org.apache.streamline.cache.view.Factory;
+import org.apache.streamline.cache.view.config.CacheConfig;
+import org.apache.streamline.cache.view.config.ConnectionConfig;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
 import com.lambdaworks.redis.RedisURI;

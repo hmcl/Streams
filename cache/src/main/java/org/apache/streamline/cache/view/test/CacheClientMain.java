@@ -18,13 +18,13 @@
 
 package org.apache.streamline.cache.view.test;
 
-import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.view.DataStoreBackedCache;
-import com.hortonworks.iotas.cache.view.service.CacheService;
-import com.hortonworks.iotas.cache.view.service.CacheServiceId;
-import com.hortonworks.iotas.cache.view.service.RedisCacheService;
-import com.hortonworks.iotas.cache.view.service.registry.CacheServiceLocalRegistry;
-import com.hortonworks.iotas.cache.view.service.registry.CacheServiceRegistry;
+import org.apache.streamline.cache.Cache;
+import org.apache.streamline.cache.view.DataStoreBackedCache;
+import org.apache.streamline.cache.view.service.CacheService;
+import org.apache.streamline.cache.view.service.CacheServiceId;
+import org.apache.streamline.cache.view.service.RedisCacheService;
+import org.apache.streamline.cache.view.service.registry.CacheServiceLocalRegistry;
+import org.apache.streamline.cache.view.service.registry.CacheServiceRegistry;
 
 import java.util.HashMap;
 

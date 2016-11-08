@@ -18,14 +18,14 @@
 
 package org.apache.streamline.cache.view.service;
 
-import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.view.DataStoreBackedCache;
-import com.hortonworks.iotas.cache.view.config.TypeConfig;
-import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
-import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
-import com.hortonworks.iotas.cache.view.io.loader.CacheLoader;
-import com.hortonworks.iotas.cache.view.io.loader.CacheLoaderFactory;
-import com.hortonworks.iotas.cache.view.io.writer.CacheWriter;
+import org.apache.streamline.cache.Cache;
+import org.apache.streamline.cache.view.DataStoreBackedCache;
+import org.apache.streamline.cache.view.config.TypeConfig;
+import org.apache.streamline.cache.view.datastore.DataStoreReader;
+import org.apache.streamline.cache.view.datastore.DataStoreWriter;
+import org.apache.streamline.cache.view.io.loader.CacheLoader;
+import org.apache.streamline.cache.view.io.loader.CacheLoaderFactory;
+import org.apache.streamline.cache.view.io.writer.CacheWriter;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;

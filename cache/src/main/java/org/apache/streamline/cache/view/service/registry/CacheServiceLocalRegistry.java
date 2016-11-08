@@ -18,8 +18,8 @@
 
 package org.apache.streamline.cache.view.service.registry;
 
-import com.hortonworks.iotas.cache.view.service.CacheService;
-import com.hortonworks.iotas.cache.view.service.CacheServiceId;
+import org.apache.streamline.cache.view.service.CacheService;
+import org.apache.streamline.cache.view.service.CacheServiceId;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

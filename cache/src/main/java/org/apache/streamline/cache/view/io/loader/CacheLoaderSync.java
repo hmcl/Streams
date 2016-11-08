@@ -18,8 +18,8 @@
 
 package org.apache.streamline.cache.view.io.loader;
 
-import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
+import org.apache.streamline.cache.Cache;
+import org.apache.streamline.cache.view.datastore.DataStoreReader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

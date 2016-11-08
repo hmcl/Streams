@@ -18,7 +18,7 @@
 
 package org.apache.streamline.cache;
 
-import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
+import org.apache.streamline.cache.view.config.ExpiryPolicy;
 
 public abstract class AbstractCache<K, V> implements Cache<K, V> {
     protected ExpiryPolicy expiryPolicy;

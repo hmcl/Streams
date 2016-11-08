@@ -18,16 +18,16 @@
 
 package org.apache.streamline.cache.view;
 
-import com.hortonworks.iotas.cache.AbstractCache;
-import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.LoadableCache;
-import com.hortonworks.iotas.cache.stats.CacheStats;
-import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
-import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
-import com.hortonworks.iotas.cache.view.io.loader.CacheLoader;
-import com.hortonworks.iotas.cache.view.io.loader.CacheLoaderCallback;
-import com.hortonworks.iotas.cache.view.io.writer.CacheWriter;
-import com.hortonworks.iotas.storage.exception.StorageException;
+import org.apache.streamline.cache.AbstractCache;
+import org.apache.streamline.cache.Cache;
+import org.apache.streamline.cache.LoadableCache;
+import org.apache.streamline.cache.stats.CacheStats;
+import org.apache.streamline.cache.view.datastore.DataStoreReader;
+import org.apache.streamline.cache.view.datastore.DataStoreWriter;
+import org.apache.streamline.cache.view.io.loader.CacheLoader;
+import org.apache.streamline.cache.view.io.loader.CacheLoaderCallback;
+import org.apache.streamline.cache.view.io.writer.CacheWriter;
+import org.apache.streamline.storage.exception.StorageException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

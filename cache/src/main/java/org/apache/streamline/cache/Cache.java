@@ -19,8 +19,8 @@
 package org.apache.streamline.cache;
 
 
-import com.hortonworks.iotas.cache.stats.CacheStats;
-import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
+import org.apache.streamline.cache.stats.CacheStats;
+import org.apache.streamline.cache.view.config.ExpiryPolicy;
 
 import java.util.Collection;
 import java.util.Map;

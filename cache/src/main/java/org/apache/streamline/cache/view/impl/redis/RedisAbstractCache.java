@@ -18,9 +18,9 @@
 
 package org.apache.streamline.cache.view.impl.redis;
 
-import com.hortonworks.iotas.cache.AbstractCache;
-import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
+import org.apache.streamline.cache.AbstractCache;
+import org.apache.streamline.cache.Cache;
+import org.apache.streamline.cache.view.config.ExpiryPolicy;
 import com.lambdaworks.redis.RedisConnection;
 
 import java.util.Collection;

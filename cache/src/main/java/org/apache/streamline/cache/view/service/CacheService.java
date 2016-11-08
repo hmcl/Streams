@@ -18,9 +18,9 @@
 
 package org.apache.streamline.cache.view.service;
 
-import com.hortonworks.iotas.cache.Cache;
-import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
-import com.hortonworks.iotas.cache.view.config.TypeConfig;
+import org.apache.streamline.cache.Cache;
+import org.apache.streamline.cache.view.config.ExpiryPolicy;
+import org.apache.streamline.cache.view.config.TypeConfig;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

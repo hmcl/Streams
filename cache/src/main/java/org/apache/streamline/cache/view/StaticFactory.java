@@ -18,7 +18,7 @@
 
 package org.apache.streamline.cache.view;
 
-import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
+import org.apache.streamline.cache.view.datastore.DataStoreReader;
 
 public interface StaticFactory<T,P> {
     T create(P param);
