@@ -16,7 +16,7 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.config;
+package org.apache.streamline.cache.view.config;
 
 public class CacheEntry {
     private String key;

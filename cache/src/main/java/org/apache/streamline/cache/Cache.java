@@ -16,7 +16,7 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache;
+package org.apache.streamline.cache;
 
 
 import com.hortonworks.iotas.cache.stats.CacheStats;

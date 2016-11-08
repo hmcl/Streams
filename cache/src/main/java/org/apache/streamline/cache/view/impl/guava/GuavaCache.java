@@ -16,7 +16,7 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.impl.guava;
+package org.apache.streamline.cache.view.impl.guava;
 
 public class GuavaCache<K,V> {
 

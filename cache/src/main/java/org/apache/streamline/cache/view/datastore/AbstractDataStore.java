@@ -16,7 +16,7 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.datastore;
+package org.apache.streamline.cache.view.datastore;
 
 import java.util.Collection;
 import java.util.Map;

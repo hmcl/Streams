@@ -16,7 +16,7 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.test;
+package org.apache.streamline.cache.view.test;
 
 import com.lambdaworks.redis.RedisConnection;
 

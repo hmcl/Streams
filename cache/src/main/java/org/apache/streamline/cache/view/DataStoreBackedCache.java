@@ -16,7 +16,7 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view;
+package org.apache.streamline.cache.view;
 
 import com.hortonworks.iotas.cache.AbstractCache;
 import com.hortonworks.iotas.cache.Cache;

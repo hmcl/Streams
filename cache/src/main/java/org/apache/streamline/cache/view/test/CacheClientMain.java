@@ -16,7 +16,7 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.test;
+package org.apache.streamline.cache.view.test;
 
 import com.hortonworks.iotas.cache.Cache;
 import com.hortonworks.iotas.cache.view.DataStoreBackedCache;

@@ -1,4 +1,4 @@
-package com.hortonworks.iotas.cache.exception;
+package org.apache.streamline.cache.exception;
 
 /**
  * Exception thrown if no value exists for a specific {@link com.hortonworks.iotas.storage.StorableKey} key,

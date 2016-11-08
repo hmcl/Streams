@@ -16,7 +16,7 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.impl.redis.connection;
+package org.apache.streamline.cache.view.impl.redis.connection;
 
 import com.hortonworks.iotas.cache.view.Factory;
 import com.hortonworks.iotas.cache.view.config.CacheConfig;

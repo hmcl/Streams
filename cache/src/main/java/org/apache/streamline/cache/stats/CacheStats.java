@@ -1,4 +1,4 @@
-package com.hortonworks.iotas.cache.stats;
+package org.apache.streamline.cache.stats;
 
 /**
  * Created by hlouro on 8/6/15.

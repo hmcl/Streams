@@ -16,7 +16,7 @@
  *   limitations under the License.
  */
 
-package com.hortonworks.iotas.cache.view.datastore.phoenix;
+package org.apache.streamline.cache.view.datastore.phoenix;
 
 import com.hortonworks.iotas.cache.view.datastore.AbstractDataStore;
 import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
