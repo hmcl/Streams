@@ -16,16 +16,19 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.impl.redis.connection;
+package com.hortonworks.iotas.cache.view.impl.redis.connection;
 
-import org.apache.streamline.cache.view.Factory;
+import com.hortonworks.iotas.cache.view.Factory;
+import com.hortonworks.iotas.cache.view.config.CacheConfig;
+import com.hortonworks.iotas.cache.view.config.ConnectionConfig;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
+import com.lambdaworks.redis.RedisURI;
 import com.lambdaworks.redis.codec.RedisCodec;
 
 public abstract class AbstractRedisConnectionFactory<K,V> implements Factory<RedisConnection<K, V>> {
-    protected final RedisClient redisClient;
-    protected final RedisCodec<K, V> codec;
+    protected RedisClient redisClient;
+    protected RedisCodec<K, V> codec;
 
     public AbstractRedisConnectionFactory(RedisClient redisClient, RedisCodec<K, V> codec) {
         this.redisClient = redisClient;
@@ -38,5 +41,21 @@ public abstract class AbstractRedisConnectionFactory<K,V> implements Factory<Red
 
     public RedisCodec<K, V> getCodec() {
         return codec;
+    }
+
+    public static String createRedisUriStr(ConnectionConfig.RedisConnectionConfig redisConnectionConfig) {
+        return createRedisUriStr(redisConnectionConfig.getHost(), redisConnectionConfig.getPort());
+    }
+
+    public static String createRedisUriStr(String host, String port) {
+        return "redis://" +  host + ":" + port;
+    }
+
+    public static RedisURI createRedisUri(ConnectionConfig.RedisConnectionConfig redisConnectionConfig) {
+        return createRedisUri(redisConnectionConfig.getHost(), redisConnectionConfig.getPort());
+    }
+
+    public static RedisURI createRedisUri(String host, String port) {
+        return RedisURI.create(createRedisUriStr(host, port));
     }
 }

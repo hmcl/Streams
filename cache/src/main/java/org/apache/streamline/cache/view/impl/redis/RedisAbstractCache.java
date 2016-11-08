@@ -16,21 +16,21 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.impl.redis;
+package com.hortonworks.iotas.cache.view.impl.redis;
 
-import org.apache.streamline.cache.AbstractCache;
-import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.view.config.ExpiryPolicy;
+import com.hortonworks.iotas.cache.AbstractCache;
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
 import com.lambdaworks.redis.RedisConnection;
 
 import java.util.Collection;
 
 public abstract class RedisAbstractCache<K, V> extends AbstractCache<K, V> implements Cache<K, V> {
-    public static final String REDIS_MAX_MEMORY = "maxmemory";
+    public static final String REDIS_MAX_MEMORY = "maxmemory";;
     public static final String REDIS_MAX_MEMORY_POLICY = "maxmemory-policy";
     public static final String REDIS_MAX_MEMORY_POLICY_ALL_KEYS_LRU = "allkeys-lru";
 
-    protected final RedisConnection<K, V> redisConnection;
+    protected RedisConnection<K, V> redisConnection;
 
     public RedisAbstractCache(RedisConnection<K, V> redisConnection) {
         this(redisConnection, null);

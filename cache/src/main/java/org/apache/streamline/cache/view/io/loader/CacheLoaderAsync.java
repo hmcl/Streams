@@ -16,15 +16,17 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.io.loader;
+package com.hortonworks.iotas.cache.view.io.loader;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.view.datastore.DataStoreReader;
+
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,15 +36,23 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
     private static final int DEFAULT_NUM_THREADS = 5;
+    private static final String CACHE_LOADER_THREAD = "cache-loader-thread";
+
     private static final Logger LOG = LoggerFactory.getLogger(CacheLoaderAsync.class);
 
-    private final ListeningExecutorService executorService;
+    private ListeningExecutorService executorService;
 
     public CacheLoaderAsync(Cache<K, V> cache, DataStoreReader<K,V> dataStoreReader) {
-        this(cache, dataStoreReader, Executors.newFixedThreadPool(DEFAULT_NUM_THREADS));
+        this(cache, dataStoreReader, Executors.newFixedThreadPool(DEFAULT_NUM_THREADS, new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, CACHE_LOADER_THREAD);
+            }
+        }));
     }
 
     public CacheLoaderAsync(Cache<K, V> cache, DataStoreReader<K,V> dataStoreReader, ExecutorService executorService) {
@@ -52,8 +62,8 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
 
     public void loadAll(final Collection<? extends K> keys, CacheLoaderCallback<K,V> callback) {
         try {
-            ListenableFuture myCall = executorService.submit(new DataStoreCallable(keys));
-            Futures.addCallback(myCall, new CacheLoaderAsyncFutureCallback(keys, callback));
+            ListenableFuture future = executorService.submit(new DataStoreCallable(keys));
+            Futures.addCallback(future, new CacheLoaderAsyncFutureCallback(keys, callback));
 
         } catch (Exception e) {
             handleException(keys, callback, e, LOG);
@@ -61,7 +71,7 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
     }
 
     private class DataStoreCallable implements Callable<Map<K,V>> {
-        private final Collection<? extends K> keys;
+        private Collection<? extends K> keys;
 
         public DataStoreCallable(Collection<? extends K> keys) {
             this.keys = keys;
@@ -70,14 +80,14 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
         @Override
         public Map<K, V> call() throws Exception {
             final Map<K, V> result = dataStoreReader.readAll(keys);
-            LOG.debug("Call to data store for keys [{}] returned [{}]", keys, result);
+            LOG.debug("Reading keys [{}] from data store returned [{}]", keys, result);
             return result;
         }
     }
 
     public class CacheLoaderAsyncFutureCallback implements FutureCallback<Map<K,V>> {
         private final Collection<? extends K> keys;
-        private final CacheLoaderCallback<K,V> callback;
+        private CacheLoaderCallback<K,V> callback;
 
         public CacheLoaderAsyncFutureCallback(Collection<? extends K> keys, CacheLoaderCallback<K, V> callback) {
             this.keys = keys;
@@ -86,21 +96,21 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
 
         @Override
         public void onSuccess(Map<K, V> read) {
-            LOG.debug("Raw result of call to data store for keys [{}] returned [{}]", keys, read);
-            Map<K,V> loaded = new HashMap<>();
+            LOG.debug("Reading keys [{}] from data store returned [{}]", keys, read);
+            final Map<K,V> loaded = new HashMap<>();
 
             if (read != null) {
                 for (Map.Entry<K, V> re : read.entrySet()) {
-                    if (re.getKey() != null) {
+                    if (re.getKey() != null && re.getValue() != null) {
                         loaded.put(re.getKey(), re.getValue());
                     } else {
-                        LOG.trace("Not loading into cache entry with null value [{}]", re);
+                        LOG.trace("Not loading into cache entry with null key or value [{}]", re);
                     }
                 }
             }
 
             cache.putAll(loaded);
-            LOG.debug("Loaded cache [{}]", loaded);
+            LOG.debug("Loaded cache with entries [{}]", loaded);
             callback.onCacheLoaded(loaded);
         }
 

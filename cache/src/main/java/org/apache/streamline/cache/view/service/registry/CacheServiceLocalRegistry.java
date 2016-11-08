@@ -16,10 +16,11 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.service.registry;
+package com.hortonworks.iotas.cache.view.service.registry;
 
-import org.apache.streamline.cache.view.service.CacheService;
-import org.apache.streamline.cache.view.service.CacheServiceId;
+import com.hortonworks.iotas.cache.view.service.CacheService;
+import com.hortonworks.iotas.cache.view.service.CacheServiceId;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

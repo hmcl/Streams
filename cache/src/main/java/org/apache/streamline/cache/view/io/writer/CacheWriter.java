@@ -16,12 +16,12 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.io.writer;
+package com.hortonworks.iotas.cache.view.io.writer;
 
-import org.apache.streamline.cache.view.datastore.DataStoreWriter;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
 
 /**
- * Marker interface
+ * Marker interface that
  * @param <K>   Type of the key
  * @param <V>   Type of the value
  */

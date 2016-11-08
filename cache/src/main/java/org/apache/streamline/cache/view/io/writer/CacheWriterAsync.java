@@ -16,9 +16,9 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.io.writer;
+package com.hortonworks.iotas.cache.view.io.writer;
 
-import org.apache.streamline.cache.view.datastore.DataStoreWriter;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
 
 import java.util.Collection;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class CacheWriterAsync<K, V> implements CacheWriter<K, V> {
     private static final int DEFAULT_NUM_THREADS = 5;
 
     private final DataStoreWriter<K, V> dataStoreWriter;
-    private final ExecutorService executorService;
+    private ExecutorService executorService;
 
     public CacheWriterAsync(DataStoreWriter<K, V> dataStoreWriter) {
         this(dataStoreWriter, Executors.newFixedThreadPool(DEFAULT_NUM_THREADS));

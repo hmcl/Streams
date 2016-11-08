@@ -16,16 +16,17 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.test;
+package com.hortonworks.iotas.cache.view.test;
 
 import com.lambdaworks.redis.RedisConnection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RedisClients {
 //    protected static final Logger LOG = LoggerFactory.getLogger(RedisClients.class);
-    private static final RedisConnection<String, String> connection = RedisCacheTestMain.getConnection();
-    private static final RedisConnection<String, String> connection1 = RedisCacheTestMain.getConnection();
+    private static RedisConnection<String, String> connection = RedisCacheTestMain.getConnection();
+    private static RedisConnection<String, String> connection1 = RedisCacheTestMain.getConnection();
 
     public RedisClients() {
     }

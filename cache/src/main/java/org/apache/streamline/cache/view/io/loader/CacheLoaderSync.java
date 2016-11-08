@@ -16,10 +16,11 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.io.loader;
+package com.hortonworks.iotas.cache.view.io.loader;
 
-import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.view.datastore.DataStoreReader;
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class CacheLoaderSync<K,V> extends CacheLoader<K,V> {
     }
 
     public void loadAll(Collection<? extends K> keys, CacheLoaderCallback<K,V> callback) {
-        Map<K, V> entries;
+        final Map<K, V> entries;
         try {
             entries = dataStoreReader.readAll(keys);
             cache.putAll(entries);

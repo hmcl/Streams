@@ -16,18 +16,19 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view;
+package com.hortonworks.iotas.cache.view;
 
-import org.apache.streamline.cache.AbstractCache;
-import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.LoadableCache;
-import org.apache.streamline.cache.exception.CacheException;
-import org.apache.streamline.cache.stats.CacheStats;
-import org.apache.streamline.cache.view.datastore.DataStoreReader;
-import org.apache.streamline.cache.view.datastore.DataStoreWriter;
-import org.apache.streamline.cache.view.io.loader.CacheLoader;
-import org.apache.streamline.cache.view.io.loader.CacheLoaderCallback;
-import org.apache.streamline.cache.view.io.writer.CacheWriter;
+import com.hortonworks.iotas.cache.AbstractCache;
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.LoadableCache;
+import com.hortonworks.iotas.cache.stats.CacheStats;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
+import com.hortonworks.iotas.cache.view.io.loader.CacheLoader;
+import com.hortonworks.iotas.cache.view.io.loader.CacheLoaderCallback;
+import com.hortonworks.iotas.cache.view.io.writer.CacheWriter;
+import com.hortonworks.iotas.storage.exception.StorageException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +45,8 @@ public class DataStoreBackedCache<K,V> extends AbstractCache<K,V> implements Loa
     private final CacheWriter<K, V> cacheWriter;
     private final DataStoreReader<K, V> dataStoreReader;
 
-    public DataStoreBackedCache(Cache<K, V> cache, CacheLoader<K, V> cacheLoader, DataStoreReader<K, V> dataStoreReader,
-                                CacheWriter<K, V> cacheWriter) {
+    public DataStoreBackedCache(Cache<K, V> cache, CacheLoader<K, V> cacheLoader,
+                DataStoreReader<K, V> dataStoreReader, CacheWriter<K, V> cacheWriter) {
 
         validateArguments(cache, dataStoreReader, cacheLoader, cacheWriter);
 
@@ -53,46 +54,57 @@ public class DataStoreBackedCache<K,V> extends AbstractCache<K,V> implements Loa
         this.dataStoreReader = dataStoreReader;
         this.cacheLoader = cacheLoader;
         this.cacheWriter = cacheWriter;
+
+        LOG.info("Created {}", this);
     }
 
     public void loadAll(Collection<? extends K> keys, CacheLoaderCallback<K,V> callback) {
         if (cacheLoader != null) {
             cacheLoader.loadAll(keys, callback);
+        } else {
+            LOG.info("No cache loader set. Not loading keys [{}]", keys);
         }
     }
 
     @Override
-    public V get(K key) throws CacheException {
+    public V get(K key) throws StorageException {
         V val = cache.get(key);
-        if (val == null && dataStoreReader != null) {     // in sync read through
-            val = dataStoreReader.read(key);
+        if (val == null && dataStoreReader != null) {     // cache miss
+            val = dataStoreReader.read(key);              // in sync read through
+            cache.put(key, val);                          // load cache with value read from data store
         }
         return val;
     }
 
     @Override
-    public void put(K key, V val) {
-        cache.put(key, val);
-        if (cacheWriter != null) {              // in sync write through
-            cacheWriter.write(key, val);
-        }
-    }
-
-    @Override
     public Map<K, V> getAll(Collection<? extends K> keys) {  // TODO what if trying to load more keys than max number of keys that be kept in the cache ?
         Map<K, V> present = cache.getAll(keys);
+        LOG.debug("Entries existing in cache [{}].", present);
+
         if (dataStoreReader != null) {
             if (present == null || present.isEmpty()) {
                 present = dataStoreReader.readAll(keys);                  // in sync read through
-            } else if (present.size() < keys.size()) {
-                Set<K> notPresent = new HashSet<>(keys);
+                cache.putAll(present);                                    // load cache with values read from data store
+            } else if (present.size() < keys.size()) {                    // not all values are in cache, i.e., some cache misses
+                final Set<K> notPresent = new HashSet<>(keys);
                 notPresent.removeAll(present.keySet());
-                Map<K, V> loaded = dataStoreReader.readAll(notPresent);   // in sync read through
+                final Map<K, V> loaded = dataStoreReader.readAll(notPresent);   // in sync read through
                 present.putAll(loaded);
+                cache.putAll(loaded);                                           // load cache with values read from data store
+                LOG.debug("Keys non existing in cache: [{}]. Entries read from database and loaded into cache [{}]", notPresent, loaded);
             }
         }
-//        LOG.debug("Entries existing in cache [{}]. Keys non existing in cache: [{}]", present, notPresent.removeAll(loaded));
+
+        LOG.debug("Entries existing in cache after loading [{}]", present);
         return present;
+    }
+
+    @Override
+    public void put(K key, V val) {
+        cache.put(key, val);
+        if (cacheWriter != null) {
+            cacheWriter.write(key, val);        // in sync write through
+        }
     }
 
     @Override
@@ -159,8 +171,6 @@ public class DataStoreBackedCache<K,V> extends AbstractCache<K,V> implements Loa
                     getSimpleName(DataStoreReader.class), getSimpleName(DataStoreWriter.class),
                     getSimpleName(CacheLoader.class), getSimpleName(Cache.class)));
         }
-
-        LOG.info("Created {}", this);
     }
 
     private String getSimpleName(Class<?> clazz) {

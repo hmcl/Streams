@@ -16,13 +16,19 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.impl.redis.connection;
+package com.hortonworks.iotas.cache.view.impl.redis.connection;
 
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
+import com.lambdaworks.redis.RedisURI;
 import com.lambdaworks.redis.codec.RedisCodec;
 
 public class RedisConnectionFactory<K,V> extends AbstractRedisConnectionFactory<K,V> {
+
+    public RedisConnectionFactory(RedisURI redisURI, RedisCodec<K, V> codec) {
+        this(RedisClient.create(redisURI), codec);
+    }
+
     public RedisConnectionFactory(RedisClient redisClient, RedisCodec<K, V> codec) {
         super(redisClient, codec);
     }

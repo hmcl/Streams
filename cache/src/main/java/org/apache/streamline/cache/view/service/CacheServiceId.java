@@ -16,7 +16,7 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.service;
+package com.hortonworks.iotas.cache.view.service;
 
 import java.net.URI;
 

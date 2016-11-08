@@ -16,23 +16,27 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.config;
+package com.hortonworks.iotas.cache.view.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-
-import java.util.concurrent.TimeUnit;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ExpiryPolicy {
     private Ttl ttl;
     private long entries;
     private Size size;
 
-    public class Ttl {
+    public ExpiryPolicy() {
+    }
+
+    public static class Ttl {
         private long count;
         private TimeUnit unit;
-        private final long ttlSeconds;
+        private long ttlSeconds;
 
-        public Ttl(long count, TimeUnit unit) {
+        @JsonCreator
+        public Ttl(@JsonProperty("count") long count,
+                   @JsonProperty("unit") TimeUnit unit) {
             this.count = count;
             this.unit = unit;
             this.ttlSeconds= unit.toSeconds(count);
@@ -59,13 +63,14 @@ public class ExpiryPolicy {
         }
     }
 
-    public class Size {
-        private final long count;
-        private final long bytes;
-        private final BytesUnit unit;
+    public static class Size {
+        private long count;
+        private long bytes;
+        private BytesUnit unit;
 
         @JsonCreator
-        public Size(long count, BytesUnit unit) {
+        public Size(@JsonProperty("count") long count,
+                    @JsonProperty("unit") BytesUnit unit) {
             this.count = count;
             this.unit = unit;
             this.bytes = unit.toBytes(count);

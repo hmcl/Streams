@@ -16,26 +16,26 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.service;
+package com.hortonworks.iotas.cache.view.service;
 
-import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.view.DataStoreBackedCache;
-import org.apache.streamline.cache.view.config.TypeConfig;
-import org.apache.streamline.cache.view.datastore.DataStoreReader;
-import org.apache.streamline.cache.view.datastore.DataStoreWriter;
-import org.apache.streamline.cache.view.io.loader.CacheLoader;
-import org.apache.streamline.cache.view.io.loader.CacheLoaderFactory;
-import org.apache.streamline.cache.view.io.writer.CacheWriter;
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.view.DataStoreBackedCache;
+import com.hortonworks.iotas.cache.view.config.TypeConfig;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
+import com.hortonworks.iotas.cache.view.io.loader.CacheLoader;
+import com.hortonworks.iotas.cache.view.io.loader.CacheLoaderFactory;
+import com.hortonworks.iotas.cache.view.io.writer.CacheWriter;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class DataStoreBackedCacheService<K,V> extends CacheService<K,V> {
-    protected final CacheLoaderFactory<K, V> cacheLoaderFactory;              // used to load cache sync or async
-    protected final CacheWriter<K, V> cacheWriter;                            // used to write to db sync or async
-    protected final DataStoreReader<K, V> dataStoreReader;                    // used for read through
+    protected CacheLoaderFactory<K, V> cacheLoaderFactory;              // used to load cache sync or async
+    protected CacheWriter<K, V> cacheWriter;                            // used to write to db sync or async
+    protected DataStoreReader<K, V> dataStoreReader;                    // used for read through
 
-    protected final ConcurrentMap<String, CacheLoader<K,V>> cacheLoaders = new ConcurrentHashMap<>();
+    protected ConcurrentMap<String, CacheLoader<K,V>> cacheLoaders = new ConcurrentHashMap<>();
 
     protected DataStoreBackedCacheService(Builder<K, V> builder) {
         super(builder);

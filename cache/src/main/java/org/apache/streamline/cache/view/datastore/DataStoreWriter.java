@@ -16,17 +16,26 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.datastore;
+package com.hortonworks.iotas.cache.view.datastore;
 
 import java.util.Collection;
 import java.util.Map;
-
+/** Write/delete entries (data) to/from the underlying data store.
+ *  Methods that receive a collection keys/entries should be optimized for bulk operations
+ *  @param <K>   Type of the key
+ *  @param <V>   Type of the value
+ **/
 public interface DataStoreWriter<K,V> {
+
+    /** Write one key/val pair */
     void write(K key, V val);
 
+    /** Write a collection of entries */
     void writeAll(Map<? extends K, ? extends V> entries);
 
+    /** Delete one key/val pair */
     void delete(K key);
 
+    /** Read a collection of keys */
     void deleteAll(Collection<? extends K> keys);
 }

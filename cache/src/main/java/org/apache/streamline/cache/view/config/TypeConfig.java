@@ -16,18 +16,50 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.config;
+package com.hortonworks.iotas.cache.view.config;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public interface TypeConfig {
-    enum Cache {REDIS, GUAVA, MEMCACHED}
+    enum Cache {
+        @JsonProperty("redis")
+        REDIS,
+        @JsonProperty("guava")
+        GUAVA,
+    }
 
-    enum RedisDatatype {STRINGS, HASHES}
+    enum RedisDatatype {
+        @JsonProperty("strings")
+        STRINGS,
+        @JsonProperty("hashes")
+        HASHES;
+    }
 
-    enum DataStore {PHOENIX, MYSQL, HBASE}
+    enum DataStore {
+        @JsonProperty("phoenix")
+        PHOENIX,
+        @JsonProperty("mysql")
+        MYSQL,
+        @JsonProperty("hbase")
+        HBASE;
+    }
 
-    enum CacheLoader {SYNC, ASYNC}
+    enum CacheLoader {
+        @JsonProperty("sync")
+        SYNC,
+        @JsonProperty("async")
+        ASYNC;
+    }
 
-    enum CacheReader {THROUGH}
+    enum CacheReader {
+        @JsonProperty("through")
+        THROUGH
+    }
 
-    enum CacheWriter {SYNC, ASYNC}
+    enum CacheWriter {
+        @JsonProperty("sync")
+        SYNC,
+        @JsonProperty("async")
+        ASYNC;
+    }
 }

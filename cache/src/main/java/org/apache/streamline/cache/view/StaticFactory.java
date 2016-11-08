@@ -16,7 +16,9 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view;
+package com.hortonworks.iotas.cache.view;
+
+import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
 
 public interface StaticFactory<T,P> {
     T create(P param);

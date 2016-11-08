@@ -16,10 +16,11 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.test;
+package com.hortonworks.iotas.cache.view.test;
 
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

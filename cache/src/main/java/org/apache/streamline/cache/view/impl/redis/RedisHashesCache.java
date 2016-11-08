@@ -16,13 +16,14 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.impl.redis;
+package com.hortonworks.iotas.cache.view.impl.redis;
 
-import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.exception.CacheException;
-import org.apache.streamline.cache.stats.CacheStats;
-import org.apache.streamline.cache.view.config.ExpiryPolicy;
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.stats.CacheStats;
+import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
+import com.hortonworks.iotas.storage.exception.StorageException;
 import com.lambdaworks.redis.RedisConnection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ import java.util.Map;
 public class RedisHashesCache<K, V> extends RedisAbstractCache<K, V> implements Cache<K, V> {
     private static   final Logger LOG = LoggerFactory.getLogger(RedisHashesCache.class);
 
-    private final K key;
+    private K key;
 
     public RedisHashesCache(RedisConnection<K, V> redisConnection, K key) {
         this(redisConnection, key, null);
@@ -46,7 +47,7 @@ public class RedisHashesCache<K, V> extends RedisAbstractCache<K, V> implements 
     }
 
     @Override
-    public V get(K field) throws CacheException {
+    public V get(K field) throws StorageException {
         return redisConnection.hget(key, field);
     }
 
@@ -76,7 +77,7 @@ public class RedisHashesCache<K, V> extends RedisAbstractCache<K, V> implements 
 
     @Override
     public void removeAll(Collection<? extends K> fields) {
-        redisConnection.del(fields.toArray(((K[]) new Object[fields.size()])));
+        redisConnection.hdel(key, fields.toArray(((K[]) new Object[fields.size()])));
     }
 
     @Override

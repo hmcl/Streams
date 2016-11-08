@@ -16,21 +16,21 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.service;
+package com.hortonworks.iotas.cache.view.service;
 
-import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.view.config.ExpiryPolicy;
-import org.apache.streamline.cache.view.config.TypeConfig;
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
+import com.hortonworks.iotas.cache.view.config.TypeConfig;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class CacheService<K,V> {
-    protected final ConcurrentMap<String, Cache<K,V>> caches = new ConcurrentHashMap<>();
+    protected ConcurrentMap<String, Cache<K,V>> caches = new ConcurrentHashMap<>();
 
-    protected final String id;
-    protected final TypeConfig.Cache cacheType;
+    protected String id;
+    protected TypeConfig.Cache cacheType;
     protected ExpiryPolicy expiryPolicy;  // ExpiryPolicy used by all the caches registered in this service, if not overridden for a particular cache
 
     public CacheService(String id, TypeConfig.Cache cacheType) {

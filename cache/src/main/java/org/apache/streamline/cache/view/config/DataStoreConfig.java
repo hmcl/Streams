@@ -16,7 +16,7 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.config;
+package com.hortonworks.iotas.cache.view.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -16,17 +16,20 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.io.loader;
+package com.hortonworks.iotas.cache.view.io.loader;
 
-import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.view.datastore.DataStoreReader;
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
+
 import org.slf4j.Logger;
 
 import java.util.Collection;
 
+/** Loads cache synchronously or asynchronously depending on implementation, and calls
+ * {@link CacheLoaderCallback} when cache loading is complete */
 public abstract class CacheLoader<K,V> {
-    protected final Cache<K,V> cache;
-    protected final DataStoreReader<K, V> dataStoreReader;
+    protected Cache<K,V> cache;
+    protected DataStoreReader<K, V> dataStoreReader;
 
     public CacheLoader(Cache<K, V> cache, DataStoreReader<K,V> dataStoreReader) {
         this.cache = cache;
@@ -35,7 +38,7 @@ public abstract class CacheLoader<K,V> {
 
     public abstract void loadAll(Collection<? extends K> keys, CacheLoaderCallback<K,V> callback);
 
-    protected void handleException(Collection<? extends K> keys, CacheLoaderCallback<K, V> callback, Exception e, Logger LOG) {
+    protected void handleException(Collection<? extends K> keys, CacheLoaderCallback<K, V> callback, Exception e, final Logger LOG) {
         final String msg = String.format("Exception occurred while loading keys [%s]", keys);
         callback.onCacheLoadingFailure(new Exception(msg, e));
         LOG.error(msg, e);

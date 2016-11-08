@@ -16,13 +16,14 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.impl.redis;
+package com.hortonworks.iotas.cache.view.impl.redis;
 
-import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.exception.CacheException;
-import org.apache.streamline.cache.stats.CacheStats;
-import org.apache.streamline.cache.view.config.ExpiryPolicy;
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.stats.CacheStats;
+import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
+import com.hortonworks.iotas.storage.exception.StorageException;
 import com.lambdaworks.redis.RedisConnection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +44,7 @@ public class RedisStringsCache<K, V> extends RedisAbstractCache<K, V> implements
     }
 
     @Override
-    public V get(K key) throws CacheException {
+    public V get(K key) throws StorageException {
         return redisConnection.get(key);
     }
 
@@ -77,8 +78,9 @@ public class RedisStringsCache<K, V> extends RedisAbstractCache<K, V> implements
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void putAll(Map<? extends K, ? extends V> entries) {
-        redisConnection.mset(new HashMap<>(entries));
+        redisConnection.mset((Map<K, V>) entries);  // cast is safe here
     }
 
     @SuppressWarnings("unchecked")

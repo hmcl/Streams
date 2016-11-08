@@ -16,15 +16,15 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.io.writer;
+package com.hortonworks.iotas.cache.view.io.writer;
 
-import org.apache.streamline.cache.view.datastore.DataStoreWriter;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreWriter;
 
 import java.util.Collection;
 import java.util.Map;
 
 public class CacheWriterSync<K,V> implements CacheWriter<K,V> {
-    protected final DataStoreWriter<K, V> dataStoreWriter;
+    protected DataStoreWriter<K, V> dataStoreWriter;
 
     public CacheWriterSync(DataStoreWriter<K,V> dataStoreWriter) {
         this.dataStoreWriter = dataStoreWriter;

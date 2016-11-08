@@ -16,11 +16,13 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache.view.io.loader;
+package com.hortonworks.iotas.cache.view.io.loader;
 
-import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.view.datastore.DataStoreReader;
+import com.hortonworks.iotas.cache.Cache;
+import com.hortonworks.iotas.cache.view.StaticFactory;
+import com.hortonworks.iotas.cache.view.datastore.DataStoreReader;
 
+/** Factory of {@link CacheLoader} objects */
 public interface CacheLoaderFactory<K,V> {
     CacheLoader<K,V> create(Cache<K, V> cache, DataStoreReader<K, V> dataStoreReader);
 

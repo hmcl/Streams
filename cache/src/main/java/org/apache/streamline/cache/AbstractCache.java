@@ -16,12 +16,12 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache;
+package com.hortonworks.iotas.cache;
 
-import org.apache.streamline.cache.view.config.ExpiryPolicy;
+import com.hortonworks.iotas.cache.view.config.ExpiryPolicy;
 
 public abstract class AbstractCache<K, V> implements Cache<K, V> {
-    protected final ExpiryPolicy expiryPolicy;
+    protected ExpiryPolicy expiryPolicy;
 
     public AbstractCache() {
         this(null);
