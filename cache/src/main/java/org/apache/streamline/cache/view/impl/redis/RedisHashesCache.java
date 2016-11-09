@@ -27,14 +27,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("unchecked")
 public class RedisHashesCache<K, V> extends RedisAbstractCache<K, V> implements Cache<K, V> {
     private static   final Logger LOG = LoggerFactory.getLogger(RedisHashesCache.class);
 
-    private K key;
+    private final K key;    // The key of the Redis Hashes Cache
 
     public RedisHashesCache(RedisConnection<K, V> redisConnection, K key) {
         this(redisConnection, key, null);
@@ -52,10 +56,31 @@ public class RedisHashesCache<K, V> extends RedisAbstractCache<K, V> implements 
 
     @Override
     public Map<K, V> getAll(Collection<? extends K> fields) {
-        Map<K, V> present = redisConnection.hgetall(key);
-        present.entrySet().retainAll(fields);
-        LOG.debug("Entries existing in cache [{}]. Keys non existing in cache: [{}]", present, fields.removeAll(present.keySet()));
-        return present;
+        // all key/val pairs for the fields specified. If a key does not exist in Redis, a null value will be returned for that key
+        final List<V> all = redisConnection.hmget(key, toArray(fields));
+        final Map<K,V> inCache = Collections.emptyMap();    // val for a given field is not null
+        final Set<K> notInCache = new HashSet<>(fields);    // val for a given field is null
+
+        if(all != null) {
+            int i = 0;
+            for (K field : fields) {
+                if (i < all.size()) {       //Check just to be safe
+                    V val = all.get(i);
+                    if (val != null) {      // key present in cache
+                        inCache.put(field, val);
+                    } else {
+                        notInCache.add(field);
+                    }
+                }
+                i++;
+            }
+        }
+        LOG.debug("Entries in cache [{}]. Keys not in cache: [{}]", inCache, notInCache);
+        return inCache;
+    }
+
+    private K[] toArray(Collection<? extends K> fields) {
+        return fields.toArray(((K[]) new Object[fields.size()]));
     }
 
     @Override

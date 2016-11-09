@@ -124,7 +124,7 @@ public class ExpiryPolicy {
     }
 
     public boolean isEntries() {
-        return entries != 0;
+        return entries > 0;
     }
 
     public boolean isSize() {
