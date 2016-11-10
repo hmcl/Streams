@@ -40,19 +40,14 @@ import java.util.concurrent.ThreadFactory;
 
 public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
     private static final int DEFAULT_NUM_THREADS = 5;
-    private static final String CACHE_LOADER_THREAD = "cache-loader-thread";
+
 
     private static final Logger LOG = LoggerFactory.getLogger(CacheLoaderAsync.class);
 
     private ListeningExecutorService executorService;
 
     public CacheLoaderAsync(Cache<K, V> cache, DataStoreReader<K,V> dataStoreReader) {
-        this(cache, dataStoreReader, Executors.newFixedThreadPool(DEFAULT_NUM_THREADS, new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, CACHE_LOADER_THREAD);
-            }
-        }));
+        this(cache, dataStoreReader, Executors.newFixedThreadPool(DEFAULT_NUM_THREADS, new CacheLoaderThreadFactory()));
     }
 
     public CacheLoaderAsync(Cache<K, V> cache, DataStoreReader<K,V> dataStoreReader, ExecutorService executorService) {
@@ -68,6 +63,15 @@ public class CacheLoaderAsync<K,V> extends CacheLoader<K,V> {
         } catch (Exception e) {
             handleException(keys, callback, e, LOG);
         }
+    }
+
+    private static class CacheLoaderThreadFactory implements ThreadFactory {
+        private static final String CACHE_LOADER_THREAD = "cache-loader-thread-";
+        private static int count = 1;
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, CACHE_LOADER_THREAD + count++);
+            }
     }
 
     private class DataStoreCallable implements Callable<Map<K,V>> {
