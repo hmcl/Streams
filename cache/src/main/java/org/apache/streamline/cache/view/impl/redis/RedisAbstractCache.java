@@ -36,6 +36,9 @@ public abstract class RedisAbstractCache<K, V> extends AbstractCache<K, V> imple
         this(redisConnection, null);
     }
 
+    /**
+     * @param expiryPolicy {@link ExpiryPolicy} to apply to all the entries in the cache
+     */
     public RedisAbstractCache(RedisConnection<K, V> redisConnection, ExpiryPolicy expiryPolicy) {
         super(expiryPolicy);
         this.redisConnection = redisConnection;

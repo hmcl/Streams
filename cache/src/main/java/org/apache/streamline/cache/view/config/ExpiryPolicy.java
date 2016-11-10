@@ -26,68 +26,8 @@ public class ExpiryPolicy {
     private long entries;
     private Size size;
 
-    public ExpiryPolicy() {
-    }
-
-    public static class Ttl {
-        private long count;
-        private TimeUnit unit;
-        private long ttlSeconds;
-
-        @JsonCreator
-        public Ttl(@JsonProperty("count") long count,
-                   @JsonProperty("unit") TimeUnit unit) {
-            this.count = count;
-            this.unit = unit;
-            this.ttlSeconds= unit.toSeconds(count);
-        }
-
-        public long getCount() {
-            return count;
-        }
-
-        public void setCount(long count) {
-            this.count = count;
-        }
-
-        public TimeUnit getUnit() {
-            return unit;
-        }
-
-        public void setUnit(TimeUnit unit) {
-            this.unit = unit;
-        }
-
-        public long getTtlSeconds() {
-            return ttlSeconds;
-        }
-    }
-
-    public static class Size {
-        private long count;
-        private long bytes;
-        private BytesUnit unit;
-
-        @JsonCreator
-        public Size(@JsonProperty("count") long count,
-                    @JsonProperty("unit") BytesUnit unit) {
-            this.count = count;
-            this.unit = unit;
-            this.bytes = unit.toBytes(count);
-        }
-
-        public long getCount() {
-            return count;
-        }
-
-        public long getBytes() {
-            return bytes;
-        }
-
-        public BytesUnit getUnit() {
-            return unit;
-        }
-    }
+    // For Jackson
+    private ExpiryPolicy() { }
 
     public ExpiryPolicy(Ttl ttl, long entries, Size size) {
         this.ttl = ttl;
@@ -129,5 +69,69 @@ public class ExpiryPolicy {
 
     public boolean isSize() {
         return size != null;
+    }
+
+    // =====
+
+    public static class Ttl {
+        private long count;
+        private TimeUnit unit;
+        private long ttlSeconds;
+
+        @JsonCreator
+        public Ttl(@JsonProperty("count") long count,
+                   @JsonProperty("unit") TimeUnit unit) {
+            this.count = count;
+            this.unit = unit;
+            this.ttlSeconds= unit.toSeconds(count);
+        }
+
+        public long getCount() {
+            return count;
+        }
+
+        public void setCount(long count) {
+            this.count = count;
+        }
+
+        public TimeUnit getUnit() {
+            return unit;
+        }
+
+        public void setUnit(TimeUnit unit) {
+            this.unit = unit;
+        }
+
+        public long getTtlSeconds() {
+            return ttlSeconds;
+        }
+    }
+
+    // =====
+
+    public static class Size {
+        private long count;
+        private long bytes;
+        private BytesUnit unit;
+
+        @JsonCreator
+        public Size(@JsonProperty("count") long count,
+                    @JsonProperty("unit") BytesUnit unit) {
+            this.count = count;
+            this.unit = unit;
+            this.bytes = unit.toBytes(count);
+        }
+
+        public long getCount() {
+            return count;
+        }
+
+        public long getBytes() {
+            return bytes;
+        }
+
+        public BytesUnit getUnit() {
+            return unit;
+        }
     }
 }
