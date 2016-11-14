@@ -1,10 +1,8 @@
 package org.apache.streamline.streams.runtime;
 
 import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.view.config.CacheConfig;
 import org.apache.streamline.streams.Result;
 import org.apache.streamline.streams.StreamlineEvent;
-import org.apache.streamline.streams.exception.ConfigException;
 import org.apache.streamline.streams.exception.ProcessingException;
 
 import java.util.List;
@@ -12,12 +10,12 @@ import java.util.Map;
 
 /**
  * Cache backed {@link CustomProcessorRuntime} that stores into the cache arbitrary values as
- * computed by {@link CacheBackedProcessorRuntime#getVal(StreamlineEvent, List)}
+ * computed by {@link CacheBackedCustomProcessorRuntime#getVal(StreamlineEvent, List)}
  *
  * @param <K> Type of the key used to cache values
  * @param <V> Type of the values to put/get into/from the cache
  */
-public abstract class CacheBackedProcessorRuntime<K, V> implements CustomProcessorRuntime {
+public abstract class CacheBackedCustomProcessorRuntime<K, V> implements CustomProcessorRuntime {
     private Cache<K, V> cache;
 
     @Override
@@ -33,8 +31,8 @@ public abstract class CacheBackedProcessorRuntime<K, V> implements CustomProcess
 
     /**
      * This final method provides a default implementation that calls the method
-     * {@link CacheBackedProcessorRuntime#processResults(StreamlineEvent)}.The implementation
-     * with the logic to compute the results should go in {@link CacheBackedProcessorRuntime#processResults(StreamlineEvent)}.
+     * {@link CacheBackedCustomProcessorRuntime#processResults(StreamlineEvent)}.The implementation
+     * with the logic to compute the results should go in {@link CacheBackedCustomProcessorRuntime#processResults(StreamlineEvent)}.
      */
     @Override
     public final List<Result> process(StreamlineEvent event) throws ProcessingException {
@@ -74,10 +72,10 @@ public abstract class CacheBackedProcessorRuntime<K, V> implements CustomProcess
 
     /**
      * Returns the value that is to be stored into the cache. This value can be the {@code List<Result>} as returned by
-     * {@link CacheBackedProcessorRuntime#processResults(StreamlineEvent)},
+     * {@link CacheBackedCustomProcessorRuntime#processResults(StreamlineEvent)},
      * or it can be any value that can be computed using the input arguments.
      * @param results List of results that is to be used to create the value to store into the cache. This is typically the result of
-     *                {@link CacheBackedProcessorRuntime#processResults(StreamlineEvent)}
+     *                {@link CacheBackedCustomProcessorRuntime#processResults(StreamlineEvent)}
      * @param event that is to be used to create the value to store into the cache
      * @return The value to be stored into the cache.
      */
@@ -85,7 +83,7 @@ public abstract class CacheBackedProcessorRuntime<K, V> implements CustomProcess
 
     /**
      * @return A CacheFactory object that is used to create the cache instance used by this
-     * {@link CacheBackedProcessorRuntime}
+     * {@link CacheBackedCustomProcessorRuntime}
      */
     public abstract CacheFactory<K,V> getCacheFactory();
 
@@ -93,10 +91,10 @@ public abstract class CacheBackedProcessorRuntime<K, V> implements CustomProcess
 
     /**
      * Cache backed {@link CustomProcessorRuntime} that stores into the cache the results computed by
-     * {@link CacheBackedProcessorRuntime#processResults(StreamlineEvent)}
+     * {@link CacheBackedCustomProcessorRuntime#processResults(StreamlineEvent)}
      * @param <K> Type of the key used to cache values
      */
-    public static abstract class CacheResults<K> extends CacheBackedProcessorRuntime<K, List<Result>> {
+    public static abstract class CacheResults<K> extends CacheBackedCustomProcessorRuntime<K, List<Result>> {
         @Override
         protected List<Result> getResultsForCachedValue(List<Result> results) {
             return results;
