@@ -2,13 +2,13 @@ package org.apache.streamline.storage.cache.impl;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.cache.CacheStats;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import org.apache.streamline.cache.Cache;
 import org.apache.streamline.cache.exception.NonexistentStorableKeyException;
-import org.apache.streamline.cache.stats.CacheStats;
-import org.apache.streamline.cache.view.config.ExpiryPolicy;
+import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
 import org.apache.streamline.storage.Storable;
 import org.apache.streamline.storage.StorableKey;
 import org.apache.streamline.storage.StorageManager;
@@ -28,7 +28,7 @@ public class GuavaCache implements Cache<StorableKey, Storable> {
     private final StorageManager dao;
     private final LoadingCache<StorableKey, Storable> guavaCache;
 
-    public GuavaCache(final StorageManager dao, CacheBuilder guavaCacheBuilder) {
+    public GuavaCache(final StorageManager dao, CacheBuilder<StorableKey, Storable> guavaCacheBuilder) {
         this.dao = dao;
         this.guavaCache = guavaCacheBuilder.build(new CacheLoader<StorableKey, Storable>() {
             @Override

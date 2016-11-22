@@ -19,8 +19,8 @@
 package org.apache.streamline.cache.view.service;
 
 import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.view.config.ExpiryPolicy;
-import org.apache.streamline.cache.view.config.TypeConfig;
+import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
+import org.apache.streamline.cache.config.jackson.TypeConfig;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

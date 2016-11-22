@@ -18,10 +18,15 @@
 
 package org.apache.streamline.cache;
 
-import org.apache.streamline.cache.view.io.loader.CacheLoaderCallback;
+import org.apache.streamline.cache.services.io.CacheLoader;
 
 import java.util.Collection;
 
-public interface LoadableCache<K, V> extends Cache<K, V> {
-    void loadAll(Collection<? extends K> keys, CacheLoaderCallback<K,V> callback);
+public interface LoadableCache<K, V> extends ManagedCache<K, V> {
+    /**
+     * Load cache with key value pairs from external resource. It can be sync or async
+     * @param keys Collection of keys to load
+     * @param listener callback when cache loading is complete
+     */
+    void loadAll(Collection<? extends K> keys, CacheLoader.Listener<K,V> listener);
 }

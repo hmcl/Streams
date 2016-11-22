@@ -16,30 +16,50 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache;
+package org.apache.streamline.cache.config.jackson;
 
-import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public abstract class AbstractCache<K, V> implements Cache<K, V> {
-    protected ExpiryPolicy expiryPolicy;
-
-    public AbstractCache() {
-        this(null);
+public interface TypeConfig {
+    enum Cache {
+        @JsonProperty("redis")
+        REDIS,
+        @JsonProperty("guava")
+        GUAVA,
     }
 
-    public AbstractCache(ExpiryPolicy expiryPolicy) {
-        this.expiryPolicy = expiryPolicy;
+    enum RedisDatatype {
+        @JsonProperty("strings")
+        STRINGS,
+        @JsonProperty("hashes")
+        HASHES;
     }
 
-    @Override
-    public ExpiryPolicy getExpiryPolicy() {
-        return expiryPolicy;
+    enum DataStore {
+        @JsonProperty("phoenix")
+        PHOENIX,
+        @JsonProperty("mysql")
+        MYSQL,
+        @JsonProperty("hbase")
+        HBASE;
     }
 
-    @Override
-    public String toString() {
-        return "AbstractCache{" +
-                "expiryPolicy=" + expiryPolicy +
-                '}';
+    enum CacheLoader {
+        @JsonProperty("sync")
+        SYNC,
+        @JsonProperty("async")
+        ASYNC;
+    }
+
+    enum CacheReader {
+        @JsonProperty("through")
+        THROUGH
+    }
+
+    enum CacheWriter {
+        @JsonProperty("sync")
+        SYNC,
+        @JsonProperty("async")
+        ASYNC;
     }
 }

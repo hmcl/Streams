@@ -16,36 +16,19 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache;
+package org.apache.streamline.cache.config.jackson;
 
+import java.util.Collections;
+import java.util.List;
 
-import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
+public class CachesConfig {
+    private List<CacheConfig> caches;
 
-import java.util.Collection;
-import java.util.Map;
+    public List<CacheConfig> getCaches() {
+        return Collections.unmodifiableList(caches);
+    }
 
-
-public interface Cache<K, V> {
-    V get(K key);
-
-    Map<K, V> getAll(Collection<? extends K> keys);
-
-    void put(K key, V val);
-
-    void putAll(Map<? extends K, ? extends V> entries);
-
-    void remove(K key);
-
-    void removeAll(Collection<? extends K> keys);
-
-    void clear();
-
-    long size();
-
-    <S> S stats();
-
-    // TODO
-    default ExpiryPolicy getExpiryPolicy() {
-        return ExpiryPolicy.none();
+    public void setCaches(List<CacheConfig> caches) {
+        this.caches = caches;
     }
 }

@@ -23,13 +23,13 @@ import org.apache.streamline.cache.view.DataStoreBackedCache;
 import org.apache.streamline.cache.view.service.CacheService;
 import org.apache.streamline.cache.view.service.CacheServiceId;
 import org.apache.streamline.cache.view.service.RedisCacheService;
-import org.apache.streamline.cache.view.service.registry.CacheServiceLocalRegistry;
-import org.apache.streamline.cache.view.service.registry.CacheServiceRegistry;
+import org.apache.streamline.cache.view.service.registry.CacheManagerLocalRegistry;
+import org.apache.streamline.cache.view.service.registry.CacheManagerRegistry;
 
 import java.util.HashMap;
 
 public class CacheClientMain {
-    private static final CacheServiceRegistry cacheRegistry = CacheServiceLocalRegistry.INSTANCE;
+    private static final CacheManagerRegistry cacheRegistry = CacheManagerLocalRegistry.INSTANCE;
 
     public static void main(String[] args) {
         CacheClientMain instance = new CacheClientMain();

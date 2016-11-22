@@ -18,7 +18,7 @@
 
 package org.apache.streamline.cache.view.service;
 
-import org.apache.streamline.cache.view.Factory;
+import org.apache.streamline.cache.util.Factory;
 
 public class CacheServiceJsonFactory<K,V> implements Factory<CacheService<K,V>> {
     @Override

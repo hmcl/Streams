@@ -1,0 +1,132 @@
+---
+caches:
+  -
+    cache:
+      key:
+        type: "java.lang.String"
+        codec: "keyCodecFactory"
+      val:
+        type: "java.lang.Integer"
+        codec: "valCodecFactory"
+      services:
+        storage:
+          id: "data-store-redis-1"
+          type: "mysql / phoenix / hbase / memory"
+          namespace: "table-name" # or namespaceFactory
+          storage-factory:  # TODO
+          storage-class: "org.apache.streamline.cache.view.datastore.phoenix.PhoenixDataStore"
+          connection:
+            host: "localhost"
+            port: "8888"
+          config: # p1=v1, p2=v2 common to all the services
+        # one reader/writer/loader requires at least one storage configuration
+        reader: "through"
+        writer: "sync / async"
+          # TODO maybe not for now
+          queue:
+          parallelism:
+        loader: "sync / async"
+      manager-id: "redis-cache-1"
+      type: "redis / guava / hazelcast / memcached"
+      service-class: "org.apache.streamline.cache.service.RedisCacheService"
+      connection:
+        host: "localhost"
+        port: "6379"
+        pool:
+          max-idle: 5
+          max-active: 20
+      expiry-policy:
+        ttl:
+          count: 10
+          unit: "seconds"
+        entries: 1000
+        size:
+          count: 10
+          unit: "megabytes"
+      views:
+        -
+          view:
+            id: "hashes-view-1"
+            type: "hashes"
+            key: "hashes-key-1"
+        -
+          view:
+            id: "hashes-view-2"
+            type: "hashes"
+            key: "hashes-key-2"
+            expiry-policy:
+              ttl:
+                count: 10
+                unit: "seconds"
+              entries: 1000
+              size:
+                count: 10
+                unit: "megabytes"
+        -
+          view:
+            id: "strings-view"
+            type: "strings"
+  -
+    cache:
+      id: "guava-1"
+      type: "guava"
+      data-store:
+        id: "data-store-guava-1"
+        type: "phoenix"
+        connection:
+          host: "127.0.0.1"
+          port: "8888"
+        load: "sync"
+        read: "through"
+        write: "async"
+      expiry-policy:
+        ttl:
+          count: 100
+          unit: "milliseconds"
+      views:
+        -
+          view:
+            id: "guava-1-view-1"
+        -
+          view:
+            id: "guava-1-view-2"
+            expiry-policy:
+              ttl:
+                count: 10
+                unit: "seconds"
+  -
+    cache:
+      id: "guava-2"
+      type: "guava"
+      views:
+        -
+          view:
+            id: "guava-2-view-1"
+        -
+          view:
+            id: "guava-2-view-2"
+            expiry-policy:
+              entries: 1000
+  -
+    cache:
+      id: "memcached-cache-1"
+      type: "memcached"
+      connection:
+        host: "198.122,123.100"
+        port: "1234"
+      expiry-policy:
+        ttl:
+          count: 10
+          unit: "seconds"
+        entries: 1000
+      views:
+        -
+          view:
+            id: "memcached-view-1"
+        -
+          view:
+            id: "memcached-view-2"
+            expiry-policy:
+              ttl:
+                count: 5
+                unit: "seconds"

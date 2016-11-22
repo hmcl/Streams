@@ -20,7 +20,7 @@ package org.apache.streamline.cache.view.service;
 
 import org.apache.streamline.cache.Cache;
 import org.apache.streamline.cache.view.DataStoreBackedCache;
-import org.apache.streamline.cache.view.config.TypeConfig;
+import org.apache.streamline.cache.config.jackson.TypeConfig;
 import org.apache.streamline.cache.view.datastore.DataStoreReader;
 import org.apache.streamline.cache.view.datastore.DataStoreWriter;
 import org.apache.streamline.cache.view.io.loader.CacheLoader;

@@ -18,13 +18,13 @@
 
 package org.apache.streamline.cache.view.service;
 
-import org.apache.streamline.cache.view.Factory;
-import org.apache.streamline.cache.view.config.CacheConfig;
-import org.apache.streamline.cache.view.config.ExpiryPolicy;
-import org.apache.streamline.cache.view.config.TypeConfig;
-import org.apache.streamline.cache.view.config.ViewConfig;
-import org.apache.streamline.cache.view.impl.redis.RedisHashesCache;
-import org.apache.streamline.cache.view.impl.redis.RedisStringsCache;
+import org.apache.streamline.cache.util.Factory;
+import org.apache.streamline.cache.config.jackson.CacheConfig;
+import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
+import org.apache.streamline.cache.config.jackson.TypeConfig;
+import org.apache.streamline.cache.config.jackson.ViewConfig;
+import org.apache.streamline.cache.view.redis.RedisHashesCache;
+import org.apache.streamline.cache.view.redis.RedisStringsCache;
 import com.lambdaworks.redis.RedisConnection;
 
 import java.util.Arrays;

@@ -16,36 +16,34 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache;
+package org.apache.streamline.cache.services.io;
 
-
-import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
+import org.apache.streamline.cache.view.datastore.DataStoreWriter;
+import org.apache.streamline.cache.view.io.writer.CacheWriter;
 
 import java.util.Collection;
 import java.util.Map;
 
+public class CacheWriterSync<K,V> implements CacheWriter<K,V> {
+    protected DataStoreWriter<K, V> dataStoreWriter;
 
-public interface Cache<K, V> {
-    V get(K key);
+    public CacheWriterSync(DataStoreWriter<K,V> dataStoreWriter) {
+        this.dataStoreWriter = dataStoreWriter;
+    }
 
-    Map<K, V> getAll(Collection<? extends K> keys);
+    public void write(K key, V val) {
+        dataStoreWriter.write(key, val);
+    }
 
-    void put(K key, V val);
+    public void writeAll(Map<? extends K, ? extends V> entries) {
+        dataStoreWriter.writeAll(entries);
+    }
 
-    void putAll(Map<? extends K, ? extends V> entries);
+    public void delete(K key) {
+        dataStoreWriter.delete(key);
+    }
 
-    void remove(K key);
-
-    void removeAll(Collection<? extends K> keys);
-
-    void clear();
-
-    long size();
-
-    <S> S stats();
-
-    // TODO
-    default ExpiryPolicy getExpiryPolicy() {
-        return ExpiryPolicy.none();
+    public void deleteAll(Collection<? extends K> keys){
+        dataStoreWriter.deleteAll(keys);
     }
 }

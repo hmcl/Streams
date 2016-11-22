@@ -18,34 +18,23 @@
 
 package org.apache.streamline.cache;
 
+import org.apache.streamline.cache.exception.CacheException;
 
-import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
+/**
+ * Cache that uses external resources that need to be managed, e.g.
+ * open and close connections.
+ * @param <K> type of key
+ * @param <V> type of value
+ */
+public interface ManagedCache<K, V> extends Cache<K, V>, AutoCloseable {
+   /**
+    * Initialize external resource
+    */
+    void init();
 
-import java.util.Collection;
-import java.util.Map;
-
-
-public interface Cache<K, V> {
-    V get(K key);
-
-    Map<K, V> getAll(Collection<? extends K> keys);
-
-    void put(K key, V val);
-
-    void putAll(Map<? extends K, ? extends V> entries);
-
-    void remove(K key);
-
-    void removeAll(Collection<? extends K> keys);
-
-    void clear();
-
-    long size();
-
-    <S> S stats();
-
-    // TODO
-    default ExpiryPolicy getExpiryPolicy() {
-        return ExpiryPolicy.none();
-    }
+    /**
+     * Close external resource
+     */
+    @Override
+    void close() throws CacheException;
 }

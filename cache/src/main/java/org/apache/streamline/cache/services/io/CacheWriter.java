@@ -16,36 +16,28 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache;
+package org.apache.streamline.cache.services.io;
 
-
-import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
+import org.apache.streamline.cache.services.Service;
 
 import java.util.Collection;
 import java.util.Map;
 
+/** Write/delete entries (data) to/from the underlying storage.
+ *  Methods that receive a collection keys/entries should be optimized for bulk operations
+ *  @param <K>   Type of the key
+ *  @param <V>   Type of the value
+ **/
+public interface CacheWriter<K,V> extends Service {
+    /** Write one key/val pair */
+    void write(K key, V val);
 
-public interface Cache<K, V> {
-    V get(K key);
+    /** Write a collection of entries */
+    void writeAll(Map<? extends K, ? extends V> entries);
 
-    Map<K, V> getAll(Collection<? extends K> keys);
+    /** Delete one key/val pair */
+    void delete(K key);
 
-    void put(K key, V val);
-
-    void putAll(Map<? extends K, ? extends V> entries);
-
-    void remove(K key);
-
-    void removeAll(Collection<? extends K> keys);
-
-    void clear();
-
-    long size();
-
-    <S> S stats();
-
-    // TODO
-    default ExpiryPolicy getExpiryPolicy() {
-        return ExpiryPolicy.none();
-    }
+    /** Read a collection of keys */
+    void deleteAll(Collection<? extends K> keys);
 }

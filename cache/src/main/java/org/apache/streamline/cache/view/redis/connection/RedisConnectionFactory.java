@@ -16,36 +16,26 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache;
+package org.apache.streamline.cache.view.redis.connection;
 
+import com.lambdaworks.redis.RedisClient;
+import com.lambdaworks.redis.RedisConnection;
+import com.lambdaworks.redis.RedisURI;
+import com.lambdaworks.redis.codec.RedisCodec;
 
-import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
+public class RedisConnectionFactory<K,V> extends AbstractRedisConnectionFactory<K,V> {
 
-import java.util.Collection;
-import java.util.Map;
+    public RedisConnectionFactory(RedisURI redisURI, RedisCodec<K, V> codec) {
+        this(RedisClient.create(redisURI), codec);
+    }
 
+    public RedisConnectionFactory(RedisClient redisClient, RedisCodec<K, V> codec) {
+        super(redisClient, codec);
+    }
 
-public interface Cache<K, V> {
-    V get(K key);
-
-    Map<K, V> getAll(Collection<? extends K> keys);
-
-    void put(K key, V val);
-
-    void putAll(Map<? extends K, ? extends V> entries);
-
-    void remove(K key);
-
-    void removeAll(Collection<? extends K> keys);
-
-    void clear();
-
-    long size();
-
-    <S> S stats();
-
-    // TODO
-    default ExpiryPolicy getExpiryPolicy() {
-        return ExpiryPolicy.none();
+    @Override
+    public RedisConnection<K, V> create() {
+        return redisClient.connect(codec);
     }
 }
+0

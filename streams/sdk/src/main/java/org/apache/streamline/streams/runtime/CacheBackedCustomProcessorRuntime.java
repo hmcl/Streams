@@ -1,6 +1,7 @@
 package org.apache.streamline.streams.runtime;
 
 import org.apache.streamline.cache.Cache;
+import org.apache.streamline.cache.CacheFactory;
 import org.apache.streamline.streams.Result;
 import org.apache.streamline.streams.StreamlineEvent;
 import org.apache.streamline.streams.exception.ProcessingException;
@@ -85,7 +86,7 @@ public abstract class CacheBackedCustomProcessorRuntime<K, V> implements CustomP
      * @return A CacheFactory object that is used to create the cache instance used by this
      * {@link CacheBackedCustomProcessorRuntime}
      */
-    public abstract CacheFactory<K,V> getCacheFactory();
+    public abstract CacheFactory<? extends Cache<K,V>> getCacheFactory();
 
     // =====
 
@@ -104,15 +105,5 @@ public abstract class CacheBackedCustomProcessorRuntime<K, V> implements CustomP
         protected List<Result> getVal(StreamlineEvent event, List<Result> results) {
             return results;
         }
-    }
-
-    // =====
-
-    // TODO: This marker interface is here just for early code review feedback. It will
-    // be part of the cache module. I am also going to try to provide a default implementation
-    // that can be used to create the cache from it's configuration, without requiring the user
-    // to have to know all the details of how to create a cache object.
-    interface CacheFactory<K,V> {
-        Cache<K,V> create();
     }
 }

@@ -16,36 +16,29 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache;
+package org.apache.streamline.cache.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.junit.Test;
 
-import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
-import java.util.Collection;
-import java.util.Map;
+public class ParseYamlTestConfigTest {
+    final ObjectMapper objMapYaml = new ObjectMapper(new YAMLFactory());
 
-
-public interface Cache<K, V> {
-    V get(K key);
-
-    Map<K, V> getAll(Collection<? extends K> keys);
-
-    void put(K key, V val);
-
-    void putAll(Map<? extends K, ? extends V> entries);
-
-    void remove(K key);
-
-    void removeAll(Collection<? extends K> keys);
-
-    void clear();
-
-    long size();
-
-    <S> S stats();
-
-    // TODO
-    default ExpiryPolicy getExpiryPolicy() {
-        return ExpiryPolicy.none();
+    @Test
+    public void testParseYaml() throws Exception {
+        //CachesConfig cachesConfig = objMapYaml.readValues(new File("cache/cache-config.yaml"), CachesConfig.class);
+        //System.out.println(cachesConfig);
     }
+
+
+    private Reader load(String fileName) throws IOException {
+        return new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(fileName));
+    }
+
+
 }

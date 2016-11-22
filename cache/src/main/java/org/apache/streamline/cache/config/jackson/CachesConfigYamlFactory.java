@@ -16,36 +16,26 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache;
+package org.apache.streamline.cache.config.jackson;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
+import org.apache.streamline.cache.view.StaticFactory;
 
-import java.util.Collection;
-import java.util.Map;
+import java.io.IOException;
+import java.io.InputStream;
 
+public enum CachesConfigYamlFactory implements StaticFactory<CachesConfig, InputStream> {
+    INSTANCE;
 
-public interface Cache<K, V> {
-    V get(K key);
-
-    Map<K, V> getAll(Collection<? extends K> keys);
-
-    void put(K key, V val);
-
-    void putAll(Map<? extends K, ? extends V> entries);
-
-    void remove(K key);
-
-    void removeAll(Collection<? extends K> keys);
-
-    void clear();
-
-    long size();
-
-    <S> S stats();
-
-    // TODO
-    default ExpiryPolicy getExpiryPolicy() {
-        return ExpiryPolicy.none();
+    @Override
+    public CachesConfig create(InputStream yaml) {
+        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+        try {
+            return objectMapper.readValue(yaml, CachesConfig.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading cache view config from YAML file");
+        }
     }
 }

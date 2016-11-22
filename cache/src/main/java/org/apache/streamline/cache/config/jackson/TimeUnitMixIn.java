@@ -16,36 +16,31 @@
  *   limitations under the License.
  */
 
-package org.apache.streamline.cache;
+package org.apache.streamline.cache.config.jackson;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
+import java.util.concurrent.TimeUnit;
 
-import java.util.Collection;
-import java.util.Map;
+public enum TimeUnitMixIn {
+    SECONDS("seconds");
 
+    @JsonIgnore
+    private String val;
 
-public interface Cache<K, V> {
-    V get(K key);
+    @JsonCreator
+    public static TimeUnit create(String val) {
+        return val == null ? null : TimeUnit.valueOf(val.toUpperCase());
+    }
 
-    Map<K, V> getAll(Collection<? extends K> keys);
+    TimeUnitMixIn(String val) {
+        this.val = val;
+    }
 
-    void put(K key, V val);
-
-    void putAll(Map<? extends K, ? extends V> entries);
-
-    void remove(K key);
-
-    void removeAll(Collection<? extends K> keys);
-
-    void clear();
-
-    long size();
-
-    <S> S stats();
-
-    // TODO
-    default ExpiryPolicy getExpiryPolicy() {
-        return ExpiryPolicy.none();
+    @JsonValue
+    public String getVal() {
+        return val;
     }
 }
