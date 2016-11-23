@@ -18,6 +18,10 @@ public class CacheConfigBuilder {
         return this;
     }
 
+    CacheConfigBuilder withLoader(CacheLoader loader) {
+        return this;
+    }
+
     CacheConfigBuilder withReader(){
         return this;
     }
@@ -36,5 +40,13 @@ public class CacheConfigBuilder {
 
     void m() {
         CacheBuilder.newBuilder().
+    }
+
+    interface Expiry {
+        void creation();
+
+        void access();
+
+        void update();
     }
 }
