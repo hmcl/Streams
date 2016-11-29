@@ -18,23 +18,21 @@
 
 package org.apache.streamline.cache.exception;
 
-public class InvalidCacheViewConfigException extends RuntimeException {
-    public InvalidCacheViewConfigException() {
-    }
+public class InvalidCacheConfigException extends RuntimeException {
 
-    public InvalidCacheViewConfigException(String message) {
+    public InvalidCacheConfigException(String message) {
         super(message);
     }
 
-    public InvalidCacheViewConfigException(String message, Throwable cause) {
+    public InvalidCacheConfigException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public InvalidCacheViewConfigException(Throwable cause) {
+    public InvalidCacheConfigException(Throwable cause) {
         super(cause);
     }
 
-    public InvalidCacheViewConfigException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public InvalidCacheConfigException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

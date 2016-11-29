@@ -2,20 +2,21 @@ package org.apache.streamline.cache.view.guava;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.google.common.cache.Weigher;
 
 import org.apache.streamline.cache.Cache;
 import org.apache.streamline.cache.CacheManager;
 import org.apache.streamline.cache.config.builder.CacheConfig;
+import org.apache.streamline.cache.config.eviction.Eviction;
+import org.apache.streamline.cache.config.expiry.Expiry;
 import org.apache.streamline.cache.exception.CacheAlreadyExistsException;
 import org.apache.streamline.cache.exception.CacheException;
+import org.apache.streamline.cache.exception.InvalidCacheConfigException;
 import org.apache.streamline.cache.services.Service;
-import org.apache.streamline.cache.services.io.CacheReader;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 
 public class GuavaCacheManager implements CacheManager {
     private ConcurrentMap<String, Cache<?, ?>> caches = new ConcurrentHashMap<>();
@@ -27,7 +28,46 @@ public class GuavaCacheManager implements CacheManager {
 
     private <K, V, T extends Cache<K, V>> T createFromConfig(final CacheConfig<K, V> config) {
 
-        final CacheBuilder<K, V> builder = CacheBuilder.newBuilder().<K,V>expireAfterAccess(10, TimeUnit.MILLISECONDS);
+        @SuppressWarnings("unchecked")
+        final CacheBuilder<K, V> builder = (CacheBuilder<K, V>) CacheBuilder.newBuilder();
+
+        // config Expiry
+        Expiry expiry = config.getExpiry();
+
+        if (expiry.isOnCreation() && expiry.isOnUpdate()) {
+            if (!expiry.onUpdate().equals(expiry.onCreation())) {
+                throw new InvalidCacheConfigException("Update and creation expiry must have the same value");
+            }
+        }
+
+        if (expiry.isOnCreation()) {
+            builder.expireAfterWrite(expiry.onCreation().getDuration(), expiry.onCreation().getTimeUnit());
+        } else if (expiry.isOnUpdate()) {
+            builder.expireAfterWrite(expiry.onUpdate().getDuration(), expiry.onUpdate().getTimeUnit());
+        }
+
+        if (expiry.isOnAccess()) {
+            builder.expireAfterAccess(expiry.onAccess().getDuration(), expiry.onAccess().getTimeUnit());
+        }
+
+        // config Eviction
+        final Eviction eviction = config.getEviction();
+
+        if (eviction.isEntries()) {
+            builder.maximumSize(eviction.entries());
+        }
+
+        if (eviction.isSize()) {
+            builder.weigher((Weigher<K, V>) (key, value) -> {
+
+
+            });
+            builder.maximumWeight(size/weigh)
+
+
+        }
+
+//        if (config.)
 
         com.google.common.cache.Cache<K, V> guavaCache;
         if (config.isReadable()) {

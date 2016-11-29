@@ -23,7 +23,7 @@ import com.lambdaworks.redis.RedisURI;
 import com.lambdaworks.redis.codec.RedisCodec;
 import com.lambdaworks.redis.codec.Utf8StringCodec;
 
-import org.apache.streamline.cache.exception.InvalidCacheViewConfigException;
+import org.apache.streamline.cache.exception.InvalidCacheConfigException;
 import org.apache.streamline.cache.exception.MissingCacheViewConfigException;
 import org.apache.streamline.cache.util.Factory;
 import org.apache.streamline.cache.config.jackson.CacheConfig;
@@ -109,7 +109,7 @@ public class CacheServiceFactory<T extends CacheService> implements Factory<T>{
             case HBASE:
                 throw new UnsupportedOperationException("HBASE DataStore not supported");
             default:
-                throw new InvalidCacheViewConfigException("Invalid DataStore option. " + dataStoreType
+                throw new InvalidCacheConfigException("Invalid DataStore option. " + dataStoreType
                         + ". Valid options are " + Arrays.toString(TypeConfig.DataStore.values()));
         }
     }
@@ -124,7 +124,7 @@ public class CacheServiceFactory<T extends CacheService> implements Factory<T>{
             case HBASE:
                 throw new UnsupportedOperationException("HBASE DataStore not supported");
             default:
-                throw new InvalidCacheViewConfigException("Invalid DataStore option. " + dataStoreType
+                throw new InvalidCacheConfigException("Invalid DataStore option. " + dataStoreType
                         + ". Valid options are " + Arrays.toString(TypeConfig.DataStore.values()));
         }
     }
@@ -137,7 +137,7 @@ public class CacheServiceFactory<T extends CacheService> implements Factory<T>{
             case ASYNC:
                 return new CacheWriterAsync(dataStoreWriter);
             default:
-                throw new InvalidCacheViewConfigException("Invalid CacheWriter option. " + cacheWriterType
+                throw new InvalidCacheConfigException("Invalid CacheWriter option. " + cacheWriterType
                         + ". Valid options are " + Arrays.toString(TypeConfig.CacheWriter.values()));
         }
     }
@@ -152,7 +152,7 @@ public class CacheServiceFactory<T extends CacheService> implements Factory<T>{
                 case ASYNC:
                     return new CacheLoaderAsyncFactory<>();
                 default:
-                    throw new InvalidCacheViewConfigException("Invalid CacheLoader option. " + cacheLoaderType
+                    throw new InvalidCacheConfigException("Invalid CacheLoader option. " + cacheLoaderType
                             + ". Valid options are " + Arrays.toString(TypeConfig.CacheLoader.values()));
             }
         }
@@ -183,10 +183,10 @@ public class CacheServiceFactory<T extends CacheService> implements Factory<T>{
             try {
                 return ReflectionHelper.newInstance(codec);
             } catch (ClassCastException e) {
-                throw new InvalidCacheViewConfigException("Codec must be the fqn of of a class that implements "
+                throw new InvalidCacheConfigException("Codec must be the fqn of of a class that implements "
                         +  RedisCodec.class.getName(), e);
             }catch (Exception e) {
-                throw new InvalidCacheViewConfigException("Exception occurred while creating codec", e);
+                throw new InvalidCacheConfigException("Exception occurred while creating codec", e);
             }
         }
     }

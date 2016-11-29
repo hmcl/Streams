@@ -1,5 +1,7 @@
 package org.apache.streamline.cache.config.builder;
 
+import org.apache.streamline.cache.config.eviction.Eviction;
+import org.apache.streamline.cache.config.expiry.Expiry;
 import org.apache.streamline.cache.services.io.CacheLoader;
 import org.apache.streamline.cache.services.io.CacheReader;
 import org.apache.streamline.cache.services.io.CacheWriter;
@@ -7,20 +9,22 @@ import org.apache.streamline.cache.services.io.CacheWriter;
 public class CacheConfig<K,V> {
     private String cacheId;    // cannot be null
 
-    private Class<K> key;      // cannot be null
+    private Class<K> key;      // cannot be null    // TODO: Do I need this ?
     private Class<V> val;      // cannot be null
 
     private CacheType type;    // cannot be null
 
-    private Eviction<?> eviction;    // can be null
-    private Expiry  expiry;          // can be null
+    private Eviction eviction;    // can be null
+    private Expiry expiry;          // can be null
 
     private CacheLoader<K,V> loader;    // can be null
     private CacheReader<K,V> reader;    // can be null
     private CacheWriter<K,V> writer;    // can be null
 
+    private Object arbitraryConfig;     // TODO
+
     // Package protected such that builder is used to create this cache
-    CacheConfig(String cacheId, Class<K> key, Class<V> val, CacheType type, Eviction<?> eviction, Expiry expiry,
+    CacheConfig(String cacheId, Class<K> key, Class<V> val, CacheType type, Eviction eviction, Expiry expiry,
                 CacheLoader<K, V> loader, CacheReader<K, V> reader, CacheWriter<K, V> writer) {
         this.cacheId = cacheId;
         this.key = key;
@@ -49,7 +53,7 @@ public class CacheConfig<K,V> {
         return type;
     }
 
-    public Eviction<?> getEviction() {
+    public Eviction getEviction() {
         return eviction;
     }
 
@@ -79,6 +83,10 @@ public class CacheConfig<K,V> {
 
     public boolean isWritable() {
         return writer != null;
+    }
+    @SuppressWarnings("unchecked")
+    public <C> C getArbitraryConfig() {     //TODO
+        return (C) arbitraryConfig;
     }
 
     @Override

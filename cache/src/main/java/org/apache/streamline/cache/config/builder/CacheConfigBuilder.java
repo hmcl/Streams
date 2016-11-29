@@ -2,6 +2,8 @@ package org.apache.streamline.cache.config.builder;
 
 import com.google.common.cache.CacheBuilder;
 
+import org.apache.streamline.cache.config.eviction.Eviction;
+import org.apache.streamline.cache.config.expiry.Expiry;
 import org.apache.streamline.cache.services.io.CacheLoader;
 import org.apache.streamline.cache.util.Factory;
 
