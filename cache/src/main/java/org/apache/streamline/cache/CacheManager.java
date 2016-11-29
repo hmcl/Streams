@@ -1,33 +1,30 @@
 package org.apache.streamline.cache;
 
+import org.apache.streamline.cache.config.builder.CacheConfig;
 import org.apache.streamline.cache.exception.CacheException;
 import org.apache.streamline.cache.services.Service;
 
 import java.util.Collection;
 
-public interface CacheManager<K,V> extends AutoCloseable {
+public interface CacheManager extends AutoCloseable {
 
-    Cache<K, V> createCache(String cacheId, CacheConfiguration<K, V> config);
+    <K,V,T extends Cache<K, V>> T createCache(String cacheId, CacheConfig<K, V> config);
 
-    <K,V> Cache<K, V> createCache(String cacheId, CacheBuilderComplex<K,V> cacheBuilder);
+    <K,V,T extends Cache<K, V>> T addCache(String cacheId, T cache);
 
-    public Cache<K, V> createAndRegisterCache(String cacheId, CacheBuilderComplex<K,V> cacheBuilder);
-
-    public Cache<K, V> createAndRegisterCache(String cacheId, CacheConfig cacheConfig);
-
-    public void addCache(String cacheId, Cache<K,V> cache);
-
-    public Cache<K, V> getCache(String cacheId);
+    <K,V,T extends Cache<K, V>> T getCache(String cacheId);
 
     /**
      * closes and removes cache from this manager
      */
-    public void removeCache(String cacheId);
+    void removeCache(String cacheId);
 
-    public void init() throws CacheException;
+    void init() throws CacheException;
 
     @Override
-    public void close() throws CacheException;
+    void close() throws CacheException;
 
-    public Collection<? extends Service> getServices();
+    Collection<? extends Service> getServices();
+
+    Collection<? extends CacheConfig> getConfigs();
 }

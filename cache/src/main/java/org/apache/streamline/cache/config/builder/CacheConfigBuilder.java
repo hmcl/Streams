@@ -5,11 +5,20 @@ import com.google.common.cache.CacheBuilder;
 import org.apache.streamline.cache.services.io.CacheLoader;
 import org.apache.streamline.cache.util.Factory;
 
-public class CacheConfigBuilder {
-
+public class CacheConfigBuilder<K,V> {
+    private String cacheId;
     private CacheConfig cacheConfig;
+    private Expiry expiry;
+    private Eviction<?> eviction;
 
-    CacheConfigBuilder withCacheConfig(CacheConfig cacheConfig) {
+    public CacheConfigBuilder(String cacheId) {
+        this.cacheId = cacheId;
+    }
+
+    /**
+     * inherits from given config
+     */
+    CacheConfigBuilder fromConfig(CacheConfig cacheConfig) {
         this.cacheConfig = cacheConfig;
         return this;
     }
@@ -30,23 +39,22 @@ public class CacheConfigBuilder {
         return this;
     }
 
-    CacheConfigBuilder withEviction(){
+    CacheConfigBuilder withEviction(Eviction eviction){
+        this.eviction = eviction;
         return this;
     }
 
-    CacheConfigBuilder withExpiry(){
+    CacheConfigBuilder withExpiry(Expiry expiry){
+        this.expiry = expiry;
         return this;
+    }
+
+    CacheConfig<K,V> build() {
+        return new CacheConfig<K, V>();
     }
 
     void m() {
         CacheBuilder.newBuilder().
     }
 
-    interface Expiry {
-        void creation();
-
-        void access();
-
-        void update();
-    }
 }

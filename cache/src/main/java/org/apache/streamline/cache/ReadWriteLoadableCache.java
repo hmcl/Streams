@@ -151,16 +151,6 @@ public class ReadWriteLoadableCache<K,V> implements LoadableCache<K,V> {
 
     }
 
-    /*@Override
-    public String toString() {
-        return "DataStoreBackedCache{" +
-                "cache=" + cacheView +
-                ", cacheLoader=" + cacheLoader +
-                ", cacheWriter=" + cacheWriter +
-                ", cacheReader=" + cacheReader +
-                "}";
-    }*/
-
     @Override
     public String toString() {
         return "ReadWriteLoadableCache{" +
@@ -180,7 +170,7 @@ public class ReadWriteLoadableCache<K,V> implements LoadableCache<K,V> {
         }
 
         if (cacheReader == null && cacheLoader == null && cacheWriter == null) {
-            throw new IllegalArgumentException(String.format("At least one non null implementation of %s,  %s, or  %s " +
+            throw new NullPointerException(String.format("At least one non null implementation of %s,  %s, or  %s " +
                             "is required. If no backing storage is required consider using a non backed implementation of %s",
                     getSimpleName(CacheReader.class), getSimpleName(CacheWriter.class),
                     getSimpleName(CacheLoader.class), getSimpleName(Cache.class)));
