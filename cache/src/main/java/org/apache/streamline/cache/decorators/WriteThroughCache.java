@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class WriteThroughCache<K,V> extends DelegateCache<K,V> {
@@ -17,6 +18,7 @@ public class WriteThroughCache<K,V> extends DelegateCache<K,V> {
 
     public WriteThroughCache(Cache<K, V> delegate, CacheWriter<K, V> cacheWriter) {
         super(delegate);
+        Objects.requireNonNull(cacheWriter);
         this.cacheWriter = cacheWriter;
     }
 

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 public class LoadableCache<K,V> extends DelegateCache<K,V> {
     protected static final Logger LOG = LoggerFactory.getLogger(LoadableCache.class);
@@ -16,6 +17,7 @@ public class LoadableCache<K,V> extends DelegateCache<K,V> {
 
     public LoadableCache(Cache<K, V> delegate, CacheLoader<K, V> cacheLoader) {
         super(delegate);
+        Objects.requireNonNull(cacheLoader);
         this.cacheLoader = cacheLoader;
     }
 
