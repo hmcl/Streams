@@ -5,6 +5,7 @@ import org.apache.streamline.cache.exception.CacheException;
 import org.apache.streamline.cache.services.Service;
 
 import java.util.Collection;
+import java.util.Map;
 
 public interface CacheManager extends AutoCloseable {
 
@@ -27,4 +28,7 @@ public interface CacheManager extends AutoCloseable {
     Collection<? extends Service> getServices();
 
     Collection<? extends CacheConfig> getConfigs();
+
+    /** Configs associated with each cache. Not all caches managed by this manager may have an associated config */
+    Map<String, ? extends CacheConfig> getCacheConfigs();
 }

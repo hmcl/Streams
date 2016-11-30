@@ -1,5 +1,7 @@
 package org.apache.streamline.cache.config.builder;
 
+import com.google.common.cache.CacheBuilderSpec;
+
 import org.apache.streamline.cache.config.eviction.Eviction;
 import org.apache.streamline.cache.config.expiry.Expiry;
 import org.apache.streamline.cache.services.io.CacheLoader;
@@ -7,8 +9,6 @@ import org.apache.streamline.cache.services.io.CacheReader;
 import org.apache.streamline.cache.services.io.CacheWriter;
 
 public class CacheConfig<K,V> {
-    private String cacheId;    // cannot be null
-
     private Class<K> key;      // cannot be null    // TODO: Do I need this ?
     private Class<V> val;      // cannot be null
 
@@ -21,12 +21,11 @@ public class CacheConfig<K,V> {
     private CacheReader<K,V> reader;    // can be null
     private CacheWriter<K,V> writer;    // can be null
 
-    private Object arbitraryConfig;     // TODO
+    private Object delegateConfig;     // TODO
 
     // Package protected such that builder is used to create this cache
-    CacheConfig(String cacheId, Class<K> key, Class<V> val, CacheType type, Eviction eviction, Expiry expiry,
+    CacheConfig(Class<K> key, Class<V> val, CacheType type, Eviction eviction, Expiry expiry,
                 CacheLoader<K, V> loader, CacheReader<K, V> reader, CacheWriter<K, V> writer) {
-        this.cacheId = cacheId;
         this.key = key;
         this.val = val;
         this.type = type;
@@ -35,10 +34,6 @@ public class CacheConfig<K,V> {
         this.loader = loader;
         this.reader = reader;
         this.writer = writer;
-    }
-
-    public String getCacheId() {
-        return cacheId;
     }
 
     public Class<K> getKey() {
@@ -53,10 +48,12 @@ public class CacheConfig<K,V> {
         return type;
     }
 
+    /** TODO: Do I need this */
     public Eviction getEviction() {
         return eviction;
     }
 
+    /** TODO: Do I need this */
     public Expiry getExpiry() {
         return expiry;
     }
@@ -85,14 +82,13 @@ public class CacheConfig<K,V> {
         return writer != null;
     }
     @SuppressWarnings("unchecked")
-    public <C> C getArbitraryConfig() {     //TODO
-        return (C) arbitraryConfig;
+    public <C> C getDelegateCacheConfig() {     //TODO
+        return (C) delegateConfig;
     }
 
     @Override
     public String toString() {
         return "CacheConfig{" +
-                "cacheId='" + cacheId + '\'' +
                 ", key=" + key +
                 ", val=" + val +
                 ", type=" + type +
@@ -102,5 +98,17 @@ public class CacheConfig<K,V> {
                 ", reader=" + reader +
                 ", writer=" + writer +
                 '}';
+    }
+
+    class GuavaCacheConfig <K,V> extends CacheConfig<K,V> {
+
+        GuavaCacheConfig(Class<K> key, Class<V> val, CacheType type, Eviction eviction, Expiry expiry, CacheLoader<K, V> loader, CacheReader<K, V> reader, CacheWriter<K, V> writer) {
+            super(key, val, type, eviction, expiry, loader, reader, writer);
+        }
+
+        @Override @SuppressWarnings("unchecked")
+        public CacheBuilderSpec getDelegateCacheConfig() {
+            return CacheBuilderSpec.parse("");
+        }
     }
 }
