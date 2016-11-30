@@ -4,9 +4,12 @@ import com.google.common.cache.CacheBuilderSpec;
 
 import org.apache.streamline.cache.config.eviction.Eviction;
 import org.apache.streamline.cache.config.expiry.Expiry;
+import org.apache.streamline.cache.services.Service;
 import org.apache.streamline.cache.services.io.CacheLoader;
 import org.apache.streamline.cache.services.io.CacheReader;
 import org.apache.streamline.cache.services.io.CacheWriter;
+
+import java.util.Collection;
 
 public class CacheConfig<K,V> {
     private Class<K> key;      // cannot be null    // TODO: Do I need this ?
@@ -22,6 +25,8 @@ public class CacheConfig<K,V> {
     private CacheWriter<K,V> writer;    // can be null
 
     private Object delegateConfig;     // TODO
+
+    private Collection<? extends Service> services;
 
     // Package protected such that builder is used to create this cache
     CacheConfig(Class<K> key, Class<V> val, CacheType type, Eviction eviction, Expiry expiry,
@@ -84,6 +89,10 @@ public class CacheConfig<K,V> {
     @SuppressWarnings("unchecked")
     public <C> C getDelegateCacheConfig() {     //TODO
         return (C) delegateConfig;
+    }
+
+    private Collection<? extends Service> getServices() {
+        return services;
     }
 
     @Override

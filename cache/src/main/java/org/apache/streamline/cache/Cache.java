@@ -48,4 +48,9 @@ public interface Cache<K, V> {
     default ExpiryPolicy getExpiryPolicy() {
         return ExpiryPolicy.none();
     }
+
+    // TODO
+    interface Managed extends Cache {
+
+    }
 }

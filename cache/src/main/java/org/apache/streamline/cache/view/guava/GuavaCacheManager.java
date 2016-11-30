@@ -3,41 +3,44 @@ package org.apache.streamline.cache.view.guava;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.cache.CacheLoader;
-import com.google.common.cache.Weigher;
 
 import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.CacheManager;
 import org.apache.streamline.cache.config.builder.CacheConfig;
-import org.apache.streamline.cache.config.eviction.Eviction;
-import org.apache.streamline.cache.config.expiry.Expiry;
 import org.apache.streamline.cache.decorators.LoadableCache;
 import org.apache.streamline.cache.decorators.WriteThroughCache;
-import org.apache.streamline.cache.exception.CacheAlreadyExistsException;
-import org.apache.streamline.cache.exception.CacheException;
-import org.apache.streamline.cache.exception.InvalidCacheConfigException;
-import org.apache.streamline.cache.services.Service;
+import org.apache.streamline.cache.manager.CacheManager;
+import org.apache.streamline.cache.manager.LocalCacheManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+public class GuavaCacheManager extends LocalCacheManager implements CacheManager {
+    private static final Logger LOG = LoggerFactory.getLogger(GuavaCacheManager.class);
 
-public class GuavaCacheManager implements CacheManager {
-    private ConcurrentMap<String, Cache<?, ?>> caches = new ConcurrentHashMap<>();
-
-    @Override @SuppressWarnings("unchecked")
-    public <K, V> GuavaCache<K,V> createCache(String cacheId, CacheConfig<K, V> config) {
-        return addCache(cacheId, createFromConfig(config));
+    @Override
+    public <K, V> Cache<K, V> createCache(String cacheId, CacheConfig<K, V> config) {
+        try {
+            addConfig(cacheId, config);
+            addServices(cacheId, config);
+            final Cache<K, V> cacheView = createCacheFromConfig(config);
+            addCache(cacheId, cacheView);
+            LOG.info("Created cache id [{}], config [{}], view instance [{}]", cacheId, config, cacheView.getClass().getSimpleName());
+            return cacheView;
+        } catch (Exception e) {
+            LOG.error("Exception occurred while creating cache with id [{}] and config [{}]", cacheId, config, e);
+            removeCache(cacheId);
+            removeServices(cacheId);
+            removeConfig(cacheId);
+            throw e;
+        }
     }
 
-    private <K, V, T extends Cache<K, V>> T createFromConfig(final CacheConfig<K, V> config) {
 
+    private <K, V> Cache<K, V> createCacheFromConfig(final CacheConfig<K, V> config) {
         @SuppressWarnings("unchecked")
-        final CacheBuilder<K, V> builder = (CacheBuilder<K, V>) CacheBuilder.from((CacheBuilderSpec) config.getDelegateCacheConfig());
-
+        final CacheBuilder<K, V> builder = (CacheBuilder<K, V>) CacheBuilder.from(config.<CacheBuilderSpec>getDelegateCacheConfig());
         com.google.common.cache.Cache<K, V> guavaCache;
-        if (config.isReadable()) {
 
-//            final LoadingCache<K, V> loadingCache = builder.build(new CacheLoader<K, V>() {
+        if (config.isReadable()) {
             guavaCache = builder.build(new CacheLoader<K, V>() {
                 @Override
                 public V load(K key) throws Exception {
@@ -45,10 +48,10 @@ public class GuavaCacheManager implements CacheManager {
                 }
             });
         } else {
-             guavaCache = builder.build();
+            guavaCache = builder.build();
         }
 
-        T cacheView = new GuavaCache<K,V>(guavaCache);
+        Cache<K, V> cacheView = new GuavaCache<>(guavaCache);
 
         if (config.isLoadable()) {
             cacheView = new LoadableCache<>(cacheView, config.getLoader());
@@ -59,43 +62,5 @@ public class GuavaCacheManager implements CacheManager {
         }
 
         return cacheView;
-    }
-
-    @Override
-    public <K, V, T extends Cache<K, V>> T addCache(String cacheId, T cache) {
-        if (caches.putIfAbsent(cacheId, cache) != null) {
-            throw new CacheAlreadyExistsException("Cache with id [" + cacheId + "] already exists");
-        }
-        return cache;
-    }
-
-    @Override @SuppressWarnings("unchecked")
-    public <K, V, T extends Cache<K, V>> T getCache(String cacheId) {
-        return (T) caches.get(cacheId);
-    }
-
-    @Override
-    public void removeCache(String cacheId) {
-        caches.remove(cacheId);
-    }
-
-    @Override
-    public void init() throws CacheException {
-
-    }
-
-    @Override
-    public void close() throws CacheException {
-
-    }
-
-    @Override
-    public Collection<? extends Service> getServices() {
-        return null;
-    }
-
-    @Override
-    public Collection<? extends CacheConfig> getConfigs() {
-        return null;
     }
 }
