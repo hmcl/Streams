@@ -10,6 +10,7 @@ import org.apache.streamline.cache.decorators.LoadableCache;
 import org.apache.streamline.cache.decorators.WriteThroughCache;
 import org.apache.streamline.cache.manager.CacheManager;
 import org.apache.streamline.cache.manager.LocalCacheManager;
+import org.apache.streamline.cache.services.io.CacheReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +43,10 @@ public class GuavaCacheManager extends LocalCacheManager implements CacheManager
 
         if (config.isReadable()) {
             guavaCache = builder.build(new CacheLoader<K, V>() {
+                final CacheReader<K, V> reader = config.getReader();
                 @Override
                 public V load(K key) throws Exception {
-                    return config.getReader().read(key);
+                    return reader.read(key);
                 }
             });
         } else {

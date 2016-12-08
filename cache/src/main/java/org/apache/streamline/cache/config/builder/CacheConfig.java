@@ -10,6 +10,7 @@ import org.apache.streamline.cache.services.io.CacheReader;
 import org.apache.streamline.cache.services.io.CacheWriter;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public class CacheConfig<K,V> {
     private Class<K> key;      // cannot be null    // TODO: Do I need this ?
@@ -86,13 +87,14 @@ public class CacheConfig<K,V> {
     public boolean isWritable() {
         return writer != null;
     }
-    @SuppressWarnings("unchecked")
-    public <C> C getDelegateCacheConfig() {     //TODO
-        return (C) delegateConfig;
+
+    public Collection<? extends Service> getServices() {
+
     }
 
-    private Collection<? extends Service> getServices() {
-        return services;
+    /** To be implemented by subclasses */
+    public <C> Optional<C> getDelegateCacheConfig() {
+        return Optional.empty();
     }
 
     @Override
@@ -109,9 +111,9 @@ public class CacheConfig<K,V> {
                 '}';
     }
 
-    class GuavaCacheConfig <K,V> extends CacheConfig<K,V> {
+    public static class Guava<K,V> extends CacheConfig<K,V> {
 
-        GuavaCacheConfig(Class<K> key, Class<V> val, CacheType type, Eviction eviction, Expiry expiry, CacheLoader<K, V> loader, CacheReader<K, V> reader, CacheWriter<K, V> writer) {
+        Guava(Class<K> key, Class<V> val, CacheType type, Eviction eviction, Expiry expiry, CacheLoader<K, V> loader, CacheReader<K, V> reader, CacheWriter<K, V> writer) {
             super(key, val, type, eviction, expiry, loader, reader, writer);
         }
 

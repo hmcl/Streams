@@ -8,14 +8,9 @@ import org.apache.streamline.cache.services.io.CacheLoader;
 import org.apache.streamline.cache.util.Factory;
 
 public class CacheConfigBuilder<K,V> {
-    private String cacheId;
     private CacheConfig cacheConfig;
     private Expiry expiry;
     private Eviction<?> eviction;
-
-    public CacheConfigBuilder(String cacheId) {
-        this.cacheId = cacheId;
-    }
 
     /**
      * inherits from given config

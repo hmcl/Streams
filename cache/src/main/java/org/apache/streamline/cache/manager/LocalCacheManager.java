@@ -46,12 +46,12 @@ public abstract class LocalCacheManager implements CacheManager {
     }
 
     @Override
-    public Map<String, CacheConfig> getCacheConfigs() {
+    public Map<String, ? extends CacheConfig> getCacheConfigs() {
         return Collections.unmodifiableMap(configs);
     }
 
     @Override
-    public Map<String, Collection<Service>> getCacheServices() {
+    public Map<String, Collection<? extends Service>> getCacheServices() {
         return Collections.unmodifiableMap(services);
     }
 

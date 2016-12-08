@@ -70,7 +70,7 @@ public class WindowRulesBolt extends BaseWindowedBolt {
             StreamlineEvent event;
             for (Tuple input : inputWindow.get()) {
                 if ((event = getStreamlineEventFromTuple(input)) != null) {
-                    LOG.debug("++++++++ Executing tuple [{}] which contains StreamlineEvent [{}]", input, event);
+                        LOG.debug("++++++++ Executing tuple [{}] which contains StreamlineEvent [{}]", input, event);
                     processAndEmit(event, curGroup);
                     curGroup.add(input);
                 }

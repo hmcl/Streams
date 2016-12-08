@@ -22,9 +22,9 @@ public interface CacheManager extends AutoCloseable {
     <K,V> Cache<K, V> removeCache(String cacheId);
 
     /** Configs associated with each cache. Not all caches managed by this manager may have an associated config */
-    Map<String, CacheConfig> getCacheConfigs();
+    Map<String, ? extends CacheConfig> getCacheConfigs();
 
-    Map<String, Collection<Service>> getCacheServices();
+    Map<String, Collection<? extends Service>> getCacheServices();
 
     void init() throws CacheException;      // TODO Exception handling
 
