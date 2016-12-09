@@ -3,12 +3,12 @@ package org.apache.streamline.cache.manager;
 import org.apache.streamline.cache.Cache;
 import org.apache.streamline.cache.config.builder.CacheConfig;
 import org.apache.streamline.cache.exception.CacheException;
-import org.apache.streamline.cache.services.Service;
 
-import java.util.Collection;
 import java.util.Map;
 
 public interface CacheManager extends AutoCloseable {
+
+    void init() throws CacheException;      // TODO Exception handling
 
     <K,V> Cache<K, V> createCache(String cacheId, CacheConfig<K, V> config);
 
@@ -21,12 +21,7 @@ public interface CacheManager extends AutoCloseable {
      */
     <K,V> Cache<K, V> removeCache(String cacheId);
 
-    /** Configs associated with each cache. Not all caches managed by this manager may have an associated config */
-    Map<String, ? extends CacheConfig> getCacheConfigs();
-
-    Map<String, Collection<? extends Service>> getCacheServices();
-
-    void init() throws CacheException;      // TODO Exception handling
+    <K,V> Map<String, CacheRuntimeInfo<K,V>> getRuntimeInfo();
 
     @Override
     void close() throws CacheException;

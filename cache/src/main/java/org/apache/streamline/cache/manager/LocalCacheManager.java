@@ -21,6 +21,8 @@ public abstract class LocalCacheManager implements CacheManager {
     protected ConcurrentMap<String, CacheConfig<?, ?>> configs = new ConcurrentHashMap<>();
     protected ConcurrentMap<String, Collection<Service>> services = new ConcurrentHashMap<>();
 
+    protected ConcurrentMap<String, CacheRuntimeInfo<?, ?>> caches = new ConcurrentHashMap<>();
+
     @Override
     public abstract <K, V> Cache<K, V> createCache(String cacheId, CacheConfig<K, V> config);
 
