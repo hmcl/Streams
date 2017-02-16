@@ -2,7 +2,7 @@ package org.apache.streamline.cache.manager;
 
 import org.apache.streamline.cache.Cache;
 import org.apache.streamline.cache.config.builder.CacheConfig;
-import org.apache.streamline.cache.services.Service;
+import org.apache.streamline.cache.services.CacheService;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -22,7 +22,7 @@ public interface CacheRuntimeInfo<K,V> {
     Optional<CacheConfig> getCacheConfig();
 
     /**
-     * {@link Service}s used by this {@link Cache}
+     * {@link CacheService}s used by this {@link Cache}
      */
-    Optional<Collection<? extends Service>> getCacheServices();
+    Optional<Collection<? extends CacheService>> getCacheServices();
 }

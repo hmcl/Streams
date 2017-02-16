@@ -1,6 +1,6 @@
 package org.apache.streamline.cache.services;
 
-public interface Service extends AutoCloseable {
+public interface CacheService extends AutoCloseable {
     void init();
 
     @Override

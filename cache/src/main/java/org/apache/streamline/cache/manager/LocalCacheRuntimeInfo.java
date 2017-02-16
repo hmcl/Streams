@@ -2,7 +2,7 @@ package org.apache.streamline.cache.manager;
 
 import org.apache.streamline.cache.Cache;
 import org.apache.streamline.cache.config.builder.CacheConfig;
-import org.apache.streamline.cache.services.Service;
+import org.apache.streamline.cache.services.CacheService;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -37,7 +37,7 @@ public class LocalCacheRuntimeInfo<K,V> implements CacheRuntimeInfo<K,V> {
     }
 
     @Override
-    public Optional<Collection<? extends Service>> getCacheServices() {
+    public Optional<Collection<? extends CacheService>> getCacheServices() {
         if (getCacheConfig().isPresent()) {
             return cacheConfig.getServices();
         }

@@ -2,7 +2,7 @@ package org.apache.streamline.cache;
 
 import org.apache.streamline.cache.exception.CacheAlreadyExistsException;
 import org.apache.streamline.cache.exception.CacheNotFoundException;
-import org.apache.streamline.cache.services.Service;
+import org.apache.streamline.cache.services.CacheService;
 import org.apache.streamline.cache.services.io.CacheLoader;
 import org.apache.streamline.cache.services.io.CacheReader;
 import org.apache.streamline.cache.view.io.writer.CacheWriter;
@@ -24,7 +24,7 @@ public class CacheManagerImpl<K,V> implements AutoCloseable {
     Class<K> keyClass;
     Class<K> valClass;
 
-    Collection<? extends Service> services;
+    Collection<? extends CacheService> services;
 
     interface Key<K> {
         Class<K> getType();
@@ -95,7 +95,7 @@ public class CacheManagerImpl<K,V> implements AutoCloseable {
 
 
         public void start() {
-            for (Service service : services) {
+            for (CacheService cacheService : services) {
 
             }
         }

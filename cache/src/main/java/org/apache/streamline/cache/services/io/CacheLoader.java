@@ -1,6 +1,6 @@
 package org.apache.streamline.cache.services.io;
 
-import org.apache.streamline.cache.services.Service;
+import org.apache.streamline.cache.services.CacheService;
 
 import java.util.Collection;
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Map;
  *  @param <K>   Type of the key
  *  @param <V>   Type of the value
  **/
-public interface CacheLoader<K, V> extends Service {
+public interface CacheLoader<K, V> extends CacheService {
     /** Gets called when {@link CacheLoader} completes loading all keys */
     interface Listener<K,V> {
         void onCacheLoaded(Map<K, V> loaded);

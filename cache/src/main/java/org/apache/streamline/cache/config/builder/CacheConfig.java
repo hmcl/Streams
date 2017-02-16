@@ -6,7 +6,7 @@ import com.google.common.cache.CacheBuilderSpec;
 
 import org.apache.streamline.cache.config.eviction.Eviction;
 import org.apache.streamline.cache.config.expiry.Expiry;
-import org.apache.streamline.cache.services.Service;
+import org.apache.streamline.cache.services.CacheService;
 import org.apache.streamline.cache.services.io.CacheLoader;
 import org.apache.streamline.cache.services.io.CacheReader;
 import org.apache.streamline.cache.services.io.CacheWriter;
@@ -26,7 +26,7 @@ public class CacheConfig<K, V> {
     private CacheReader<K, V> reader;    // can be null
     private CacheWriter<K, V> writer;    // can be null
 
-    private Supplier<Collection<? extends Service>> services;   // memoize services
+    private Supplier<Collection<? extends CacheService>> services;   // memoize services
 
     // Package protected such that builder is used to create this cache
     CacheConfig(Class<K> key, Class<V> val, CacheType type, CacheLoader<K, V> loader,
@@ -76,12 +76,12 @@ public class CacheConfig<K, V> {
         return writer != null;
     }
 
-    public Optional<Collection<? extends Service>> getServices() {
+    public Optional<Collection<? extends CacheService>> getServices() {
         return services.get().isEmpty() ? Optional.empty() : Optional.of(services.get());
     }
 
-    private Collection<? extends Service> getActiveServices() {
-        final List<Service> servs = new ArrayList<>(3);
+    private Collection<? extends CacheService> getActiveServices() {
+        final List<CacheService> servs = new ArrayList<>(3);
 
         if (isReadable()) {
             servs.add(reader);

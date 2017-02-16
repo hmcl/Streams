@@ -6,7 +6,7 @@ import org.apache.streamline.cache.config.builder.CacheConfig;
 import org.apache.streamline.cache.exception.CacheAlreadyExistsException;
 import org.apache.streamline.cache.exception.CacheException;
 import org.apache.streamline.cache.exception.CacheNotFoundException;
-import org.apache.streamline.cache.services.Service;
+import org.apache.streamline.cache.services.CacheService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 public abstract class LocalCacheManager implements CacheManager {
     protected ConcurrentMap<String, Cache<?, ?>> caches = new ConcurrentHashMap<>();
     protected ConcurrentMap<String, CacheConfig<?, ?>> configs = new ConcurrentHashMap<>();
-    protected ConcurrentMap<String, Collection<Service>> services = new ConcurrentHashMap<>();
+    protected ConcurrentMap<String, Collection<CacheService>> services = new ConcurrentHashMap<>();
 
     protected ConcurrentMap<String, CacheRuntimeInfo<?, ?>> caches = new ConcurrentHashMap<>();
 
@@ -53,7 +53,7 @@ public abstract class LocalCacheManager implements CacheManager {
     }
 
     @Override
-    public Map<String, Collection<? extends Service>> getCacheServices() {
+    public Map<String, Collection<? extends CacheService>> getCacheServices() {
         return Collections.unmodifiableMap(services);
     }
 
