@@ -24,7 +24,6 @@ public class DelegateCache<K, V> implements Cache<K, V> {
 
     @Override
     public void put(K key, V val) {
-
         delegate.put(key, val);
     }
 

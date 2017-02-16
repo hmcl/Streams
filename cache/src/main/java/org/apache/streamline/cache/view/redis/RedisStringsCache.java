@@ -18,10 +18,11 @@
 
 package org.apache.streamline.cache.view.redis;
 
-import org.apache.streamline.cache.Cache;
-import org.apache.streamline.cache.stats.CacheStats;
-import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
 import com.lambdaworks.redis.RedisConnection;
+
+import org.apache.streamline.cache.Cache;
+import org.apache.streamline.cache.config.jackson.ExpiryPolicy;
+import org.apache.streamline.cache.stats.CacheStats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,7 @@ public class RedisStringsCache<K, V> extends RedisAbstractCache<K, V> implements
         final HashMap<K, V> present = new HashMap<>();
 
         if (ks.length != vals.size()) {
-            LOG.error("Number of keys [{}] does not match unexpected number of values [{}]. Returning empty map");
+            LOG.warn("Number of keys [{}] does not match unexpected number of values [{}]. Returning empty map");
         } else {
             for (int i = 0; i < vals.size(); i++) { // values come in order from Redis
                 final V val = vals.get(i);
