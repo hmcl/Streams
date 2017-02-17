@@ -1,6 +1,10 @@
 package org.apache.streamline.cache.exception;
 
-public class CacheServiceException extends Exception {
+public class CacheServiceException extends CacheException {
+
+    public CacheServiceException() {
+        super();
+    }
 
     public CacheServiceException(Throwable cause) {
         super(cause);

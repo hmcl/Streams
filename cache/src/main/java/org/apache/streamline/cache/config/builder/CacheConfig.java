@@ -16,28 +16,35 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public class CacheConfig<K, V> {
-    private Class<K> key;      // cannot be null    // TODO: Do I need this ?
-    private Class<V> val;      // cannot be null
+/**
+ * 
+ * @param <K> Type of the key
+ * @param <V> Type of the value
+ * @param <C> Type of the underlying cache configuration
+ */
+public class CacheConfig<K, V, C> {
+    private final Class<K> key;      // cannot be null    // TODO: Do I need this ?
+    private final Class<V> val;      // cannot be null
 
-    private CacheType type;    // cannot be null
+    private final CacheType type;    // cannot be null
 
-    private CacheLoader<K, V> loader;    // can be null
-    private CacheReader<K, V> reader;    // can be null
-    private CacheWriter<K, V> writer;    // can be null
+    private final C cacheConfig;
+    private final CacheLoader<K, V> loader;    // can be null
+    private final CacheReader<K, V> reader;    // can be null
+    private final CacheWriter<K, V> writer;    // can be null
 
-    private Supplier<Collection<? extends CacheService>> services;   // memoize services
+    private final Supplier<Collection<? extends CacheService>> cacheServices;   // memoize services
 
-    // Package protected such that builder is used to create this cache
-    CacheConfig(Class<K> key, Class<V> val, CacheType type, CacheLoader<K, V> loader,
+    public CacheConfig(Class<K> key, Class<V> val, CacheType type, C cacheConfig, CacheLoader<K, V> loader,
                 CacheReader<K, V> reader, CacheWriter<K, V> writer) {
         this.key = key;
         this.val = val;
         this.type = type;
+        this.cacheConfig = cacheConfig;
         this.loader = loader;
         this.reader = reader;
         this.writer = writer;
-        this.services = Suppliers.memoize(this::getActiveServices);
+        this.cacheServices = Suppliers.memoize(this::getActiveServices);
     }
 
     public Class<K> getKey() {
@@ -76,32 +83,29 @@ public class CacheConfig<K, V> {
         return writer != null;
     }
 
-    public Optional<Collection<? extends CacheService>> getServices() {
-        return services.get().isEmpty() ? Optional.empty() : Optional.of(services.get());
+    public Optional<Collection<? extends CacheService>> getCacheServices() {
+        return cacheServices.get().isEmpty() ? Optional.empty() : Optional.of(cacheServices.get());
     }
 
     private Collection<? extends CacheService> getActiveServices() {
-        final List<CacheService> servs = new ArrayList<>(3);
+        final List<CacheService> services = new ArrayList<>(3);
 
         if (isReadable()) {
-            servs.add(reader);
+            services.add(reader);
         }
 
         if (isLoadable()) {
-            servs.add(loader);
+            services.add(loader);
         }
 
         if (isWritable()) {
-            servs.add(writer);
+            services.add(writer);
         }
-        return servs;
+        return services;
     }
 
-    /**
-     * To be implemented by subclasses
-     */
-    public <C> Optional<C> getDelegateCacheConfig() {
-        return Optional.empty();
+    public Optional<C> getDelegateCacheConfig() {
+        return Optional.ofNullable(cacheConfig);
     }
 
     @Override

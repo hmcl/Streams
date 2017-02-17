@@ -6,29 +6,30 @@ import org.apache.streamline.cache.config.builder.CacheConfig;
 import org.apache.streamline.cache.exception.CacheAlreadyExistsException;
 import org.apache.streamline.cache.exception.CacheException;
 import org.apache.streamline.cache.exception.CacheNotFoundException;
-import org.apache.streamline.cache.services.CacheService;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
 
 @SuppressWarnings("unchecked")
 public abstract class LocalCacheManager implements CacheManager {
-    protected ConcurrentMap<String, Cache<?, ?>> caches = new ConcurrentHashMap<>();
-    protected ConcurrentMap<String, CacheConfig<?, ?>> configs = new ConcurrentHashMap<>();
-    protected ConcurrentMap<String, Collection<CacheService>> services = new ConcurrentHashMap<>();
-
-    protected ConcurrentMap<String, CacheRuntimeInfo<?, ?>> caches = new ConcurrentHashMap<>();
+    protected ConcurrentMap<String, CacheRuntimeInfo<?,?,?>> caches = new ConcurrentHashMap<>();
 
     @Override
-    public abstract <K, V> Cache<K, V> createCache(String cacheId, CacheConfig<K, V> config);
+    public abstract <K, V, C> Cache<K, V> createCache(String cacheId, CacheConfig<K, V, C> config);
 
     @Override
     public <K, V> Cache<K, V> addCache(String cacheId, Cache<K, V> cache) {
-        if (caches.putIfAbsent(cacheId, cache) != null) {
+        if (caches.putIfAbsent(cacheId, new LocalCacheRuntimeInfo<>(cacheId, cache)) != null) {
+            throw new CacheAlreadyExistsException("Cache with id [" + cacheId + "] already exists");
+        }
+        return cache;
+    }
+
+    protected <K, V, C> Cache<K, V> addCache(String cacheId, Cache<K, V> cache, CacheConfig<K, V, C> config) {
+        if (caches.putIfAbsent(cacheId, new LocalCacheRuntimeInfo<>(cacheId, cache, config)) != null) {
             throw new CacheAlreadyExistsException("Cache with id [" + cacheId + "] already exists");
         }
         return cache;
@@ -48,60 +49,22 @@ public abstract class LocalCacheManager implements CacheManager {
     }
 
     @Override
-    public Map<String, ? extends CacheConfig> getCacheConfigs() {
-        return Collections.unmodifiableMap(configs);
-    }
-
-    @Override
-    public Map<String, Collection<? extends CacheService>> getCacheServices() {
-        return Collections.unmodifiableMap(services);
+    public Map<String, CacheRuntimeInfo<?,?,?>> getRuntimeInfo() {
+        return Collections.unmodifiableMap(caches);
     }
 
     @Override
     public void init() throws CacheException {
-        for (Cache<?, ?> cache : caches.values()) {
-            if (cache instanceof ManagedCache) {
-                ((ManagedCache) cache).init();
-            }
-        }
+        exec(ManagedCache::init);
     }
 
     @Override
     public void close() throws CacheException {
-        for (Cache<?, ?> cache : caches.values()) {
-            if (cache instanceof ManagedCache) {
-                ((ManagedCache) cache).close();
-            }
-        }
+        exec(ManagedCache::close);
     }
 
-    // ======== Bookkeeping methods for use in subclasses ====
-
-    protected <K, V> void addConfig(String cacheId, CacheConfig<K, V> config) {
-        if (configs.putIfAbsent(cacheId, config) != null) {
-            throw new CacheException("Cache with id [" + cacheId + "] already configured");
-        }
-    }
-
-    protected <K, V> void addServices(String cacheId, CacheConfig<K, V> config) {
-        services.putIfAbsent(cacheId, new ArrayList<>());
-        if (config.isReadable()) {
-            services.get(cacheId).add(config.getReader());
-        }
-        if (config.isLoadable()) {
-            services.get(cacheId).add(config.getLoader());
-        }
-        if (config.isWritable()) {
-            services.get(cacheId).add(config.getWriter());
-        }
-    }
-
-    // used to revert state in case of exception
-    protected void removeServices(String cacheId) {
-        services.remove(cacheId);
-    }
-
-    protected <K, V> void removeConfig(String cacheId) {
-        configs.remove(cacheId);
+    private void exec(Consumer<ManagedCache> method) {
+        caches.values().stream().filter((cache) -> cache instanceof ManagedCache)
+                .forEach((cache) -> method.accept((ManagedCache) cache));
     }
 }

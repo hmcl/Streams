@@ -54,6 +54,16 @@ public class CacheWriterAsync<K, V> implements CacheWriter<K, V> {
         executorService.submit(new DataStoreDeleteRunnable(keys));
     }
 
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public void close() throws Exception {
+
+    }
+
     private class DataStoreWriteRunnable implements Runnable {
         private Map<? extends K, ? extends V> entries;
         private K key;

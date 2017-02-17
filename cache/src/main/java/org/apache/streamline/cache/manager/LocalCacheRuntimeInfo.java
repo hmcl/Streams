@@ -8,12 +8,16 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
-public class LocalCacheRuntimeInfo<K,V> implements CacheRuntimeInfo<K,V> {
+public class LocalCacheRuntimeInfo<K,V,C> implements CacheRuntimeInfo<K,V,C> {
     private String cacheId;
     private Cache<K, V> cache;
-    private CacheConfig<K,V> cacheConfig;
+    private CacheConfig<K,V,C> cacheConfig;
 
-    public LocalCacheRuntimeInfo(String cacheId, Cache<K, V> cache, CacheConfig<K, V> cacheConfig) {
+    public LocalCacheRuntimeInfo(String cacheId, Cache<K, V> cache) {
+        this(cacheId, cache, null);
+    }
+
+    public LocalCacheRuntimeInfo(String cacheId, Cache<K, V> cache, CacheConfig<K,V,C> cacheConfig) {
         Objects.requireNonNull(cacheId);
         Objects.requireNonNull(cache);
         this.cacheId = cacheId;
@@ -32,14 +36,14 @@ public class LocalCacheRuntimeInfo<K,V> implements CacheRuntimeInfo<K,V> {
     }
 
     @Override
-    public Optional<CacheConfig> getCacheConfig() {
+    public Optional<CacheConfig<K,V,C>> getCacheConfig() {
         return Optional.ofNullable(cacheConfig);
     }
 
     @Override
     public Optional<Collection<? extends CacheService>> getCacheServices() {
         if (getCacheConfig().isPresent()) {
-            return cacheConfig.getServices();
+            return cacheConfig.getCacheServices();
         }
         return Optional.empty();
     }
@@ -57,7 +61,7 @@ public class LocalCacheRuntimeInfo<K,V> implements CacheRuntimeInfo<K,V> {
             return false;
         }
 
-        return cacheId.equals(((LocalCacheRuntimeInfo<?, ?>) o).cacheId);
+        return cacheId.equals(((LocalCacheRuntimeInfo<?,?,?>) o).cacheId);
     }
 
     @Override

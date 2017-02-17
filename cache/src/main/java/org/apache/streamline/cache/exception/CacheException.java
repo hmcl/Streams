@@ -3,6 +3,10 @@ package org.apache.streamline.cache.exception;
 //TODO: Should this the a Checked Exception instead of a RuntimeException
 public class CacheException extends RuntimeException {
 
+    public CacheException() {
+        super();
+    }
+
     public CacheException(Throwable cause) {
         super(cause);
     }

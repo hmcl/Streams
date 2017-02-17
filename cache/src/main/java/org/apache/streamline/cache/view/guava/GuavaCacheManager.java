@@ -8,6 +8,7 @@ import org.apache.streamline.cache.Cache;
 import org.apache.streamline.cache.config.builder.CacheConfig;
 import org.apache.streamline.cache.decorators.LoadableCache;
 import org.apache.streamline.cache.decorators.WriteThroughCache;
+import org.apache.streamline.cache.exception.CacheConfigException;
 import org.apache.streamline.cache.manager.CacheManager;
 import org.apache.streamline.cache.manager.LocalCacheManager;
 import org.apache.streamline.cache.services.io.CacheReader;
@@ -18,49 +19,50 @@ public class GuavaCacheManager extends LocalCacheManager implements CacheManager
     private static final Logger LOG = LoggerFactory.getLogger(GuavaCacheManager.class);
 
     @Override
-    public <K, V> Cache<K, V> createCache(String cacheId, CacheConfig<K, V> config) {
+    public <K, V, C> Cache<K, V> createCache(String cacheId, CacheConfig<K, V, C> config) {
         try {
-            addConfig(cacheId, config);
-            addServices(cacheId, config);
-            final Cache<K, V> cacheView = createCacheFromConfig(config);
-            addCache(cacheId, cacheView);
-            LOG.info("Created cache id [{}], config [{}], view instance [{}]", cacheId, config, cacheView.getClass().getSimpleName());
+            @SuppressWarnings("unchecked")
+            final Cache<K, V> cacheView = createCacheFromConfig((CacheConfig<K, V, CacheBuilderSpec>) config);
+            addCache(cacheId, cacheView, config);
+            LOG.info("Created [cache={}] with [id={}] and [config={}]", cacheView, cacheId, config);
             return cacheView;
         } catch (Exception e) {
-            LOG.error("Exception occurred while creating cache with id [{}] and config [{}]", cacheId, config, e);
+            LOG.error("Exception occurred while creating cache with [id={}] and [config={}]", cacheId, config, e);
             removeCache(cacheId);
-            removeServices(cacheId);
-            removeConfig(cacheId);
             throw e;
         }
     }
 
 
-    private <K, V> Cache<K, V> createCacheFromConfig(final CacheConfig<K, V> config) {
+    private <K, V> Cache<K, V> createCacheFromConfig(final CacheConfig<K, V, CacheBuilderSpec> config) {
         @SuppressWarnings("unchecked")
-        final CacheBuilder<K, V> builder = (CacheBuilder<K, V>) CacheBuilder.from(config.<CacheBuilderSpec>getDelegateCacheConfig());
+        final CacheBuilder<K, V> gcBuilder =(CacheBuilder<K, V>) CacheBuilder.from(config.getDelegateCacheConfig()
+                .orElse(CacheBuilderSpec.parse("")));
+
         com.google.common.cache.Cache<K, V> guavaCache;
 
         if (config.isReadable()) {
-            guavaCache = builder.build(new CacheLoader<K, V>() {
-                final CacheReader<K, V> reader = config.getReader();
+            guavaCache = gcBuilder.build(new CacheLoader<K, V>() {
+                final CacheReader<K, V> reader = config.getReader().get();
                 @Override
                 public V load(K key) throws Exception {
                     return reader.read(key);
                 }
             });
         } else {
-            guavaCache = builder.build();
+            guavaCache = gcBuilder.build();
         }
 
         Cache<K, V> cacheView = new GuavaCache<>(guavaCache);
 
         if (config.isLoadable()) {
-            cacheView = new LoadableCache<>(cacheView, config.getLoader());
+            cacheView = new LoadableCache<>(cacheView, config.getLoader().orElseThrow(() ->
+                    new CacheConfigException("Failed to create LoadableCache because CacheLoader not specified")));
         }
 
         if (config.isWritable()) {
-            cacheView = new WriteThroughCache<>(cacheView, config.getWriter());
+            cacheView = new WriteThroughCache<>(cacheView, config.getWriter().orElseThrow(() ->
+                    new CacheConfigException("Failed to create WritableCache because CacheWriter not specified")));
         }
 
         return cacheView;

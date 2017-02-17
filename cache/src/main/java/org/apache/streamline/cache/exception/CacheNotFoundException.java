@@ -2,6 +2,10 @@ package org.apache.streamline.cache.exception;
 
 public class CacheNotFoundException extends CacheException {
 
+    public CacheNotFoundException() {
+        super();
+    }
+
     public CacheNotFoundException(String message) {
         super(message);
     }

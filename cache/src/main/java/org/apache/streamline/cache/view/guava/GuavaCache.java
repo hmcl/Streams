@@ -18,7 +18,6 @@
 
 package org.apache.streamline.cache.view.guava;
 
-import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheStats;
 
 import org.apache.streamline.cache.Cache;
@@ -32,7 +31,8 @@ public class GuavaCache<K,V> implements Cache<K,V> {
     private com.google.common.cache.Cache<K,V> delegate;
 
     public GuavaCache(com.google.common.cache.Cache<K, V> delegate) {
-        Objects.requireNonNull(delegate);
+        Objects.requireNonNull(delegate, "Must specify an implementation of "
+                + com.google.common.cache.Cache.class.getName());
         this.delegate = delegate;
     }
 
@@ -85,5 +85,12 @@ public class GuavaCache<K,V> implements Cache<K,V> {
     @Override
     public ExpiryPolicy getExpiryPolicy() {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "GuavaCache{" +
+                "delegate=" + delegate +
+                '}';
     }
 }

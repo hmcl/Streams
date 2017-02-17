@@ -9,8 +9,12 @@ import java.util.Optional;
 
 /**
  * Wrapper for Cache, Service, Cache Config
+ *
+ * @param <K> Type of the key
+ * @param <V> Type of the value
+ * @param <C> Type of the underlying cache configuration
  */
-public interface CacheRuntimeInfo<K,V> {
+public interface CacheRuntimeInfo<K,V,C> {
 
     String getCacheId();
 
@@ -19,7 +23,7 @@ public interface CacheRuntimeInfo<K,V> {
     /**
      * {@link CacheConfig} info used to create the {@link Cache}
      */
-    Optional<CacheConfig> getCacheConfig();
+    Optional<CacheConfig<K,V,C>> getCacheConfig();
 
     /**
      * {@link CacheService}s used by this {@link Cache}
